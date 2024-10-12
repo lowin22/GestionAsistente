@@ -14,9 +14,7 @@
             <thead style="text-align: center;">
                 <tr style="text-align: center">
                     <th>Acciones</th>
-                    <th>Nombre</th>
-                    <th>Primer Apellido</th>
-                    <th>Segundo Apellido</th>
+                    <th>Nombre Completo</th>
                     <th>Unidad</th>
                 </tr>
             </thead>
@@ -40,9 +38,8 @@
                                     </svg>
                                 </button>
                             </td>
-                            <td>@encargado.Persona.Nombre</td>
-                            <td>@encargado.Persona.PrimerApellido</td>
-                            <td>@encargado.Persona.SegundoApellido</td>
+                            <td>@encargado.Persona.Nombre @encargado.Persona.PrimerApellido @encargado.Persona.SegundoApellido</td>
+                           
                             <td>@encargado.Unidad.Nombre</td>
                         </tr>
                     }
@@ -208,6 +205,8 @@
             Persona = new Persona()
         };
         StateHasChanged();
+
+
     }
 
 }
