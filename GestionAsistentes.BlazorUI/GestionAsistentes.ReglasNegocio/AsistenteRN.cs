@@ -45,5 +45,21 @@ namespace GestionAsistentes.ReglasNegocio
             return await asistenteAD.RegistrarAsistente(asistente);
         }
 
+        public async Task<List<Asistente>> ListarAsistentes()
+        {
+            List<Asistente> asistentes = new List<Asistente>();
+            asistentes = await this.asistenteAD.listarAsistentes();
+            return asistentes;
+        }
+
+        public async Task<bool> EliminarAsistente(int asistenteID)
+        {
+            return await asistenteAD.EliminarAsistente(asistenteID);
+        }
+
+        public async Task<bool> ActualizarAsistente(Asistente asistente)
+        {
+            return await asistenteAD.ModificarAsistente(asistente);
+        }
     }
 }

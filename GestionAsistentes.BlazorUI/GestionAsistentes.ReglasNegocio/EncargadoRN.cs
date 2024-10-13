@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Timers;
 
 namespace GestionAsistentes.ReglasNegocio
 {
@@ -52,32 +51,12 @@ namespace GestionAsistentes.ReglasNegocio
             encargados = await this.encargadoAD.ListarEncargados();
             return encargados;
         }
-        public async Task<(string, bool)> ActualizarEncargado(Encargado encargado)
+
+        public async Task<List<Encargado>> ListarEncargadosPorID(int unidadID)
         {
-            if (encargado != null)
-            {
-                if (encargado.UnidadID == 0)
-                {
-                   return ("La unidad es erronea", false);
-                }
-                if (encargado.Persona.SegundoApellido == null)
-                {
-                    return ("El segundo apellido es necesario", false);
-                }
-                if (encargado.Persona.PrimerApellido == null)
-                {
-                    return ("El primer apellido es necesario", false);
-                }
-                if (encargado.Persona.Nombre == null)
-                {
-                    return ("El nombre es necesario", false);
-                }
-            }
-            return await encargadoAD.ActualizarEncargado(encargado);
-        }
-        public async Task<(string, bool)> EliminarEncargado(int encargadoID)
-        {
-            return await encargadoAD.EliminarEncargado(encargadoID);
+            List<Encargado> encargadosFiltrados = new List<Encargado>();
+            encargadosFiltrados = await this.encargadoAD.ListarEncargadosPorID(unidadID);
+            return encargadosFiltrados;
         }
     }
 }

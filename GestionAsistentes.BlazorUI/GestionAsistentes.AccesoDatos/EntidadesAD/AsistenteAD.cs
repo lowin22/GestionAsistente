@@ -38,9 +38,10 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             this._contexto.AsistenteEFs.Add(asistenteEF);
             return this._contexto.SaveChanges() > 0;
         }
-        public List<Asistente> listarAsistentes()
+        public async Task<List<Asistente>> listarAsistentes()
         {
             List<AsistenteEF> asistenteEFs = _contexto.AsistenteEFs
+                .Include(a => a.Persona)
                 .Include(a => a.Encargado)          // Incluir Encargado
                     .ThenInclude(e => e.Persona)    // Incluir Persona del Encargado
                 .Include(a => a.Unidad)             // Incluir Unidad
@@ -54,7 +55,21 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                 // Mapear las propiedades de Asistente
                 Asistente asistente = new Asistente
                 {
+                    AsistenteID = asistenteEF.AsistenteID,
+                    Persona = new Persona // Mapeo de Persona asistente
+                    {
+                        Nombre = asistenteEF.Persona.Nombre,
+                        PrimerApellido = asistenteEF.Persona.PrimerApellido,
+                        SegundoApellido = asistenteEF.Persona.SegundoApellido
+                    },
+
                     UnidadID = asistenteEF.UnidadID,
+                    // Mapeo de nombre de la Unidad
+                    Unidad = new Unidad // Asegúrate de que tu clase Asistente tenga una propiedad Unidad
+                    {
+                        UnidadID = asistenteEF.Unidad.UnidadID, // Asumiendo que Unidad tiene UnidadID
+                        Nombre = asistenteEF.Unidad.Nombre // Mapeo del nombre de la unidad
+                    },
                     nombreUsuario = asistenteEF.nombreUsuario,
                     Accesos = asistenteEF.Accesos,
                     Contrasenia = asistenteEF.Contrasenia,
@@ -66,10 +81,6 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                             Nombre = asistenteEF.Encargado.Persona.Nombre,
                             PrimerApellido = asistenteEF.Encargado.Persona.PrimerApellido,
                             SegundoApellido = asistenteEF.Encargado.Persona.SegundoApellido
-                        },
-                        Unidad = new Unidad // Mapeo de Unidad
-                        {
-                            Nombre = asistenteEF.Encargado.Unidad.Nombre
                         }
                     }
                 };
@@ -79,23 +90,40 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
 
             return asistentes;
         }
-        public bool ModificarAsistente(Asistente asistente)
-        {
-            AsistenteEF asistenteEF = _contexto.AsistenteEFs.Find(asistente.AsistenteID);
 
+        public async Task<bool> ModificarAsistente(Asistente asistente)
+        {
+            // Buscar el asistente por ID
+            var asistenteEF = await _contexto.AsistenteEFs
+                .Include(a => a.Persona) // Asegúrate de incluir la entidad Persona
+                .FirstOrDefaultAsync(a => a.AsistenteID == asistente.AsistenteID);
+
+            // Verificar si se encontró el asistente
             if (asistenteEF == null)
             {
-                return false;
+                return false; // Si no se encontró, retorna falso
             }
+
+            // Actualizar los datos de la entidad Persona
+            asistenteEF.Persona.Nombre = asistente.Persona.Nombre;
+            asistenteEF.Persona.PrimerApellido = asistente.Persona.PrimerApellido;
+            asistenteEF.Persona.SegundoApellido = asistente.Persona.SegundoApellido;
+
+            // Actualizar los demás campos del asistente
             asistenteEF.UnidadID = asistente.UnidadID;
             asistenteEF.nombreUsuario = asistente.nombreUsuario;
             asistenteEF.Accesos = asistente.Accesos;
             asistenteEF.EncargadoID = asistente.EncargadoID;
             asistenteEF.Contrasenia = asistente.Contrasenia;
             asistenteEF.BadgeID = asistente.BadgeID;
-            return _contexto.SaveChanges() > 0;
+
+            // Guardar los cambios en la base de datos
+            return await _contexto.SaveChangesAsync() > 0; // Asegúrate de usar SaveChangesAsync para mantener la asynchronía
         }
-        public bool EliminarAsistente(int AsistenteID)
+
+
+
+        public async Task<bool> EliminarAsistente(int AsistenteID)
         {
             AsistenteEF asistenteEF = _contexto.AsistenteEFs.Find(AsistenteID);
             if (asistenteEF == null)
