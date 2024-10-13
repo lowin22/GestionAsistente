@@ -1,0 +1,54 @@
+﻿html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#header {
+    background-color: #005da4;
+    color: white;
+}
+
+#top-header {
+    padding: 10px 0;
+}
+
+#bottom-header {
+    background-color: #6c757d;
+    padding: 10px 0;
+}
+
+    #bottom-header h2 {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+.content {
+    min-height: calc(100vh - 50px - 100px); /* Ajustado para el nuevo header */
+    padding-bottom: 50px;
+}
+
+.footer {
+    background-color: dimgrey;
+    height: 50px;
+    line-height: 50px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: white;
+}
+
+#navbar {
+    background-color: #eaeaea;
+    lighting-color: #989d96;
+}
+
+#boton-salir {
+}
+
+thead {
+    background-color: #005da4;
+    color: white;
+}

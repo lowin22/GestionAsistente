@@ -1,0 +1,87 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = GestionAsistentes.BlazorUI
+build_property.RootNamespace = GestionAsistentes.BlazorUI
+build_property.ProjectDir = C:\Users\XCPC\Documents\GitHub\GestionAsistenetes\GestionAsistentes.BlazorUI\GestionAsistentes.BlazorUI\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\XCPC\Documents\GitHub\GestionAsistenetes\GestionAsistentes.BlazorUI\GestionAsistentes.BlazorUI
+build_property._RazorSourceGeneratorDebug = 
+
+[C:/Users/XCPC/Documents/GitHub/GestionAsistenetes/GestionAsistentes.BlazorUI/GestionAsistentes.BlazorUI/Components/App.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/XCPC/Documents/GitHub/GestionAsistenetes/GestionAsistentes.BlazorUI/GestionAsistentes.BlazorUI/Components/Pages/Ayuda.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBeXVkYS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/XCPC/Documents/GitHub/GestionAsistenetes/GestionAsistentes.BlazorUI/GestionAsistentes.BlazorUI/Components/Pages/CrearAsistente.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDcmVhckFzaXN0ZW50ZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/XCPC/Documents/GitHub/GestionAsistenetes/GestionAsistentes.BlazorUI/GestionAsistentes.BlazorUI/Components/Pages/CrearEncargado.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDcmVhckVuY2FyZ2Fkby5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/XCPC/Documents/GitHub/GestionAsistenetes/GestionAsistentes.BlazorUI/GestionAsistentes.BlazorUI/Components/Pages/CrearOficina.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDcmVhck9maWNpbmEucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/XCPC/Documents/GitHub/GestionAsistenetes/GestionAsistentes.BlazorUI/GestionAsistentes.BlazorUI/Components/Pages/CrearUnidad.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDcmVhclVuaWRhZC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/XCPC/Documents/GitHub/GestionAsistenetes/GestionAsistentes.BlazorUI/GestionAsistentes.BlazorUI/Components/Pages/CrearUsuario.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDcmVhclVzdWFyaW8ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/XCPC/Documents/GitHub/GestionAsistenetes/GestionAsistentes.BlazorUI/GestionAsistentes.BlazorUI/Components/Pages/Historial.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIaXN0b3JpYWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/XCPC/Documents/GitHub/GestionAsistenetes/GestionAsistentes.BlazorUI/GestionAsistentes.BlazorUI/Components/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/XCPC/Documents/GitHub/GestionAsistenetes/GestionAsistentes.BlazorUI/GestionAsistentes.BlazorUI/Components/Pages/MostrarAsistentes.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xNb3N0cmFyQXNpc3RlbnRlcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/XCPC/Documents/GitHub/GestionAsistenetes/GestionAsistentes.BlazorUI/GestionAsistentes.BlazorUI/Components/Pages/MostrarEncargado.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xNb3N0cmFyRW5jYXJnYWRvLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/XCPC/Documents/GitHub/GestionAsistenetes/GestionAsistentes.BlazorUI/GestionAsistentes.BlazorUI/Components/Pages/MostrarOficinas.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xNb3N0cmFyT2ZpY2luYXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/XCPC/Documents/GitHub/GestionAsistenetes/GestionAsistentes.BlazorUI/GestionAsistentes.BlazorUI/Components/Pages/MostrarUnidades.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xNb3N0cmFyVW5pZGFkZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/XCPC/Documents/GitHub/GestionAsistenetes/GestionAsistentes.BlazorUI/GestionAsistentes.BlazorUI/Components/Pages/MostrarUsuarios.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xNb3N0cmFyVXN1YXJpb3MucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/XCPC/Documents/GitHub/GestionAsistenetes/GestionAsistentes.BlazorUI/GestionAsistentes.BlazorUI/Components/Routes.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/XCPC/Documents/GitHub/GestionAsistenetes/GestionAsistentes.BlazorUI/GestionAsistentes.BlazorUI/Components/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xfSW1wb3J0cy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/XCPC/Documents/GitHub/GestionAsistenetes/GestionAsistentes.BlazorUI/GestionAsistentes.BlazorUI/Components/Layout/LayoutPrincipal.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTGF5b3V0UHJpbmNpcGFsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-nbywvsvxsr

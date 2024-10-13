@@ -1,0 +1,44 @@
+﻿@page "/"
+@using GestionAsistentes.BlazorUI.Components.Layout
+@using GestionAsistentes.Entidades
+@using GestionAsistentes.ReglasNegocio
+@layout LayoutPrincipal
+
+<div class="text-center my-5">
+    <h1>Bienvenido al Sistema de Gestión de Asistentes</h1>
+    <p>Este sistema te permitirá gestionar la información de los asistentes de manera eficiente.</p>
+
+</div>
+
+
+
+
+@if (oficinas == null)
+{
+    <p>Cargando oficinas...</p>
+}
+else if (!oficinas.Any())
+{
+    <p>No hay oficinas disponibles.</p>
+}
+else
+{
+    <h2>Oficinas:</h2>
+    <ul>
+        @foreach (var oficina in oficinas)
+        {
+            <li>@oficina.Nombre</li> <!-- Ajusta 'Nombre' según la propiedad que desees mostrar -->
+        }
+    </ul>
+}
+@code {
+    [Inject]
+    public OficinaRN oficina { get; set; }
+
+    private List<Oficina> oficinas; // Declare la lista aquí
+
+    protected override async Task OnInitializedAsync()
+    {
+        oficinas = oficina.getOficinas(); // Asegúrate de usar await
+    }
+}
