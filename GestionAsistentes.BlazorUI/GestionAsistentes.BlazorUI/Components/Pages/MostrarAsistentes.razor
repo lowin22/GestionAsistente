@@ -1,34 +1,203 @@
 ﻿@page "/mostrar-asistentes"
 @using GestionAsistentes.BlazorUI.Components.Layout
+@using GestionAsistentes.BlazorUI.Controlador
+@using GestionAsistentes.Entidades
 @layout LayoutPrincipal
+@rendermode InteractiveServer
 
+<h2 class="mb-4">Mostrar Asistentes</h2>
 <div class="col-md-12 col-xs-12 col-sm-12" style="text-align: center; overflow-y: auto; top: 0px; left: 0px;">
     <div class="table-responsive col-md-12 col-xs-12 col-sm-12" style="text-align: center; overflow-y: auto;">
-    <table class="table table-bordered">
-        <thead style="text-align: center;">
-            <tr style="text-align: center">
-                <th>Usuario</th>
-                <th>Nombre</th>
-                <th>Contraseña</th>
-                <th>Encargado</th>
-                <th>Accesos</th>
-                <th>Badge</th>
-                <th>Unidad</th>
-                <th>Horario</th>
-            </tr>
-        </thead>
-
-        <tr>
-            <td>Usuario</td>
-            <td>Nombre</td>
-            <td>Contraseña</td>
-            <td>Encargado</td>
-            <td>Accesos</td>
-            <td>Badge</td>
-            <td>Unidad</td>
-            <td>Horario</td>
-        </tr>
-
-</table>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Opciones</th>
+                    <th>Usuario</th>
+                    <th>Nombre</th>
+                    <th>Contraseña</th>
+                    <th>Encargado</th>
+                    <th>Accesos</th>
+                    <th>Badge</th>
+                    <th>Unidad</th>
+                    <th>Horario</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (listaAsistentes == null || !listaAsistentes.Any())
+                {
+                    <tr>
+                        <td colspan="8">No se encontraron asistentes.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var asistente in listaAsistentes)
+                    {
+                        <tr>
+                            <td>
+                                 
+                                <button @onclick="() => EliminarAsistente(asistente.AsistenteID)">Eliminar</button>
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#ActualizarAsistente" @onclick="() => PrepararActualizacion(asistente.AsistenteID)">
+                                    Actualizar
+                                </button>
+                            </td>
+                            <td>@asistente.nombreUsuario</td>
+                            <td>@($"{asistente.Persona?.Nombre} {asistente.Persona?.PrimerApellido} {asistente.Persona?.SegundoApellido}")</td>
+                            <td>@asistente.Contrasenia</td>
+                            <td>@($"{asistente.Encargado?.Persona.Nombre} {asistente.Encargado?.Persona.PrimerApellido} {asistente.Encargado?.Persona.SegundoApellido}")</td>
+                            <td>@asistente.Accesos</td>                                             
+                            <td>@asistente.BadgeID</td>                                                                               
+                            <td>@asistente.Unidad?.Nombre</td>
+                            <td>
+                            <button>Horario</button>   
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<div class="modal fade" id="ActualizarAsistente" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ActualizarAsistente">Actualizar Asistente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <EditForm Model="asistente" OnValidSubmit="GuardarActualizacionAsistente" FormName="actualizarAsistenteForm">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <div class="mb-3">
+                        <label for="usuario" class="form-label">Usuario</label>
+                        <InputText id="usuario" class="form-control" @bind-Value="asistente.nombreUsuario" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <InputText id="nombre" class="form-control" @bind-Value="asistente.Persona.Nombre" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="primerApellido" class="form-label">Primer Apellido</label>
+                        <InputText id="primerApellido" class="form-control" @bind-Value="asistente.Persona.PrimerApellido" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="segundoApellido" class="form-label">Segundo Apellido</label>
+                        <InputText id="segundoApellido" class="form-control" @bind-Value="asistente.Persona.SegundoApellido" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="contrasenia" class="form-label">Contraseña</label>
+                        <InputText id="contrasenia" class="form-control" @bind-Value="asistente.Contrasenia" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="unidadID" class="form-label">Unidad</label>
+                        <InputSelect id="unidadID" class="form-control" @bind-Value="asistente.UnidadID" @oninput="OnUnidadChanged">
+                            @foreach (var unidad in listaUnidades)
+                            {
+                                <option value="@unidad.UnidadID">@unidad.Nombre</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="mb-3">
+                        <label for="encargadoID" class="form-label">Encargado</label>
+                          <InputSelect id="encargadoID" class="form-control" @bind-Value="asistente.EncargadoID">
+                            <option value="@asistente.EncargadoID">@asistente.EncargadoID"</option>
+                        @foreach (var encargado in listaEncargados)
+                        {
+                        <option value="@encargado.EncargadoID">@($"{encargado.Persona.Nombre} {encargado.Persona.PrimerApellido}")</option>
+                        }
+                        </InputSelect>  
+                    </div>
+                    <div class="mb-3">
+                        <label for="accesos" class="form-label">Accesos</label>
+                        <InputTextArea id="accesos" class="form-control" @bind-Value="asistente.Accesos" />
+                    </div>
+                     <div class="mb-3">
+                    <label for="BadgeID">Badge</label>
+                    <InputSelect id="BadgeID" class="form-select" @bind-Value="asistente.BadgeID">
+                    <option value="">Seleccione el badge</option>
+                    <option value="1">Badge 1</option>
+                    <option value="2">Badge 2</option>
+                    <option value="3">Badge 3</option>
+                    </InputSelect>
+                    
+                    </div> 
+                   
+                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Guardar Cambios</button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
 </div>
+
+@code {
+
+    private AsistenteControlador asistenteControlador = new AsistenteControlador();
+    private UnidadControlador unidadControlador = new UnidadControlador();
+    private EncargadoControlador encargadoControlador = new EncargadoControlador();
+    private List<Asistente> listaAsistentes = new List<Asistente>();
+    private List<Unidad> listaUnidades = new List<Unidad>();
+    private List<Encargado> listaEncargados = new List<Encargado>();
+    private Asistente asistente = new Asistente
+        {
+            Persona = new Persona()
+        };
+
+
+    private async Task PrepararActualizacion(int asistenteID)
+    {
+        listaUnidades = await unidadControlador.ListarUnidades();
+        asistente = listaAsistentes.Find(a => a.AsistenteID == asistenteID);
+        if (asistente.UnidadID != 0)
+        {
+            await CargarEncargados(asistente.UnidadID);
+        }
+       
+      
+    }
+    private async Task OnUnidadChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value.ToString(), out int unidadId))
+        {
+            asistente.UnidadID = unidadId;
+            await CargarEncargados(unidadId);
+        }
+    }
+
+    private async Task CargarEncargados(int unidadId)
+    {
+        if (unidadId != 0)
+        {
+            listaEncargados = await encargadoControlador.ListarEncargadosPorID(unidadId);
+        }
+        else
+        {
+            listaEncargados = new List<Encargado>();
+        }
+        asistente.EncargadoID = 0;
+        StateHasChanged();
+    }
+    private async Task EliminarAsistente(int asistente)
+    {
+        bool eliminado = await asistenteControlador.EliminarAsistente(asistente);
+        if (eliminado)
+        {
+            OnInitializedAsync();
+        }
+    }
+ 
+    private async Task GuardarActualizacionAsistente()
+    {
+        bool actualizado = await asistenteControlador.ActualizarAsistente(asistente);
+
+        if (actualizado)
+        {
+            OnInitializedAsync();
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        listaAsistentes = await asistenteControlador.ListarAsistentes();
+    }
+}

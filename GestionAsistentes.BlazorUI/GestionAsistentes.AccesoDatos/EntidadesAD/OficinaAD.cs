@@ -27,7 +27,8 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                 Nombre = oficina.Nombre
             };
             _contexto.OficinaEFs.Add(oficinaEF);
-            return _contexto.SaveChanges() >0;
+
+            return _contexto.SaveChanges() > 0;
         }
         public Oficina BuscarOficina(string nombre)
         {
@@ -35,8 +36,8 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
               .Where(x => x.Nombre == nombre)
                 .Select(x => new Oficina
                 {
-                         OficinaID = x.OficinaID,
-                          Nombre = x.Nombre
+                    OficinaID = x.OficinaID,
+                    Nombre = x.Nombre
                 }).FirstOrDefault();
             if (oficina == null)
             {
