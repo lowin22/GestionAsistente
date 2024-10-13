@@ -7,7 +7,20 @@
 *.vsidx
 # Archivos dll
 *.dll
+# Visual Studio files
+*.vsidx
+*.suo
 
+# Visual Studio project files
+*.v2
+*.v8.bin
+*.metadata.v8.bin
+
+# .NET specific
+*.deps.json
+
+# Otros archivos específicos
+DocumentLayout.json
 # Archivos de caché de NuGet
 *.nuget.cache
 
