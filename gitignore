@@ -4,6 +4,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+*.vsidx
 
 # Build results
 [Dd]ebug/
@@ -20,12 +21,48 @@ bld/
 [Ll]og/
 [Ll]ogs/
 
+# Visual Studio cache files
+*.cache
+*.vspscc
+*.vssscc
+
+# ReSharper cache directories
+_ReSharper*/
+
+# Visual Studio IntelliCode
+.vs/
+
+# Visual Studio Code
+.vscode/
+
+# Rider
+.idea/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Blazor specific
+*.razor.g.cs
+*.razor.g.i.cs
+*.razor.g.cs.map
+*.razor.g.i.cs.map
+
+# DocumentLayout.json (si es un archivo de configuración local)
+*DocumentLayout.json
+
+# project.razor.vs.bin (archivo específico de Visual Studio para Razor)
+*.razor.vs.bin
+
 # .NET Core
 project.lock.json
 project.fragment.lock.json
 artifacts/
 
-# Files built by Visual Studio
+# Archivos generados por Visual Studio
 *_i.c
 *_p.c
 *_h.h
@@ -53,41 +90,3 @@ artifacts/
 *.pidb
 *.svclog
 *.scc
-
-# NuGet Packages
-*.nupkg
-# NuGet Symbol Packages
-*.snupkg
-# The packages folder can be ignored because of Package Restore
-**/[Pp]ackages/*
-# except build/, which is used as an MSBuild target.
-!**/[Pp]ackages/build/
-
-# User-specific files
-*.rsuser
-
-# Rider
-.idea/
-
-# User-specific files
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
-
-# Mono auto generated files
-mono_crash.*
-
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
-
-# Folder config file
-Desktop.ini
-
-# VS Code files
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
