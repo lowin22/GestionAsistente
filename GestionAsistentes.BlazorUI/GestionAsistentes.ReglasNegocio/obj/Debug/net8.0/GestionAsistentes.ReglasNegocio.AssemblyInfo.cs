@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GestionAsistentes.ReglasNegocio")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+19a41e1a943f676939b9998494dec521979b9ac4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f3e596e09ce1ad583ff22ef59a8ac083652c9f93")]
 [assembly: System.Reflection.AssemblyProductAttribute("GestionAsistentes.ReglasNegocio")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GestionAsistentes.ReglasNegocio")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

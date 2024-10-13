@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.BlazorUI\\GestionAsistentes.BlazorUI.csproj": {}
+    "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.BlazorUI\\GestionAsistentes.BlazorUI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.AccesoDatos\\GestionAsistentes.AccesoDatos.csproj": {
+    "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.AccesoDatos\\GestionAsistentes.AccesoDatos.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.AccesoDatos\\GestionAsistentes.AccesoDatos.csproj",
+        "projectUniqueName": "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.AccesoDatos\\GestionAsistentes.AccesoDatos.csproj",
         "projectName": "GestionAsistentes.AccesoDatos",
-        "projectPath": "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.AccesoDatos\\GestionAsistentes.AccesoDatos.csproj",
-        "packagesPath": "C:\\Users\\XCPC\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.AccesoDatos\\obj\\",
+        "projectPath": "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.AccesoDatos\\GestionAsistentes.AccesoDatos.csproj",
+        "packagesPath": "C:\\Users\\edwin\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.AccesoDatos\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\XCPC\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\edwin\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -29,8 +29,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.Entidades\\GestionAsistentes.Entidades.csproj": {
-                "projectPath": "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.Entidades\\GestionAsistentes.Entidades.csproj"
+              "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.Entidades\\GestionAsistentes.Entidades.csproj": {
+                "projectPath": "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.Entidades\\GestionAsistentes.Entidades.csproj"
               }
             }
           }
@@ -87,21 +87,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300-preview.24203.14/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.BlazorUI\\GestionAsistentes.BlazorUI.csproj": {
+    "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.BlazorUI\\GestionAsistentes.BlazorUI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.BlazorUI\\GestionAsistentes.BlazorUI.csproj",
+        "projectUniqueName": "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.BlazorUI\\GestionAsistentes.BlazorUI.csproj",
         "projectName": "GestionAsistentes.BlazorUI",
-        "projectPath": "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.BlazorUI\\GestionAsistentes.BlazorUI.csproj",
-        "packagesPath": "C:\\Users\\XCPC\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.BlazorUI\\obj\\",
+        "projectPath": "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.BlazorUI\\GestionAsistentes.BlazorUI.csproj",
+        "packagesPath": "C:\\Users\\edwin\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.BlazorUI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\XCPC\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\edwin\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -116,11 +116,11 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.AccesoDatos\\GestionAsistentes.AccesoDatos.csproj": {
-                "projectPath": "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.AccesoDatos\\GestionAsistentes.AccesoDatos.csproj"
+              "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.AccesoDatos\\GestionAsistentes.AccesoDatos.csproj": {
+                "projectPath": "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.AccesoDatos\\GestionAsistentes.AccesoDatos.csproj"
               },
-              "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.ReglasNegocio\\GestionAsistentes.ReglasNegocio.csproj": {
-                "projectPath": "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.ReglasNegocio\\GestionAsistentes.ReglasNegocio.csproj"
+              "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.ReglasNegocio\\GestionAsistentes.ReglasNegocio.csproj": {
+                "projectPath": "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.ReglasNegocio\\GestionAsistentes.ReglasNegocio.csproj"
               }
             }
           }
@@ -172,21 +172,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300-preview.24203.14/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.Entidades\\GestionAsistentes.Entidades.csproj": {
+    "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.Entidades\\GestionAsistentes.Entidades.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.Entidades\\GestionAsistentes.Entidades.csproj",
+        "projectUniqueName": "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.Entidades\\GestionAsistentes.Entidades.csproj",
         "projectName": "GestionAsistentes.Entidades",
-        "projectPath": "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.Entidades\\GestionAsistentes.Entidades.csproj",
-        "packagesPath": "C:\\Users\\XCPC\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.Entidades\\obj\\",
+        "projectPath": "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.Entidades\\GestionAsistentes.Entidades.csproj",
+        "packagesPath": "C:\\Users\\edwin\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.Entidades\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\XCPC\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\edwin\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -233,21 +233,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300-preview.24203.14/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.ReglasNegocio\\GestionAsistentes.ReglasNegocio.csproj": {
+    "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.ReglasNegocio\\GestionAsistentes.ReglasNegocio.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.ReglasNegocio\\GestionAsistentes.ReglasNegocio.csproj",
+        "projectUniqueName": "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.ReglasNegocio\\GestionAsistentes.ReglasNegocio.csproj",
         "projectName": "GestionAsistentes.ReglasNegocio",
-        "projectPath": "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.ReglasNegocio\\GestionAsistentes.ReglasNegocio.csproj",
-        "packagesPath": "C:\\Users\\XCPC\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.ReglasNegocio\\obj\\",
+        "projectPath": "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.ReglasNegocio\\GestionAsistentes.ReglasNegocio.csproj",
+        "packagesPath": "C:\\Users\\edwin\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.ReglasNegocio\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\XCPC\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\edwin\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -262,11 +262,11 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.AccesoDatos\\GestionAsistentes.AccesoDatos.csproj": {
-                "projectPath": "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.AccesoDatos\\GestionAsistentes.AccesoDatos.csproj"
+              "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.AccesoDatos\\GestionAsistentes.AccesoDatos.csproj": {
+                "projectPath": "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.AccesoDatos\\GestionAsistentes.AccesoDatos.csproj"
               },
-              "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.Entidades\\GestionAsistentes.Entidades.csproj": {
-                "projectPath": "C:\\Users\\XCPC\\Documents\\GitHub\\GestionAsistenetes\\GestionAsistentes.BlazorUI\\GestionAsistentes.Entidades\\GestionAsistentes.Entidades.csproj"
+              "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.Entidades\\GestionAsistentes.Entidades.csproj": {
+                "projectPath": "C:\\Users\\edwin\\Documents\\GitHub\\GestionAsistente\\GestionAsistentes.BlazorUI\\GestionAsistentes.Entidades\\GestionAsistentes.Entidades.csproj"
               }
             }
           }
@@ -301,7 +301,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.300-preview.24203.14/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
