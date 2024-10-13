@@ -58,5 +58,33 @@ namespace GestionAsistentes.ReglasNegocio
             encargadosFiltrados = await this.encargadoAD.ListarEncargadosPorID(unidadID);
             return encargadosFiltrados;
         }
+
+        public async Task<(string, bool)> ActualizarEncargado(Encargado encargado)
+        {
+            if (encargado != null)
+            {
+                if (encargado.UnidadID == 0)
+                {
+                    return ("La unidad es erronea", false);
+                }
+                if (encargado.Persona.SegundoApellido == null)
+                {
+                    return ("El segundo apellido es necesario", false);
+                }
+                if (encargado.Persona.PrimerApellido == null)
+                {
+                    return ("El primer apellido es necesario", false);
+                }
+                if (encargado.Persona.Nombre == null)
+                {
+                    return ("El nombre es necesario", false);
+                }
+            }
+            return await encargadoAD.ActualizarEncargado(encargado);
+        }
+        public async Task<(string, bool)> EliminarEncargado(int encargadoID)
+        {
+            return await encargadoAD.EliminarEncargado(encargadoID);
+        }
     }
 }

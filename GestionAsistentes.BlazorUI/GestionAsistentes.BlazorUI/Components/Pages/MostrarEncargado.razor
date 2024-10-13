@@ -21,6 +21,7 @@
             </thead>
             <tbody>
                 @if (listaEncargados != null)
+
                 {
                     @foreach (var encargado in listaEncargados)
                     {
@@ -40,7 +41,7 @@
                                 </button>
                             </td>
                             <td>@encargado.Persona.Nombre @encargado.Persona.PrimerApellido @encargado.Persona.SegundoApellido</td>
-                           
+
                             <td>@encargado.Unidad.Nombre</td>
                         </tr>
                     }
@@ -66,11 +67,11 @@
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Nombre</label>
                         <InputText id="nombre" class="form-control" @bind-Value="encargado.Persona.Nombre" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="primerApellido" class="form-label">Primer Apellido</label>
-                            <InputText id="primerApellido" class="form-control" @bind-Value="encargado.Persona.PrimerApellido" />
-                            </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="primerApellido" class="form-label">Primer Apellido</label>
+                        <InputText id="primerApellido" class="form-control" @bind-Value="encargado.Persona.PrimerApellido" />
+                    </div>
                     <div class="mb-3">
                         <label for="primerApellido" class="form-label">Primer Apellido</label>
                         <InputText id="primerApellido" class="form-control" @bind-Value="encargado.Persona.SegundoApellido" />
@@ -79,6 +80,7 @@
                         <label for="unidadID" class="form-label">Unidad</label>
                         <InputSelect id="unidadID" class="form-control" @bind-Value="encargado.UnidadID">
                             @foreach (var unidad in listaUnidades)
+
                             {
                                 <option value="@unidad.UnidadID">@unidad.Nombre</option>
                             }
@@ -117,6 +119,7 @@
                         <label for="unidadID" class="form-label">Unidad</label>
                         <InputSelect id="unidadID" class="form-control" @bind-Value="crearEncargado.UnidadID">
                             @foreach (var unidad in listaUnidades)
+
                             {
                                 <option value="@unidad.UnidadID">@unidad.Nombre</option>
                             }
@@ -144,68 +147,114 @@
                     Cancelar
                 </button>
                 <button class="btn btn-danger" data-bs-dismiss="modal" @onclick="() => EliminarEncargado(eliminarEncargado.EncargadoID)">
-                    
+
                     Confirmar
                 </button>
-               
+
             </div>
         </div>
     </div>
 </div>
 @code {
     UnidadControlador unidadControlador = new UnidadControlador();
+
     EncargadoControlador encargadoControlador = new EncargadoControlador();
+
     List<Encargado> listaEncargados = new List<Encargado>();
+
     List<Unidad> listaUnidades = new List<Unidad>();
+
     Encargado encargado = new Encargado
         {
             Persona = new Persona()
         };
+
     Encargado crearEncargado = new Encargado
         {
             Persona = new Persona()
         };
+
     Encargado eliminarEncargado = new Encargado
         {
             Persona = new Persona()
         };
+
     protected override async Task OnInitializedAsync()
+
     {
+
         listaEncargados = await encargadoControlador.ListarEncargados();
+
         listaUnidades = await unidadControlador.ListarUnidades();
+
     }
 
+
+
     async Task EditarEncargado(int encargadoID)
+
     {
+
         encargado = listaEncargados.Find(x => x.EncargadoID == encargadoID);
-       
+
+
+
     }
+
     private async Task seleccionarEncargadoEliminar(int eliminarEncargadoS)
+
     {
+
         eliminarEncargado = listaEncargados.Find(x => x.EncargadoID == eliminarEncargadoS);
+
     }
+
     async Task EliminarEncargado(int encargadoID)
+
     {
+
         await encargadoControlador.EliminarEncargado(encargadoID);
-        listaEncargados = await encargadoControlador.ListarEncargados();    
+
+        listaEncargados = await encargadoControlador.ListarEncargados();
+
         StateHasChanged();
-       
+
+
+
     }
+
     private async Task ActualizarEncargado()
+
     {
+
         await encargadoControlador.ActualizarEncargado(encargado);
+
         listaEncargados = await encargadoControlador.ListarEncargados();
+
         StateHasChanged();
+
     }
+
     private async Task RegistrarEncargado()
-    { 
-             await encargadoControlador.RegistrarEncargado(crearEncargado);
+
+    {
+
+        await encargadoControlador.RegistrarEncargado(crearEncargado);
+
         listaEncargados = await encargadoControlador.ListarEncargados();
+
         crearEncargado = new Encargado
-        {
-            Persona = new Persona()
-        };
+
+            {
+
+                Persona = new Persona()
+
+            };
+
         StateHasChanged();
+
+
+
 
 
     }

@@ -107,28 +107,48 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
 
             return encargados;
         }
-        public bool EliminarEncargado(int encargadoID)
+        public async Task<(string, bool)> EliminarEncargado(int encargadoID)
         {
             EncargadoEF encargadoEF = this._contexto.EncargadoEFs
                 .FirstOrDefault(e => e.EncargadoID == encargadoID);
             if (encargadoEF == null)
             {
-                return false;
+                return ("No existe el registro de encargado", false);
+            }
+            PersonaEF personaEF = this._contexto.PersonaEFs
+                .FirstOrDefault(p => p.PersonaID == encargadoEF.PersonaID);
+            if (personaEF == null)
+            {
+                return ("No existe el registro de encargado", false);
             }
             this._contexto.EncargadoEFs.Remove(encargadoEF);
-            return this._contexto.SaveChanges() > 0;
+            this._contexto.PersonaEFs.Remove(personaEF);
+            return this._contexto.SaveChanges() > 0
+       ? ("Eliminado correctamente", true)
+       : ("Error al Eliminar", false);
         }
-        public bool ActualizarEncargado(Encargado encargado)
+        public async Task<(string, bool)> ActualizarEncargado(Encargado encargado)
         {
             EncargadoEF encargadoEF = this._contexto.EncargadoEFs
                 .FirstOrDefault(e => e.EncargadoID == encargado.EncargadoID);
             if (encargadoEF == null)
             {
-                return false;
+                return ("El encargado no se pudo actualizar", false);
             }
+            PersonaEF personaEF = this._contexto.PersonaEFs
+                .FirstOrDefault(p => p.PersonaID == encargado.PersonaID);
+            if (personaEF == null)
+            {
+                return ("La persona no se pudo actualizar", false);
+            }
+            personaEF.Nombre = encargado.Persona.Nombre;
+            personaEF.PrimerApellido = encargado.Persona.PrimerApellido;
+            personaEF.SegundoApellido = encargado.Persona.SegundoApellido;
             encargadoEF.PersonaID = encargado.PersonaID;
             encargadoEF.UnidadID = encargado.UnidadID;
-            return this._contexto.SaveChanges() > 0;
+            return this._contexto.SaveChanges() > 0
+        ? ("Actualizado correctamente", true)
+        : ("Error al actualizar", false);
         }
     }
 }
