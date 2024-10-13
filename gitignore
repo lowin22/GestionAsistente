@@ -5,6 +5,19 @@
 *.userosscache
 *.sln.docstates
 *.vsidx
+# Archivos dll
+*.dll
+
+# Archivos de caché de NuGet
+*.nuget.cache
+
+# Archivos de configuración específicos del entorno
+applicationhost.config
+
+# Archivos generados por el compilador
+*.dgspec.json
+*.props
+*.targets
 
 # Build results
 [Dd]ebug/
