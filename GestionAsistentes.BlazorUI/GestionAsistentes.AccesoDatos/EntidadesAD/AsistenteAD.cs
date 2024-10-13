@@ -58,6 +58,7 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                     AsistenteID = asistenteEF.AsistenteID,
                     Persona = new Persona // Mapeo de Persona asistente
                     {
+                        PersonaID = asistenteEF.Persona.PersonaID,
                         Nombre = asistenteEF.Persona.Nombre,
                         PrimerApellido = asistenteEF.Persona.PrimerApellido,
                         SegundoApellido = asistenteEF.Persona.SegundoApellido
@@ -95,7 +96,6 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
         {
             // Buscar el asistente por ID
             var asistenteEF = await _contexto.AsistenteEFs
-                .Include(a => a.Persona) // Asegúrate de incluir la entidad Persona
                 .FirstOrDefaultAsync(a => a.AsistenteID == asistente.AsistenteID);
 
             // Verificar si se encontró el asistente
@@ -104,10 +104,15 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                 return false; // Si no se encontró, retorna falso
             }
 
-            // Actualizar los datos de la entidad Persona
-            asistenteEF.Persona.Nombre = asistente.Persona.Nombre;
-            asistenteEF.Persona.PrimerApellido = asistente.Persona.PrimerApellido;
-            asistenteEF.Persona.SegundoApellido = asistente.Persona.SegundoApellido;
+            PersonaEF personaEF = this._contexto.PersonaEFs
+                 .FirstOrDefault(p => p.PersonaID == asistente.Persona.PersonaID);
+            if (personaEF == null)
+            {
+                return false;
+            }
+            personaEF.Nombre = asistente.Persona.Nombre;
+            personaEF.PrimerApellido = asistente.Persona.PrimerApellido;
+            personaEF.SegundoApellido = asistente.Persona.SegundoApellido;
 
             // Actualizar los demás campos del asistente
             asistenteEF.UnidadID = asistente.UnidadID;

@@ -67,7 +67,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
-                <EditForm Model="asistente" OnValidSubmit="GuardarActualizacionAsistente" FormName="actualizarAsistenteForm">
+                <EditForm Model="asistente" FormName="actualizarAsistenteForm">
                     <DataAnnotationsValidator />
                     <ValidationSummary />
                     <div class="mb-3">
@@ -124,7 +124,7 @@
                     
                     </div> 
                    
-                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Guardar Cambios</button>
+                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @onclick="GuardarActualizacionAsistente">Guardar Cambios</button>
                 </EditForm>
             </div>
         </div>
@@ -176,25 +176,23 @@
             listaEncargados = new List<Encargado>();
         }
         asistente.EncargadoID = 0;
-        StateHasChanged();
+       
     }
     private async Task EliminarAsistente(int asistente)
     {
         bool eliminado = await asistenteControlador.EliminarAsistente(asistente);
         if (eliminado)
         {
-            OnInitializedAsync();
+            listaAsistentes = await asistenteControlador.ListarAsistentes();
+            StateHasChanged();
         }
     }
  
     private async Task GuardarActualizacionAsistente()
     {
         bool actualizado = await asistenteControlador.ActualizarAsistente(asistente);
-
-        if (actualizado)
-        {
-            OnInitializedAsync();
-        }
+        listaAsistentes = await asistenteControlador.ListarAsistentes();
+      
     }
     protected override async Task OnInitializedAsync()
     {
