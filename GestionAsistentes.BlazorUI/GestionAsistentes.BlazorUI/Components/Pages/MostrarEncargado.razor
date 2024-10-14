@@ -194,10 +194,19 @@
     async Task EditarEncargado(int encargadoID)
 
     {
+        Encargado actaulizarEncargado = new Encargado
+            {
+                Persona = new Persona()
+            };
 
-        encargado = listaEncargados.Find(x => x.EncargadoID == encargadoID);
+        actaulizarEncargado = listaEncargados.Find(x => x.EncargadoID == encargadoID);
 
-
+        encargado.EncargadoID = actaulizarEncargado.EncargadoID;
+        encargado.PersonaID = actaulizarEncargado.PersonaID;
+        encargado.Persona.Nombre = actaulizarEncargado.Persona.Nombre;
+        encargado.Persona.PrimerApellido = actaulizarEncargado.Persona.PrimerApellido;
+        encargado.Persona.SegundoApellido = actaulizarEncargado.Persona.SegundoApellido;
+        encargado.UnidadID = actaulizarEncargado.UnidadID;
 
     }
 
