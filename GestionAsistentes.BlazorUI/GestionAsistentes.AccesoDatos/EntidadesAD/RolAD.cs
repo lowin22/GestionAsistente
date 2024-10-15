@@ -25,7 +25,7 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             this._contexto.RolEFs.Add(rolEF);
             return this._contexto.SaveChanges() > 0;
         }
-        public List<Rol> listarRoles()
+        public async Task<List<Rol>> listarRoles()
         {
             List<RolEF> rolEFs = _contexto.RolEFs.ToList();
             List<Rol> roles = new List<Rol>();
@@ -34,6 +34,7 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             {
                 roles.Add(new Rol
                 {
+                    RolID = rolEF.RolID,
                     Nombre = rolEF.Nombre
                 });
             }

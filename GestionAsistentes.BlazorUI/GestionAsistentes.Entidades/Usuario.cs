@@ -11,8 +11,8 @@ namespace GestionAsistentes.Entidades
     {
         public int UsuarioID { get; set; }
         public string Contrasenia { get; set; }
-        public int RolID { get; set; }
-        public int UnidadID { get; set; }
+        public int? RolID { get; set; }
+        public int? UnidadID { get; set; }
         public int PersonaID { get; set; }
         public virtual Rol Rol { get; set; }
         public virtual Unidad Unidad { get; set; }
