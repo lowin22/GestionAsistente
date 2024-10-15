@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace GestionAsistentes.AccesoDatos.Migrations
 {
     /// <inheritdoc />
-    public partial class initDB : Migration
+    public partial class InitDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -206,8 +206,8 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                     UsuarioID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Contrasenia = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RolID = table.Column<int>(type: "int", nullable: false),
-                    UnidadID = table.Column<int>(type: "int", nullable: false),
+                    RolID = table.Column<int>(type: "int", nullable: true),
+                    UnidadID = table.Column<int>(type: "int", nullable: true),
                     PersonaID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -223,14 +223,12 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                         name: "FK_Usuario_Rol_RolID",
                         column: x => x.RolID,
                         principalTable: "Rol",
-                        principalColumn: "RolID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "RolID");
                     table.ForeignKey(
                         name: "FK_Usuario_Unidad_UnidadID",
                         column: x => x.UnidadID,
                         principalTable: "Unidad",
-                        principalColumn: "UnidadID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "UnidadID");
                 });
 
             migrationBuilder.CreateTable(
