@@ -10,7 +10,7 @@ namespace GestionAsistentes.Entidades
     {
         public int EncargadoID { get; set; }
         public int PersonaID { get; set; }
-        public int UnidadID { get; set; }
+        public int? UnidadID { get; set; }
         public Persona Persona { get; set; }
         public Unidad Unidad { get; set; }
     }

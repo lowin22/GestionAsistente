@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -160,7 +160,7 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Accesos = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Horario = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UnidadID = table.Column<int>(type: "int", nullable: false)
+                    UnidadID = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -170,7 +170,7 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                         column: x => x.UnidadID,
                         principalTable: "Unidad",
                         principalColumn: "UnidadID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -180,7 +180,7 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                     EncargadoID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PersonaID = table.Column<int>(type: "int", nullable: false),
-                    UnidadID = table.Column<int>(type: "int", nullable: false)
+                    UnidadID = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -196,7 +196,7 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                         column: x => x.UnidadID,
                         principalTable: "Unidad",
                         principalColumn: "UnidadID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -238,11 +238,11 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                     AsistenteID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     nombreUsuario = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UnidadID = table.Column<int>(type: "int", nullable: false),
+                    UnidadID = table.Column<int>(type: "int", nullable: true),
                     Accesos = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EncargadoID = table.Column<int>(type: "int", nullable: false),
+                    EncargadoID = table.Column<int>(type: "int", nullable: true),
                     Contrasenia = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BadgeID = table.Column<int>(type: "int", nullable: false),
+                    BadgeID = table.Column<int>(type: "int", nullable: true),
                     PersonaID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -252,8 +252,7 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                         name: "FK_Asistente_Badge_BadgeID",
                         column: x => x.BadgeID,
                         principalTable: "Badge",
-                        principalColumn: "BadgeID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "BadgeID");
                     table.ForeignKey(
                         name: "FK_Asistente_Encargado_EncargadoID",
                         column: x => x.EncargadoID,

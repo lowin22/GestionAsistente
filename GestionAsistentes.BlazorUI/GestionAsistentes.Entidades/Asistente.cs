@@ -10,11 +10,11 @@ namespace GestionAsistentes.Entidades
     {
         public int AsistenteID { get; set; }
         public string nombreUsuario { get; set; }
-        public int UnidadID { get; set; }
+        public int? UnidadID { get; set; }
         public string Accesos { get; set; }
-        public int EncargadoID { get; set; }
+        public int? EncargadoID { get; set; }
         public string Contrasenia { get; set; }
-        public int BadgeID { get; set; }
+        public int? BadgeID { get; set; }
         public Badge Badge { get; set; }
         public Unidad Unidad { get; set; }
         public Persona Persona { get; set; }

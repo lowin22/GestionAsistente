@@ -37,11 +37,86 @@ namespace GestionAsistentes.AccesoDatos.Contexto
                 .HasOne(a => a.Encargado) // Relación con EncargadoEF
                 .WithMany() // Si EncargadoEF no tiene relación inversa, simplemente lo omitimos
                 .OnDelete(DeleteBehavior.Restrict);
-
+            modelBuilder.Entity<AsistenteEF>()
+                .HasOne(a => a.Unidad) // Relación con UnidadEF
+                .WithMany() // Si UnidadEF no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<AsistenteEF>()
+                .HasOne(a => a.Encargado) // Relación con EncargadoEF
+                .WithMany() // Si EncargadoEF no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<EncargadoEF>()
+                .HasOne(e => e.Unidad) // Relación con Unidad
+                .WithMany() // Si Unidad no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<AsistenteEF>()
+                .HasOne(a => a.Encargado) // Relación con Encargado
+                .WithMany() // Si Encargado no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<AsistenteEF>()
+                .HasOne(a => a.Unidad) // Relación con Unidad
+                .WithMany() // Si Unidad no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<AsistenteEF>()
+                .HasOne(a => a.Unidad) // Relación con UnidadEF
+                .WithMany() // Si UnidadEF no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<AsistenteEF>()
+                .HasOne(a => a.Encargado) // Relación con EncargadoEF
+                .WithMany() // Si EncargadoEF no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<EncargadoEF>()
+                .HasOne(e => e.Unidad) // Relación con Unidad
+                .WithMany() // Si Unidad no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<AsistenteEF>()
+                .HasOne(a => a.Encargado) // Relación con Encargado
+                .WithMany() // Si Encargado no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<AsistenteEF>()
+                .HasOne(a => a.Unidad) // Relación con Unidad
+                .WithMany() // Si Unidad no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<BadgeEF>()
+                .HasOne(b => b.Unidad) // Relación con Unidad
+                .WithMany() // Si Unidad no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<EncargadoEF>()
+                .HasOne(e => e.Unidad) // Relación con Unidad
+                .WithMany() // Si Unidad no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.SetNull); // Configura la eliminación a SetNull
+            modelBuilder.Entity<AsistenteEF>()
+                .HasOne(a => a.Encargado) // Relación con Encargado
+                .WithMany() // Si Encargado no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<AsistenteEF>()
+                .HasOne(a => a.Unidad) // Relación con Unidad
+                .WithMany() // Si Unidad no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<BadgeEF>()
+                .HasOne(b => b.Unidad) // Relación con Unidad
+                .WithMany() // Si Unidad no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<EncargadoEF>()
+                .HasOne(e => e.Unidad) // Relación con Unidad
+                .WithMany() // Si Unidad no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.SetNull); // Configura la eliminación a SetNull
+            modelBuilder.Entity<AsistenteEF>()
+                .HasOne(a => a.Encargado) // Relación con Encargado
+                .WithMany() // Si Encargado no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<AsistenteEF>()
+                .HasOne(a => a.Unidad) // Relación con Unidad
+                .WithMany() // Si Unidad no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<BadgeEF>()
+                .HasOne(b => b.Unidad) // Relación con Unidad
+                .WithMany() // Si Unidad no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<EncargadoEF>()
+                .HasOne(e => e.Unidad) // Relación con Unidad
+                .WithMany() // Si Unidad no tiene relación inversa, simplemente lo omitimos
+                .OnDelete(DeleteBehavior.SetNull); // Configura la eliminación a SetNull
         }
-
-
-
-
     }
 }
