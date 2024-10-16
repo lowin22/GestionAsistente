@@ -42,9 +42,13 @@
                             </td>
                             <td>@encargado.Persona.Nombre @encargado.Persona.PrimerApellido @encargado.Persona.SegundoApellido</td>
 
-                            <td>@encargado.Unidad.Nombre</td>
+                            <td>@encargado.Unidad?.Nombre</td>
                         </tr>
                     }
+                }else {
+                    <tr>
+                        <td colspan="3">No hay encargados registrados</td>
+                    </tr>
                 }
             </tbody>
         </table>
@@ -78,7 +82,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="unidadID" class="form-label">Unidad</label>
-                        <InputSelect id="unidadID" class="form-control" @bind-Value="encargado.UnidadID">
+                        <InputSelect id="unidadID" class="form-control" @bind-Value="encargado.Unidad.UnidadID">
                             @foreach (var unidad in listaUnidades)
 
                             {
@@ -117,7 +121,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="unidadID" class="form-label">Unidad</label>
-                        <InputSelect id="unidadID" class="form-control" @bind-Value="crearEncargado.UnidadID">
+                        <InputSelect id="unidadID" class="form-control" @bind-Value="crearEncargado.Unidad.UnidadID">
                             @foreach (var unidad in listaUnidades)
 
                             {
@@ -166,17 +170,20 @@
 
     Encargado encargado = new Encargado
         {
-            Persona = new Persona()
+            Persona = new Persona(),
+            Unidad = new Unidad()
         };
 
     Encargado crearEncargado = new Encargado
         {
-            Persona = new Persona()
+            Persona = new Persona(),
+            Unidad = new Unidad()
         };
 
     Encargado eliminarEncargado = new Encargado
         {
-            Persona = new Persona()
+            Persona = new Persona(),
+            Unidad = new Unidad()
         };
 
     protected override async Task OnInitializedAsync()
@@ -184,6 +191,11 @@
     {
 
         listaEncargados = await encargadoControlador.ListarEncargados();
+
+        if (listaEncargados == null)
+        {
+            listaEncargados = new List<Encargado>(); // Initialize to prevent null reference
+        }
 
         listaUnidades = await unidadControlador.ListarUnidades();
 

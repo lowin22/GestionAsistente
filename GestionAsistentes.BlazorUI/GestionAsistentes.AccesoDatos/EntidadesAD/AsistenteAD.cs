@@ -66,16 +66,16 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
 
                     UnidadID = asistenteEF.UnidadID,
                     // Mapeo de nombre de la Unidad
-                    Unidad = new Unidad // Asegúrate de que tu clase Asistente tenga una propiedad Unidad
+                    Unidad = asistenteEF.Unidad!= null ? new Unidad // Asegúrate de que tu clase Asistente tenga una propiedad Unidad
                     {
                         UnidadID = asistenteEF.Unidad.UnidadID, // Asumiendo que Unidad tiene UnidadID
                         Nombre = asistenteEF.Unidad.Nombre // Mapeo del nombre de la unidad
-                    },
+                    }: null,
                     nombreUsuario = asistenteEF.nombreUsuario,
                     Accesos = asistenteEF.Accesos,
                     Contrasenia = asistenteEF.Contrasenia,
                     BadgeID = asistenteEF.BadgeID,
-                    Encargado = new Encargado // Mapeo de Encargado
+                    Encargado = asistenteEF.Encargado != null ?  new Encargado // Mapeo de Encargado
                     {
                         Persona = new Persona // Mapeo de Persona
                         {
@@ -83,7 +83,7 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                             PrimerApellido = asistenteEF.Encargado.Persona.PrimerApellido,
                             SegundoApellido = asistenteEF.Encargado.Persona.SegundoApellido
                         }
-                    }
+                    }:null
                 };
 
                 asistentes.Add(asistente);
@@ -128,7 +128,7 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
 
 
 
-        public async Task<bool> EliminarAsistente(int AsistenteID)
+        public async Task<bool> EliminarAsistente(int? AsistenteID)
         {
             AsistenteEF asistenteEF = _contexto.AsistenteEFs.Find(AsistenteID);
             if (asistenteEF == null)
@@ -159,7 +159,7 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             {
                 UnidadID = asistenteEF.UnidadID,
                 Accesos = asistenteEF.Accesos,
-                Encargado = new Encargado
+                Encargado =asistenteEF.Encargado != null ? new Encargado
                 {
                     Persona = new Persona
                     {
@@ -171,11 +171,11 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                     {
                         Nombre = asistenteEF.Encargado.Unidad.Nombre
                     }
-                },
+                }:null,
                 Contrasenia = asistenteEF.Contrasenia,
                 BadgeID = asistenteEF.BadgeID,
                 nombreUsuario = asistenteEF.nombreUsuario,
-                Badge = new Badge
+                Badge = asistenteEF.Badge!= null ? new Badge
                 {
                     BadgeID = asistenteEF.Badge.BadgeID,
                     Accesos = asistenteEF.Badge.Accesos,
@@ -185,12 +185,12 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                         UnidadID = asistenteEF.Badge.Unidad.UnidadID,
                         Nombre = asistenteEF.Badge.Unidad.Nombre,
                     }
-                },
-                Unidad = new Unidad
+                }:null,
+                Unidad = asistenteEF.Unidad != null ? new Unidad
                 {
                     UnidadID = asistenteEF.Unidad.UnidadID,
                     Nombre = asistenteEF.Unidad.Nombre,
-                }
+                }:null,
             }).ToList(); // Convertimos la colección a una lista
         }
         public List<Asistente> BuscarAsistentePorEncargado(string encargado)
@@ -216,7 +216,7 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                 Contrasenia = asistenteEF.Contrasenia,
                 BadgeID = asistenteEF.BadgeID,
                 nombreUsuario = asistenteEF.nombreUsuario,
-                Badge = new Badge
+                Badge = asistenteEF.Badge != null ? new Badge
                 {
                     BadgeID = asistenteEF.Badge.BadgeID,
                     Accesos = asistenteEF.Badge?.Accesos,
@@ -226,13 +226,13 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                         UnidadID = asistenteEF.Badge.Unidad.UnidadID,
                         Nombre = asistenteEF.Badge.Unidad.Nombre,
                     } : null
-                },
+                } : null,
                 Unidad = asistenteEF.Unidad != null ? new Unidad
                 {
                     UnidadID = asistenteEF.Unidad.UnidadID,
                     Nombre = asistenteEF.Unidad.Nombre,
                 } : null,
-                Encargado = new Encargado
+                Encargado = asistenteEF.Encargado != null ? new Encargado
                 {
                     Persona = new Persona
                     {
@@ -240,7 +240,7 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                         PrimerApellido = asistenteEF.Encargado.Persona.PrimerApellido,
                         SegundoApellido = asistenteEF.Encargado.Persona.SegundoApellido
                     }
-                }
+                }:null
             }).ToList();
         }
 

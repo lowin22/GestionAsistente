@@ -20,7 +20,7 @@ namespace GestionAsistentes.BlazorUI.Controlador
             return await encargadoRN.ListarEncargados();
         }
 
-        public async Task<List<Encargado>> ListarEncargadosPorID(int unidadID)
+        public async Task<List<Encargado>> ListarEncargadosPorID(int? unidadID)
         {
             return await encargadoRN.ListarEncargadosPorID(unidadID);
         }

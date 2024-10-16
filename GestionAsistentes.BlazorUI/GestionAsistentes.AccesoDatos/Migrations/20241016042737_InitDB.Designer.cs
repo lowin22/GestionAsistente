@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GestionAsistentes.AccesoDatos.Migrations
 {
     [DbContext(typeof(GestionAsistenteContexto))]
-    [Migration("20241016015746_InitDB")]
+    [Migration("20241016042737_InitDB")]
     partial class InitDB
     {
         /// <inheritdoc />
@@ -402,23 +402,24 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                 {
                     b.HasOne("GestionAsistentes.AccesoDatos.Modelos.BadgeEF", "Badge")
                         .WithMany()
-                        .HasForeignKey("BadgeID");
+                        .HasForeignKey("BadgeID")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("GestionAsistentes.AccesoDatos.Modelos.EncargadoEF", "Encargado")
                         .WithMany()
                         .HasForeignKey("EncargadoID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("GestionAsistentes.AccesoDatos.Modelos.PersonaEF", "Persona")
                         .WithMany()
                         .HasForeignKey("PersonaID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("GestionAsistentes.AccesoDatos.Modelos.UnidadEF", "Unidad")
                         .WithMany()
                         .HasForeignKey("UnidadID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Badge");
 
@@ -434,7 +435,7 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                     b.HasOne("GestionAsistentes.AccesoDatos.Modelos.UnidadEF", "Unidad")
                         .WithMany()
                         .HasForeignKey("UnidadID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Unidad");
                 });

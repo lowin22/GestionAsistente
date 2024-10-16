@@ -21,10 +21,7 @@ namespace GestionAsistentes.ReglasNegocio
         {
             if (asistente != null)
             {
-                if (asistente.UnidadID == 0)
-                {
-                    throw new Exception("La unidad no puede ser nula");
-                };
+               
                 if (asistente.Persona.SegundoApellido == null)
                 {
                     throw new Exception("El segundo apellido no puede ser nulo");
@@ -52,7 +49,7 @@ namespace GestionAsistentes.ReglasNegocio
             return asistentes;
         }
 
-        public async Task<bool> EliminarAsistente(int asistenteID)
+        public async Task<bool> EliminarAsistente(int? asistenteID)
         {
             return await asistenteAD.EliminarAsistente(asistenteID);
         }

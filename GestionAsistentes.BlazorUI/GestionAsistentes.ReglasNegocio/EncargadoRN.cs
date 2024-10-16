@@ -52,7 +52,7 @@ namespace GestionAsistentes.ReglasNegocio
             return encargados;
         }
 
-        public async Task<List<Encargado>> ListarEncargadosPorID(int unidadID)
+        public async Task<List<Encargado>> ListarEncargadosPorID(int? unidadID)
         {
             List<Encargado> encargadosFiltrados = new List<Encargado>();
             encargadosFiltrados = await this.encargadoAD.ListarEncargadosPorID(unidadID);

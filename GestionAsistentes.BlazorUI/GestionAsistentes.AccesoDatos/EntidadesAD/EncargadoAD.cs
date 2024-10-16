@@ -31,7 +31,7 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             EncargadoEF encargadoEF = new EncargadoEF
             {
                 Persona = personaEF, // Aquí asignamos el objeto persona
-                UnidadID = encargado.UnidadID
+                UnidadID = encargado.Unidad.UnidadID
             };
 
             // Agregar el objeto EncargadoEF al contexto
@@ -55,25 +55,31 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                     EncargadoID = encargadoEF.EncargadoID,
                     PersonaID = encargadoEF.PersonaID,
                     UnidadID = encargadoEF.UnidadID,
-                    Persona = new Persona
+
+                    // Verificar si la entidad Persona no es nula en encargadoEF
+                    Persona = encargadoEF.Persona != null ? new Persona
                     {
                         PersonaID = encargadoEF.Persona.PersonaID,
                         Nombre = encargadoEF.Persona.Nombre,
                         PrimerApellido = encargadoEF.Persona.PrimerApellido,
                         SegundoApellido = encargadoEF.Persona.SegundoApellido
-                    },
-                    Unidad = new Unidad
+                    } : null,
+
+                    // Verificar si la entidad Unidad no es nula en encargadoEF
+                    Unidad = encargadoEF.Unidad != null ? new Unidad
                     {
                         UnidadID = encargadoEF.Unidad.UnidadID,
                         Nombre = encargadoEF.Unidad.Nombre
-                    }
+                    } : null
                 };
+
                 encargados.Add(encargado);
             }
 
+
             return encargados;
         }
-        public async Task<List<Encargado>> ListarEncargadosPorID(int unidadID)
+        public async Task<List<Encargado>> ListarEncargadosPorID(int? unidadID)
         {
             List<Encargado> encargados = new List<Encargado>();
             List<EncargadoEF> encargadosEF = this._contexto.EncargadoEFs
@@ -96,11 +102,11 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                         PrimerApellido = encargadoEF.Persona.PrimerApellido,
                         SegundoApellido = encargadoEF.Persona.SegundoApellido
                     },
-                    Unidad = new Unidad
+                    Unidad = encargadoEF.Unidad != null ? new Unidad
                     {
                         UnidadID = encargadoEF.Unidad.UnidadID,
                         Nombre = encargadoEF.Unidad.Nombre
-                    }
+                    }: null
                 };
                 encargados.Add(encargado);
             }
@@ -145,7 +151,7 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             personaEF.PrimerApellido = encargado.Persona.PrimerApellido;
             personaEF.SegundoApellido = encargado.Persona.SegundoApellido;
             encargadoEF.PersonaID = encargado.PersonaID;
-            encargadoEF.UnidadID = encargado.UnidadID;
+            encargadoEF.UnidadID = encargado.Unidad.UnidadID;
             return this._contexto.SaveChanges() > 0
         ? ("Actualizado correctamente", true)
         : ("Error al actualizar", false);

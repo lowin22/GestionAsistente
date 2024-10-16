@@ -170,7 +170,7 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                         column: x => x.UnidadID,
                         principalTable: "Unidad",
                         principalColumn: "UnidadID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -252,25 +252,26 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                         name: "FK_Asistente_Badge_BadgeID",
                         column: x => x.BadgeID,
                         principalTable: "Badge",
-                        principalColumn: "BadgeID");
+                        principalColumn: "BadgeID",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Asistente_Encargado_EncargadoID",
                         column: x => x.EncargadoID,
                         principalTable: "Encargado",
                         principalColumn: "EncargadoID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Asistente_Persona_PersonaID",
                         column: x => x.PersonaID,
                         principalTable: "Persona",
                         principalColumn: "PersonaID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Asistente_Unidad_UnidadID",
                         column: x => x.UnidadID,
                         principalTable: "Unidad",
                         principalColumn: "UnidadID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
