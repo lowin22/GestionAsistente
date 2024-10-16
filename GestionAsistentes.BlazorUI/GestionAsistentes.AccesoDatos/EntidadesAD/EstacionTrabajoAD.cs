@@ -16,7 +16,7 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
         {
             this._contexto = new GestionAsistenteContexto();
         }
-        public bool RegistrarEstacionTrabajo(EstacionTrabajo estacionTrabajo)
+        public async Task<bool> RegistrarEstacionTrabajo(EstacionTrabajo estacionTrabajo)
         {
             EstacionTrabajoEF estacionTrabajoEF = new EstacionTrabajoEF
             {
@@ -44,6 +44,32 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
 
             return estacionesTrabajo;
         }
+
+        public async Task<int> estacionesPorOficina(int oficinaID)
+        {
+            List<EstacionTrabajoEF> estacionTrabajoEFs = _contexto.EstacionTrabajoEFs.ToList();
+            List<EstacionTrabajo> estacionesTrabajo = new List<EstacionTrabajo>();
+            int cantidadEstaciones = 0;
+
+            foreach (EstacionTrabajoEF estacionTrabajoEF in estacionTrabajoEFs)
+            {
+                estacionesTrabajo.Add(new EstacionTrabajo
+                {
+                    Numero = estacionTrabajoEF.Numero,
+                    Estado = estacionTrabajoEF.Estado,
+                    OficinaID = estacionTrabajoEF.OficinaID
+                });
+
+                if (oficinaID == estacionTrabajoEF.OficinaID)
+                {
+                    cantidadEstaciones++;
+                }
+
+            }
+
+            return cantidadEstaciones;
+        }
+
         public EstacionTrabajo BuscarEstacion(int numero)
         {
             var estacionTrabajo = _contexto.EstacionTrabajoEFs
@@ -71,5 +97,23 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             _contexto.EstacionTrabajoEFs.Remove(estacionTrabajoEF);
             return _contexto.SaveChanges() > 0;
         }
+
+
+        public async Task<bool> EliminarEstacionPorOficina(int OficinaID)
+        {
+            EstacionTrabajoEF estacionTrabajoEF = _contexto.EstacionTrabajoEFs.Find(OficinaID);
+            int cantidadEstaciones = await estacionesPorOficina(OficinaID);
+            if (estacionTrabajoEF == null)
+            {
+                return false;
+            }
+            while (estacionTrabajoEF.OficinaID.Equals(OficinaID))
+            {
+                _contexto.EstacionTrabajoEFs.Remove(estacionTrabajoEF);
+            }
+            
+            return _contexto.SaveChanges() > 0;
+        }
+
     }
 }
