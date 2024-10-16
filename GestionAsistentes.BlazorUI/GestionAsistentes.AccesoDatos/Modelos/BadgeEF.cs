@@ -16,7 +16,7 @@ namespace GestionAsistentes.AccesoDatos.Modelos
         public int BadgeID { get; set; }
         public string Accesos { get; set; }
         public string Horario { get; set; }
-        public int UnidadID { get; set; }
+        public int? UnidadID { get; set; }
         public virtual UnidadEF Unidad { get; set; }
     }
 }

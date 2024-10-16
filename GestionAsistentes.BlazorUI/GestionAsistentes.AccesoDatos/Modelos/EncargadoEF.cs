@@ -15,7 +15,7 @@ namespace GestionAsistentes.AccesoDatos.Modelos
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int EncargadoID { get; set; }
         public int PersonaID { get; set; }
-        public int UnidadID { get; set; }
+        public int? UnidadID { get; set; }
         public virtual PersonaEF Persona { get; set; }
         public virtual UnidadEF Unidad { get; set; }
 
