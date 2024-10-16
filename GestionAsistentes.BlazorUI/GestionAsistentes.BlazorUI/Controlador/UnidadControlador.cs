@@ -12,11 +12,19 @@ namespace GestionAsistentes.BlazorUI.Controlador
         }
         public async Task<bool> RegistrarUnidad(Unidad unidad)
         {
-            return await this.unidadRN.RegistrarUnidad(unidad);
+            return await unidadRN.RegistrarUnidad(unidad);
         }
         public async Task<List<Unidad>> ListarUnidades()
         {
-            return await this.unidadRN.ListasUnidades();
+            return await unidadRN.ListarUnidades();
+        }
+        public async Task<(string, bool)> ActualizarUnidad(Unidad unidad)
+        {
+            return await unidadRN.ActualizarUnidad(unidad);
+        }
+        public async Task<(string, bool)> EliminarUnidad(int unidadID)
+        {
+            return await unidadRN.EliminarUnidad(unidadID);
         }
     }
 }

@@ -13,7 +13,8 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
     public class UnidadAD
     {
         private readonly GestionAsistenteContexto _contexto;
-        public UnidadAD() { 
+        public UnidadAD() 
+        { 
             this._contexto = new GestionAsistenteContexto();
         }
         public async Task<bool> RegistrarUnidad(Unidad unidad)
@@ -42,26 +43,30 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
 
             return unidads;
         }
-        public bool ModificarUnidad(Unidad unidad)
+        public async Task<(string, bool)> ActualizarUnidad(Unidad unidad)
         {
             UnidadEF unidadEF = _contexto.UnidadEFs.Find(unidad.UnidadID);
 
             if (unidadEF == null)
             {
-                return false;
+                return ("La unidad no se pudo actualizar", false);
             }
             unidadEF.Nombre = unidad.Nombre; 
-           return _contexto.SaveChanges() > 0;
+           return this._contexto.SaveChanges() > 0
+                ? ("Actualizado correctamente", true)
+                : ("Error al actualizar", false);
         }
-        public bool EliminarUnidad(int UnidadID)
+        public async Task<(string, bool)> EliminarUnidad(int unidadID)
         {
-            UnidadEF unidadEF = _contexto.UnidadEFs.Find(UnidadID);
+            UnidadEF unidadEF = this._contexto.UnidadEFs.FirstOrDefault(e => e.UnidadID == unidadID);
             if (unidadEF == null)
             {
-                return false;
+               return ("No existe el registro de unidad", false);
             }
-            _contexto.UnidadEFs.Remove(unidadEF);
-            return _contexto.SaveChanges() > 0;
+            this._contexto.UnidadEFs.Remove(unidadEF);
+            return this._contexto.SaveChanges() > 0
+                ? ("Eliminado correctamente", true)
+                : ("Error al eliminar", false);
         }
     }
 }
