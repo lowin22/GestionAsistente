@@ -1,6 +1,7 @@
 ﻿using GestionAsistentes.AccesoDatos.Contexto;
 using GestionAsistentes.AccesoDatos.Modelos;
 using GestionAsistentes.Entidades;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,16 +21,44 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
         {
             return _contexto.OficinaEFs.ToList();
         }
-        public bool RegistrarOficina(Oficina oficina)
+        public async Task<int> RegistrarOficina(Oficina oficina)
         {
             OficinaEF oficinaEF = new OficinaEF
             {
                 Nombre = oficina.Nombre
             };
             _contexto.OficinaEFs.Add(oficinaEF);
-
-            return _contexto.SaveChanges() > 0;
+            _contexto.SaveChanges();
+            return oficinaEF.OficinaID;
+            //obtener el ID del ultimo
         }
+
+        //public async Task<bool> RegistrarOficina(EstacionTrabajo estacion)
+        //{
+        //    // Crear el objeto EstacionEF
+        //    EstacionTrabajoEF estacionEF = new EstacionTrabajoEF
+        //    {
+        //        Numero = estacion.Numero,
+        //        Oficina= estacion.Oficina,
+        //        SegundoApellido = encargado.Persona.SegundoApellido
+        //    };
+
+        //    // Crear el objeto OficinaEF y asociarlo con la EstacionEF
+        //    EncargadoEF encargadoEF = new EncargadoEF
+        //    {
+        //        Persona = estacionEF, // Aquí asignamos el objeto persona
+        //        UnidadID = encargado.UnidadID
+        //    };
+
+        //    // Agregar el objeto EncargadoEF al contexto
+        //    this._contexto.EncargadoEFs.Add(encargadoEF);
+
+        //    // Guardar los cambios
+        //    return this._contexto.SaveChanges() > 0;
+        //}
+
+
+
         public Oficina BuscarOficina(string nombre)
         {
             var oficina = _contexto.OficinaEFs
@@ -45,17 +74,20 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             }
             return oficina;
         }
-        public bool ModificarOficina(Oficina oficina)
+        public async Task<(string, bool)> ModificarOficina(Oficina oficina)
         {
             OficinaEF oficinaEF = _contexto.OficinaEFs.Find(oficina.OficinaID);
             if (oficinaEF == null)
             {
-                return false;
+                return ("El encargado no se pudo actualizar", false);
             }
             oficinaEF.Nombre = oficina.Nombre;
-            return _contexto.SaveChanges() > 0;
+            return this._contexto.SaveChanges() > 0
+        ? ("Actualizado correctamente", true)
+        : ("Error al actualizar", false);
         }
-        public bool EliminarOficina(int OficinaID)
+
+        public async Task<bool> EliminarOficina(int OficinaID)
         {
             OficinaEF oficinaEF = _contexto.OficinaEFs.Find(OficinaID);
             if (oficinaEF == null)
@@ -65,5 +97,32 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             _contexto.OficinaEFs.Remove(oficinaEF);
             return _contexto.SaveChanges() > 0;
         }
+
+        //public async Task<(string, bool)> EliminarOficina(int OficinaID)
+        //{
+        //    // Obtén la oficina junto con sus estaciones de trabajo
+        //    var estacionesEF = _contexto.EstacionTrabajoEFs;
+        //    var oficinaEF = await _contexto.OficinaEFs
+        //                                   .Include(o => estacionesEF)
+        //                                   .FirstOrDefaultAsync(o => o.OficinaID == OficinaID);
+
+        //    if (oficinaEF == null)
+        //    {
+        //        return ("Oficina no encontrada", false);
+        //    }
+
+        //    // Eliminar todas las estaciones de trabajo relacionadas
+        //    _contexto.EstacionTrabajoEFs.RemoveRange(estacionesEF);
+
+        //    // Eliminar la oficina
+        //    _contexto.OficinaEFs.Remove(oficinaEF);
+
+        //    // Guardar los cambios
+        //    return await _contexto.SaveChangesAsync() > 0
+        //        ? ("Eliminado correctamente", true)
+        //        : ("Error al eliminar", false);
+        //}
+
+
     }
 }

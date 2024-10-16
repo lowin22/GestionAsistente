@@ -16,8 +16,9 @@ namespace GestionAsistentes.ReglasNegocio
         {
             oficinaAD = new OficinaAD();
         }
-        public List<Oficina> getOficinas() { 
-            List<OficinaEF> oficinasEF= this.oficinaAD.ObtenerOficinas();
+        public async Task<List<Oficina>> ListarOficinas()
+        {
+            List<OficinaEF> oficinasEF = this.oficinaAD.ObtenerOficinas();
             List<Oficina> oficinas = new List<Oficina>();
             foreach (var oficinaEF in oficinasEF)
             {
@@ -28,9 +29,39 @@ namespace GestionAsistentes.ReglasNegocio
                 };
                 oficinas.Add(oficina);
             }
-           return oficinas;
-
-            
+            return oficinas;
         }
+
+        public async Task<int> RegistrarOficina(Oficina oficina)
+        {
+            if (oficina == null)
+            {
+                throw new ArgumentNullException(nameof(oficina));
+            }
+            return await oficinaAD.RegistrarOficina(oficina); // Sin await si no es asíncrono
+        }
+
+        public async Task<bool> EliminarOficina(int oficinaID)
+        {
+            if (oficinaID == null)
+            {
+                throw new ArgumentNullException(nameof(oficinaID));
+            }
+            return await oficinaAD.EliminarOficina(oficinaID); // Sin await si no es asíncrono
+        }
+
+        public async Task<(string, bool)> ActualizarOficina(Oficina oficina)
+        {
+            if (oficina != null)
+            {
+                if (oficina.OficinaID == 0)
+                {
+                    return ("La unidad es erronea", false);
+                }
+            }
+            return await oficinaAD.ModificarOficina(oficina);
+        }
+
+
     }
 }

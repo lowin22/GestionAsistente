@@ -1,5 +1,93 @@
 ﻿@page "/crear-oficina"
 @using GestionAsistentes.BlazorUI.Components.Layout
-@layout LayoutPrincipal
+@using GestionAsistentes.BlazorUI.Controlador
+@using GestionAsistentes.Entidades
+@rendermode InteractiveServer
+<h3>Crear Oficina</h3>
 
-<h1>Crear oficina</h1>
+<EditForm Model="oficina" OnValidSubmit="RegistrarOficina" FormName="crearOficinaForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="nombre" class="form-label">Nombre</label>
+        <InputText id="nombre" class="form-control" @bind-Value="oficina.Nombre" />
+    </div>
+
+    <div class="mb-3">
+        <label for="primerApellido" class="form-label">Estaciones de trabajo</label>
+        <InputNumber id="primerApellido" class="form-control" @bind-Value="cantidadEstaciones" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Registrar</button>
+</EditForm>
+@if (mensajeExito != null)
+{
+    <div class="alert alert-success">
+        @mensajeExito
+    </div>
+}
+@if (mensajeError != null)
+{
+    <div class="alert alert-danger">
+        @mensajeError
+    </div>
+}
+
+@code {
+    string mensajeExito;
+    string mensajeError;
+    // protected override async Task OnInitializedAsync()
+    // {
+
+    // };
+
+    int cantidadEstaciones;
+    Oficina oficina = new Oficina();
+    EstacionTrabajo estacion = new EstacionTrabajo();
+
+    private async Task RegistrarOficina()
+    {
+        OficinaControlador oficinaControlador = new OficinaControlador();
+        EstacionTrabajoControlador estacionTrabajoControlador = new EstacionTrabajoControlador();
+
+        try
+        {
+            int idOficina = await oficinaControlador.RegistrarOficina(oficina);
+
+            for (int i = 1; i <= cantidadEstaciones; i++)
+            {
+                estacion = new EstacionTrabajo()
+                    {
+                        OficinaID = idOficina,
+                        Numero = i,
+                        Estado = 0
+                    };
+                await estacionTrabajoControlador.RegistrarEstacionTrabajo(estacion);
+            }
+
+
+            if (idOficina > 0)
+            {
+                mensajeExito = "Oficina registrada con éxito.";
+                mensajeError = null;
+
+                // oficina = new Encargado
+                //     {
+                //         Persona = new Persona()
+                //     };
+            }
+            else
+            {
+                mensajeExito = null;
+                mensajeError = "Hubo un problema al registrar el encargado.";
+            }
+        }
+        catch (Exception ex)
+        {
+            mensajeError = $"Error: {ex.Message}";
+            mensajeExito = null;
+        }
+        StateHasChanged();
+    }
+}
