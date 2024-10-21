@@ -56,6 +56,7 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                 Asistente asistente = new Asistente
                 {
                     AsistenteID = asistenteEF.AsistenteID,
+                    EncargadoID = asistenteEF.Encargado.EncargadoID,
                     Persona = new Persona // Mapeo de Persona asistente
                     {
                         PersonaID = asistenteEF.Persona.PersonaID,
@@ -66,24 +67,25 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
 
                     UnidadID = asistenteEF.UnidadID,
                     // Mapeo de nombre de la Unidad
-                    Unidad = asistenteEF.Unidad!= null ? new Unidad // Asegúrate de que tu clase Asistente tenga una propiedad Unidad
+                    Unidad = asistenteEF.Unidad != null ? new Unidad // Asegúrate de que tu clase Asistente tenga una propiedad Unidad
                     {
                         UnidadID = asistenteEF.Unidad.UnidadID, // Asumiendo que Unidad tiene UnidadID
                         Nombre = asistenteEF.Unidad.Nombre // Mapeo del nombre de la unidad
-                    }: null,
+                    } : null,
                     nombreUsuario = asistenteEF.nombreUsuario,
                     Accesos = asistenteEF.Accesos,
                     Contrasenia = asistenteEF.Contrasenia,
                     BadgeID = asistenteEF.BadgeID,
-                    Encargado = asistenteEF.Encargado != null ?  new Encargado // Mapeo de Encargado
+                    Encargado = asistenteEF.Encargado != null ? new Encargado // Mapeo de Encargado
                     {
+                        EncargadoID = asistenteEF.Encargado.EncargadoID,
                         Persona = new Persona // Mapeo de Persona
                         {
                             Nombre = asistenteEF.Encargado.Persona.Nombre,
                             PrimerApellido = asistenteEF.Encargado.Persona.PrimerApellido,
                             SegundoApellido = asistenteEF.Encargado.Persona.SegundoApellido
                         }
-                    }:null
+                    } : null
                 };
 
                 asistentes.Add(asistente);
@@ -159,7 +161,7 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             {
                 UnidadID = asistenteEF.UnidadID,
                 Accesos = asistenteEF.Accesos,
-                Encargado =asistenteEF.Encargado != null ? new Encargado
+                Encargado = asistenteEF.Encargado != null ? new Encargado
                 {
                     Persona = new Persona
                     {
@@ -171,11 +173,11 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                     {
                         Nombre = asistenteEF.Encargado.Unidad.Nombre
                     }
-                }:null,
+                } : null,
                 Contrasenia = asistenteEF.Contrasenia,
                 BadgeID = asistenteEF.BadgeID,
                 nombreUsuario = asistenteEF.nombreUsuario,
-                Badge = asistenteEF.Badge!= null ? new Badge
+                Badge = asistenteEF.Badge != null ? new Badge
                 {
                     BadgeID = asistenteEF.Badge.BadgeID,
                     Accesos = asistenteEF.Badge.Accesos,
@@ -185,12 +187,12 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                         UnidadID = asistenteEF.Badge.Unidad.UnidadID,
                         Nombre = asistenteEF.Badge.Unidad.Nombre,
                     }
-                }:null,
+                } : null,
                 Unidad = asistenteEF.Unidad != null ? new Unidad
                 {
                     UnidadID = asistenteEF.Unidad.UnidadID,
                     Nombre = asistenteEF.Unidad.Nombre,
-                }:null,
+                } : null,
             }).ToList(); // Convertimos la colección a una lista
         }
         public List<Asistente> BuscarAsistentePorEncargado(string encargado)
@@ -240,7 +242,7 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                         PrimerApellido = asistenteEF.Encargado.Persona.PrimerApellido,
                         SegundoApellido = asistenteEF.Encargado.Persona.SegundoApellido
                     }
-                }:null
+                } : null
             }).ToList();
         }
 

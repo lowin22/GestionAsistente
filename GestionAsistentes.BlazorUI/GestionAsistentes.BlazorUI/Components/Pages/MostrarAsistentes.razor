@@ -101,30 +101,29 @@
                     </div>
                     <div class="mb-3">
                         <label for="encargadoID" class="form-label">Encargado</label>
-                          <InputSelect id="encargadoID" class="form-control" @bind-Value="asistente.EncargadoID">
-                            <option value="@asistente.EncargadoID">@asistente.EncargadoID"</option>
-                        @foreach (var encargado in listaEncargados)
-                        {
-                        <option value="@encargado.EncargadoID">@($"{encargado.Persona.Nombre} {encargado.Persona.PrimerApellido}")</option>
-                        }
-                        </InputSelect>  
+                        <InputSelect id="encargadoID" class="form-control" @bind-Value="asistente.EncargadoID" disabled="@(!listaEncargados.Any())">
+                            <option value="0">-- Seleccione un encargado --</option> <!-- Opción en blanco -->
+                            @foreach (var encargado in listaEncargados)
+                            {
+                                <option value="@encargado.EncargadoID">@($"{encargado?.Persona.Nombre} {encargado?.Persona.PrimerApellido} {encargado?.Persona.SegundoApellido}")</option>
+                            }
+                        </InputSelect>
                     </div>
                     <div class="mb-3">
                         <label for="accesos" class="form-label">Accesos</label>
                         <InputTextArea id="accesos" class="form-control" @bind-Value="asistente.Accesos" />
                     </div>
-                     <div class="mb-3">
-                    <label for="BadgeID">Badge</label>
-                    <InputSelect id="BadgeID" class="form-select" @bind-Value="asistente.BadgeID">
-                    <option value="">Seleccione el badge</option>
-                    <option value="1">Badge 1</option>
-                    <option value="2">Badge 2</option>
-                    <option value="3">Badge 3</option>
-                    </InputSelect>
-                    
-                    </div> 
-                   
-                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @onclick="GuardarActualizacionAsistente">Guardar Cambios</button>
+                    <div class="mb-3">
+                        <label for="BadgeID">Badge</label>
+                        <InputSelect id="BadgeID" class="form-select" @bind-Value="asistente.BadgeID">
+                            <option value="">Seleccione el badge</option>
+                            <option value="1">Badge 1</option>
+                            <option value="2">Badge 2</option>
+                            <option value="3">Badge 3</option>
+                        </InputSelect>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @onclick="GuardarActualizacionAsistente" disabled="@(!puedeGuardar())">Guardar Cambios</button>
                 </EditForm>
             </div>
         </div>
@@ -141,9 +140,14 @@
     private List<Encargado> listaEncargados = new List<Encargado>();
     private Asistente asistente = new Asistente
         {
-            Persona = new Persona()
+            Persona = new Persona(),
+            Encargado = new Encargado()
+            {
+                Persona = new Persona()
+            }
         };
 
+    private bool unidadCambiada = false;
 
     private async Task PrepararActualizacion(int asistenteID)
     {
@@ -153,14 +157,15 @@
         {
             await CargarEncargados(asistente.UnidadID);
         }
-       
-      
     }
+
     private async Task OnUnidadChanged(ChangeEventArgs e)
     {
         if (int.TryParse(e.Value.ToString(), out int unidadId))
         {
             asistente.UnidadID = unidadId;
+            asistente.EncargadoID = 0; // Reiniciar encargado al cambiar la unidad y agregar opción en blanco
+            unidadCambiada = true;
             await CargarEncargados(unidadId);
         }
     }
@@ -175,27 +180,41 @@
         {
             listaEncargados = new List<Encargado>();
         }
-        asistente.EncargadoID = 0;
-       
     }
-    private async Task EliminarAsistente(int asistente)
+
+    private async Task EliminarAsistente(int asistenteID)
     {
-        bool eliminado = await asistenteControlador.EliminarAsistente(asistente);
+        bool eliminado = await asistenteControlador.EliminarAsistente(asistenteID);
         if (eliminado)
         {
             listaAsistentes = await asistenteControlador.ListarAsistentes();
             StateHasChanged();
         }
     }
- 
+
     private async Task GuardarActualizacionAsistente()
     {
+        // Verificación para asegurarse de que se seleccionó un encargado
+        if (asistente.EncargadoID == 0 && unidadCambiada)
+        {
+            // No se ha seleccionado un encargado
+            return;
+        }
+
         bool actualizado = await asistenteControlador.ActualizarAsistente(asistente);
         listaAsistentes = await asistenteControlador.ListarAsistentes();
-      
     }
+
+    private bool puedeGuardar()
+    {
+        // No permitir guardar si la unidad ha cambiado y no se ha seleccionado un encargado
+        return !unidadCambiada || asistente.EncargadoID != 0;
+    }
+
     protected override async Task OnInitializedAsync()
     {
         listaAsistentes = await asistenteControlador.ListarAsistentes();
     }
 }
+
+
