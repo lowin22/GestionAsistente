@@ -41,7 +41,7 @@
                                     Actualizar
                                 </button>
                             </td>
-                            <td>@asistente.nombreUsuario</td>
+                            <td>@asistente.AsistenteID</td>
                             <td>@($"{asistente.Persona?.Nombre} {asistente.Persona?.PrimerApellido} {asistente.Persona?.SegundoApellido}")</td>
                             <td>@asistente.Contrasenia</td>
                             <td>@($"{asistente.Encargado?.Persona.Nombre} {asistente.Encargado?.Persona.PrimerApellido} {asistente.Encargado?.Persona.SegundoApellido}")</td>
@@ -49,14 +49,14 @@
                             <td>@asistente.BadgeID</td>                                                                               
                             <td>@asistente.Unidad?.Nombre</td>
                             <td>
-                                <button class="btn" data-bs-toggle="modal" data-bs-target="#horario" @onclick="() => traerOficinas()">
+                                <button class="btn" data-bs-toggle="modal" data-bs-target="#horario" @onclick="() => traerOficinas(asistente.AsistenteID)">
+                                    
                                     <span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stopwatch" viewBox="0 0 16 16">
                                             <path d="M8.5 5.6a.5.5 0 1 0-1 0v2.9h-3a.5.5 0 0 0 0 1H8a.5.5 0 0 0 .5-.5z" />
                                             <path d="M6.5 1A.5.5 0 0 1 7 .5h2a.5.5 0 0 1 0 1v.57c1.36.196 2.594.78 3.584 1.64l.012-.013.354-.354-.354-.353a.5.5 0 0 1 .707-.708l1.414 1.415a.5.5 0 1 1-.707.707l-.353-.354-.354.354-.013.012A7 7 0 1 1 7 2.071V1.5a.5.5 0 0 1-.5-.5M8 3a6 6 0 1 0 .001 12A6 6 0 0 0 8 3" />
                                         </svg>
                                     </span>
-                                   
                                 </button>
                             </td>
                         </tr>
@@ -158,7 +158,7 @@
                 </div>
                 <div class="col-md-6">
                     <label for="EstacionTrabajo">EstacionTrabajo</label>
-                    <InputSelect id="EstacionTrabajo" class="form-select" @bind-Value="estacionTrabajoID">
+                    <InputSelect id="EstacionTrabajo" class="form-select" @bind-Value="horario.EstacionTrabajoID">
                         <option value="">Seleccione la estación de trabajo</option>
                         @foreach (var estacionTrabajo in listaEstacionTrabajos)
                         {
@@ -171,7 +171,7 @@
                     <div class="row">
                         <div class="card mt-4 col-md-6">
                             <label for="diaSemana">Día</label>
-                            <InputSelect id="diaSemana" class="form-select" @bind-Value="diaSeleccionado">
+                            <InputSelect id="diaSemana" class="form-select" @bind-Value="horario.Dia">
                                 <option value="">Seleccione el día</option>
                                 @foreach (var dia in diasDeLaSemana)
                                 {
@@ -182,9 +182,9 @@
 
                         <div class="card mt-4 col-md-6">
                             <label for="horaInicio">Hora de Inicio</label>
-                            <InputSelect id="horaInicio" class="form-select" @bind-Value="horaInicioSeleccionada">
+                            <InputSelect id="horaInicio" class="form-select" @bind-Value="horaInicio">
                                 <option value="">Seleccione la hora de inicio</option>
-                                @foreach (var hora in horasDelDia)
+                                @foreach (var hora in horasDelDiaInicio)
                                 {
                                     <option value="@hora">@hora</option>
                                 }
@@ -193,9 +193,9 @@
 
                         <div class="card mt-4 col-md-6">
                             <label for="horaFinal">Hora de Final</label>
-                            <InputSelect id="horaFinal" class="form-select" @bind-Value="horaFinalSeleccionada">
+                            <InputSelect id="horaFinal" class="form-select" @bind-Value="horaFinal">
                                 <option value="">Seleccione la hora de finalización</option>
-                                @foreach (var hora in horasDelDia)
+                                @foreach (var hora in horasDelDiaFinal)
                                 {
                                     <option value="@hora">@hora</option>
                                 }
@@ -204,126 +204,187 @@
                     </div>
                 </div>
             </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @onclick="GuardarHorarioAsistente">Guardar horario</button>
+
+            </div>
         </div>
     </div>
 </div>
 
 
-                @code {
+@code {
 
-                    private AsistenteControlador asistenteControlador = new AsistenteControlador();
-                    private UnidadControlador unidadControlador = new UnidadControlador();
-                    private EncargadoControlador encargadoControlador = new EncargadoControlador();
-                    private OficinaControlador oficinaControlador = new OficinaControlador();
-                    private EstacionTrabajoControlador estacionTrabajoControlador = new EstacionTrabajoControlador();
-                    private List<Asistente> listaAsistentes = new List<Asistente>();
-                    private List<Unidad> listaUnidades = new List<Unidad>();
-                    private List<Encargado> listaEncargados = new List<Encargado>();
-                    private List<Oficina> listaOficinas = new List<Oficina>();
-                    private List<EstacionTrabajo> listaEstacionTrabajos = new List<EstacionTrabajo>();
-                    private int oficinaID;
-                    private int estacionTrabajoID;
-                    private string diaSeleccionado;
-                    private string horaInicioSeleccionada;
-                    private string horaFinalSeleccionada;
-                    private Asistente asistente = new Asistente
+    private AsistenteControlador asistenteControlador = new AsistenteControlador();
+    private UnidadControlador unidadControlador = new UnidadControlador();
+    private EncargadoControlador encargadoControlador = new EncargadoControlador();
+    private OficinaControlador oficinaControlador = new OficinaControlador();
+    private EstacionTrabajoControlador estacionTrabajoControlador = new EstacionTrabajoControlador();
+    private HorarioControlador horarioControlador = new HorarioControlador();
+    private List<Asistente> listaAsistentes = new List<Asistente>();
+    private List<Unidad> listaUnidades = new List<Unidad>();
+    private List<Encargado> listaEncargados = new List<Encargado>();
+    private List<Oficina> listaOficinas = new List<Oficina>();
+    private List<EstacionTrabajo> listaEstacionTrabajos = new List<EstacionTrabajo>();
+    private Horario horario = new Horario()
         {
-            Persona = new Persona(),
-            Encargado = new Encargado()
+            Asistente = new Asistente()
             {
                 Persona = new Persona()
             }
         };
+    string horaInicio, horaFinal = "";
+    private int oficinaID;
+    private int estacionTrabajoID;
+    private string diaSeleccionado;
+    private string horaInicioSeleccionada;
+    private string horaFinalSeleccionada;
+    private Asistente asistente = new Asistente
+                    {
+                        Persona = new Persona(),
+                        Encargado = new Encargado()
+                        {
+                            Persona = new Persona()
+                        }
+                    };
 
-                    // Lista de días de la semana
-                    private List<string> diasDeLaSemana = new List<string>
+    // Lista de días de la semana
+    private List<string> diasDeLaSemana = new List<string>
                 {
                 "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"
                 };
 
-                    // Lista de horas (de 7 a 20)
-                    private List<string> horasDelDia = Enumerable.Range(7, 14).Select(h => $"{h}:00").ToList();
+    // Lista de horas (de 7 a 20)
+    private List<string> horasDelDiaInicio = new()
+    {
+        "07:00",
+        "08:00",
+        "09:00",
+        "10:00",
+        "11:00",
+        "12:00",
+        "13:00",
+        "14:00",
+        "15:00",
+        "16:00",
+        "17:00",
+        "18:00"
+    };
+    private List<string> horasDelDiaFinal = new()
+    {
+        "07:00",
+        "08:00",
+        "09:00",
+        "10:00",
+        "11:00",
+        "12:00",
+        "13:00",
+        "14:00",
+        "15:00",
+        "16:00",
+        "17:00",
+        "18:00"
+    };
 
-                    private bool unidadCambiada = false;
+    private bool unidadCambiada = false;
 
-                    private async Task PrepararActualizacion(int asistenteID)
-                    {
-                        listaUnidades = await unidadControlador.ListarUnidades();
-                        asistente = listaAsistentes.Find(a => a.AsistenteID == asistenteID);
-                        if (asistente.UnidadID != 0)
-                        {
-                            await CargarEncargados(asistente.UnidadID);
-                        }
-                    }
 
-                    private async Task OnUnidadChanged(ChangeEventArgs e)
-                    {
-                        if (int.TryParse(e.Value.ToString(), out int unidadId))
-                        {
-                            asistente.UnidadID = unidadId;
-                            asistente.EncargadoID = 0; // Reiniciar encargado al cambiar la unidad y agregar opción en blanco
-                            unidadCambiada = true;
-                            await CargarEncargados(unidadId);
-                        }
-                    }
+    private async Task GuardarHorarioAsistente()
+    {            
+        horario.AsistenteID = asistente.AsistenteID;
+        horario.HoraInicio = DateTime.Parse(horaInicio);
+        horario.HoraFin = DateTime.Parse(horaFinal);
+        await horarioControlador.RegistrarHorario(horario);
+        // Limpiar el formulario
+        LimpiarFormulario();         
+    }
+    private void LimpiarFormulario()
+    {
 
-                    private async Task CargarEncargados(int? unidadId)
-                    {
-                        if (unidadId != 0)
-                        {
-                            listaEncargados = await encargadoControlador.ListarEncargadosPorID(unidadId);
-                        }
-                        else
-                        {
-                            listaEncargados = new List<Encargado>();
-                        }
-                    }
+        listaEstacionTrabajos.Clear();
+        StateHasChanged();
+    }
 
-                    private async Task EliminarAsistente(int asistenteID)
-                    {
-                        bool eliminado = await asistenteControlador.EliminarAsistente(asistenteID);
-                        if (eliminado)
-                        {
-                            listaAsistentes = await asistenteControlador.ListarAsistentes();
-                            StateHasChanged();
-                        }
-                    }
 
-                    private async Task GuardarActualizacionAsistente()
-                    {
-                        // Verificación para asegurarse de que se seleccionó un encargado
-                        if (asistente.EncargadoID == 0 && unidadCambiada)
-                        {
-                            // No se ha seleccionado un encargado
-                            return;
-                        }
+    private async Task PrepararActualizacion(int asistenteID)
+    {
+        listaUnidades = await unidadControlador.ListarUnidades();
+        asistente = listaAsistentes.Find(a => a.AsistenteID == asistenteID);
+        if (asistente.UnidadID != 0)
+        {
+            await CargarEncargados(asistente.UnidadID);
+        }
+    }
 
-                        bool actualizado = await asistenteControlador.ActualizarAsistente(asistente);
-                        listaAsistentes = await asistenteControlador.ListarAsistentes();
-                    }
+    private async Task OnUnidadChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value.ToString(), out int unidadId))
+        {
+            asistente.UnidadID = unidadId;
+            asistente.EncargadoID = 0; // Reiniciar encargado al cambiar la unidad y agregar opción en blanco
+            unidadCambiada = true;
+            await CargarEncargados(unidadId);
+        }
+    }
 
-                    private bool puedeGuardar()
-                    {
-                        // No permitir guardar si la unidad ha cambiado y no se ha seleccionado un encargado
-                        return !unidadCambiada || asistente.EncargadoID != 0;
-                    }
+    private async Task CargarEncargados(int? unidadId)
+    {
+        if (unidadId != 0)
+        {
+            listaEncargados = await encargadoControlador.ListarEncargadosPorID(unidadId);
+        }
+        else
+        {
+            listaEncargados = new List<Encargado>();
+        }
+    }
 
-                    protected override async Task OnInitializedAsync()
-                    {
-                        listaAsistentes = await asistenteControlador.ListarAsistentes();
-                    }
+    private async Task EliminarAsistente(int asistenteID)
+    {
+        bool eliminado = await asistenteControlador.EliminarAsistente(asistenteID);
+        if (eliminado)
+        {
+            listaAsistentes = await asistenteControlador.ListarAsistentes();
+            StateHasChanged();
+        }
+    }
 
-                    private async void traerOficinas()
-                    {
-                        listaOficinas = await oficinaControlador.ListarOficinas();
-                    }
+    private async Task GuardarActualizacionAsistente()
+    {
+        // Verificación para asegurarse de que se seleccionó un encargado
+        if (asistente.EncargadoID == 0 && unidadCambiada)
+        {
+            // No se ha seleccionado un encargado
+            return;
+        }
 
-                    private async Task OnEstacionChanged(ChangeEventArgs e)
-                    {
-                        if (int.TryParse(e.Value.ToString(), out int oficinaid))
-                        {
-                            listaEstacionTrabajos = await estacionTrabajoControlador.ListarEstacionPorOficina(oficinaid);
-                            StateHasChanged(); // Forzar la actualización de la UI
-                        }
-                    }
-                }
+        bool actualizado = await asistenteControlador.ActualizarAsistente(asistente);
+        listaAsistentes = await asistenteControlador.ListarAsistentes();
+    }
+
+    private bool puedeGuardar()
+    {
+        // No permitir guardar si la unidad ha cambiado y no se ha seleccionado un encargado
+        return !unidadCambiada || asistente.EncargadoID != 0;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        listaAsistentes = await asistenteControlador.ListarAsistentes();
+    }
+
+    private async void traerOficinas(int asistenteID)
+    {
+        horario.Asistente.AsistenteID = asistenteID;
+        listaOficinas = await oficinaControlador.ListarOficinas();
+    }
+    
+    private async Task OnEstacionChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value.ToString(), out int oficinaid))
+        {
+            listaEstacionTrabajos = await estacionTrabajoControlador.ListarEstacionPorOficina(oficinaid);
+            StateHasChanged(); // Forzar la actualización de la UI
+        }
+    }
+}
