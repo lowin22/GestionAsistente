@@ -16,10 +16,11 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
         {
             _contexto = new GestionAsistenteContexto();
         }
-        public bool RegistrarHorario(Horario horario)
+        public async Task<bool> RegistrarHorario(Horario horario)
         {
             HorarioEF horarioEF = new HorarioEF
             {
+                AsistenteID = horario.Asistente.AsistenteID,
                 HoraInicio = horario.HoraInicio,
                 HoraFin = horario.HoraFin,
                 Dia = horario.Dia,
