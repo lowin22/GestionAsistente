@@ -114,6 +114,22 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             
             return _contexto.SaveChanges() > 0;
         }
-
+        public async Task<List<EstacionTrabajo>> ListarEstacionPorOficina(int OficinaID)
+        {
+            List<EstacionTrabajo> estacionTrabajo = new List<EstacionTrabajo>();
+            List<EstacionTrabajoEF> estacionTrabajos = new List<EstacionTrabajoEF>();
+            estacionTrabajos = _contexto.EstacionTrabajoEFs.Where(e => e.OficinaID == OficinaID).ToList();
+            foreach (EstacionTrabajoEF estacionTrabajoEF in estacionTrabajos)
+            {
+                estacionTrabajo.Add(new EstacionTrabajo
+                {
+                    EstacionTrabajoID = estacionTrabajoEF.EstacionTrabajoID,
+                    Numero = estacionTrabajoEF.Numero,
+                    Estado = estacionTrabajoEF.Estado,
+                    OficinaID = estacionTrabajoEF.OficinaID
+                });
+            }
+            return estacionTrabajo;
+        }
     }
 }

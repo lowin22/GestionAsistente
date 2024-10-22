@@ -44,6 +44,9 @@ namespace GestionAsistentes.ReglasNegocio
             }
             return await estacionTrabajoAD.EliminarEstacionPorOficina(OficinaID); // Sin await si no es asíncrono
         }
+        public async Task<List<EstacionTrabajo>> ListarEstacionPorOficina(int OficinaID) {
+            return await estacionTrabajoAD.ListarEstacionPorOficina(OficinaID);
+        }
 
 
     }

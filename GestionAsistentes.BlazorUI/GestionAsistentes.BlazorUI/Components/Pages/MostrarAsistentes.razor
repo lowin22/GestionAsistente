@@ -49,7 +49,15 @@
                             <td>@asistente.BadgeID</td>                                                                               
                             <td>@asistente.Unidad?.Nombre</td>
                             <td>
-                            <button>Horario</button>   
+                                <button class="btn" data-bs-toggle="modal" data-bs-target="#horario" @onclick="() => traerOficinas()">
+                                    <span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stopwatch" viewBox="0 0 16 16">
+                                            <path d="M8.5 5.6a.5.5 0 1 0-1 0v2.9h-3a.5.5 0 0 0 0 1H8a.5.5 0 0 0 .5-.5z" />
+                                            <path d="M6.5 1A.5.5 0 0 1 7 .5h2a.5.5 0 0 1 0 1v.57c1.36.196 2.594.78 3.584 1.64l.012-.013.354-.354-.354-.353a.5.5 0 0 1 .707-.708l1.414 1.415a.5.5 0 1 1-.707.707l-.353-.354-.354.354-.013.012A7 7 0 1 1 7 2.071V1.5a.5.5 0 0 1-.5-.5M8 3a6 6 0 1 0 .001 12A6 6 0 0 0 8 3" />
+                                        </svg>
+                                    </span>
+                                   
+                                </button>
                             </td>
                         </tr>
                     }
@@ -115,7 +123,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="BadgeID">Badge</label>
-                        <InputSelect id="BadgeID" class="form-select" @bind-Value="asistente.BadgeID">
+                        <InputSelect id="BadgeID" class="form-select" @bind-Value="asistente.BadgeID" @oninput="OnUnidadChanged">
                             <option value="">Seleccione el badge</option>
                             <option value="1">Badge 1</option>
                             <option value="2">Badge 2</option>
@@ -129,15 +137,94 @@
         </div>
     </div>
 </div>
+<!-- Modal -->
+<div class="modal fade" id="horario" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="horario">Actualizar Encargado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body row">
+                <div class="col-md-6">
+                    <label for="Oficina">Oficina</label>
+                    <InputSelect id="OficinaID" class="form-select" @bind-Value="oficinaID" @oninput="OnEstacionChanged">
+                        <option value="">Seleccione la oficina</option>
+                        @foreach (var oficina in listaOficinas)
+                        {
+                            <option value="@oficina.OficinaID">@($"{oficina.Nombre}")</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <!-- EstacionTrabajo dropdown -->
+                <div class="col-md-6">
+                    <label for="EstacionTrabajo">EstacionTrabajo</label>
+                    <InputSelect id="EstacionTrabajo" class="form-select" @bind-Value="estacionTrabajoID">
+                        <option value="">Seleccione la estación de trabajo</option>
+                        @foreach (var estacionTrabajo in listaEstacionTrabajos)
+                        {
+                            <option value="@estacionTrabajo.EstacionTrabajoID">@($"{estacionTrabajo.Numero}")</option>
+                        }
+                    </InputSelect>
+                </div>
+           
+            <div class="card-body">
+                <div class="row">
+                        <div class="card mt-4 col-md-6">
+
+                            <label for="horaInicio">Dia</label>
+                            <select class="form-select" aria-label="Default select example">
+                                <option selected>AM</option>
+                                <option>PM</option>
+                            </select>
+
+
+                        </div>
+
+                        <div class="card mt-4 col-md-6">
+                            
+                                <label for="horaInicio">Hora de Inicio</label>
+                                <select class="form-select" aria-label="Default select example">
+                                    <option selected>AM</option>
+                                    <option>PM</option>
+                                </select>
+                                
+                            
+                        </div>
+                        <div class="card mt-4 col-md-6">
+                            
+                                <label for="horaInicio">Hora de Final</label>
+
+                                <select class="form-select" aria-label="Default select example">
+                                    <option selected>AM</option>
+                                    <option>PM</option>
+                                </select>
+                          
+                        </div>
+               </div>
+
+                   
+               </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
 
     private AsistenteControlador asistenteControlador = new AsistenteControlador();
     private UnidadControlador unidadControlador = new UnidadControlador();
     private EncargadoControlador encargadoControlador = new EncargadoControlador();
+    private OficinaControlador oficinaControlador = new OficinaControlador();
+    private EstacionTrabajoControlador estacionTrabajoControlador = new EstacionTrabajoControlador();
     private List<Asistente> listaAsistentes = new List<Asistente>();
     private List<Unidad> listaUnidades = new List<Unidad>();
     private List<Encargado> listaEncargados = new List<Encargado>();
+    private List<Oficina> listaOficinas = new List<Oficina>();
+    private List<EstacionTrabajo> listaEstacionTrabajos = new List<EstacionTrabajo>();
+    private int oficinaID;
+    private int estacionTrabajoID;
     private Asistente asistente = new Asistente
         {
             Persona = new Persona(),
@@ -214,6 +301,19 @@
     protected override async Task OnInitializedAsync()
     {
         listaAsistentes = await asistenteControlador.ListarAsistentes();
+    }
+
+    private async void traerOficinas()
+    {
+        listaOficinas = await oficinaControlador.ListarOficinas();
+    }
+    private async Task OnEstacionChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value.ToString(), out int oficinaid))
+        {
+            listaEstacionTrabajos = await estacionTrabajoControlador.ListarEstacionPorOficina(oficinaid);
+            StateHasChanged(); // Forzar la actualización de la UI
+        }
     }
 }
 
