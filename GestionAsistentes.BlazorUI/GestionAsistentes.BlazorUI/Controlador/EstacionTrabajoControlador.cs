@@ -25,7 +25,10 @@ namespace GestionAsistentes.BlazorUI.Controlador
         {
             return await estacionTrabajoRN.EliminarEstacionPorOficina(OficinaID);
         }
-
+        public async Task<List<EstacionTrabajo>> ListarEstacionPorOficina(int OficinaID)
+        {
+            return await estacionTrabajoRN.ListarEstacionPorOficina(OficinaID);
+        }
     }
 }
 
