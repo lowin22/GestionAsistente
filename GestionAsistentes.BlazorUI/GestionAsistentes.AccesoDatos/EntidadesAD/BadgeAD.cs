@@ -16,11 +16,10 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
         {
             this._contexto = new GestionAsistenteContexto();
         }
-        public bool RegistrarBadge(Badge badge)
+        public async Task<bool> RegistrarBadge(Badge badge)
         {
             BadgeEF badgeEF = new BadgeEF
             {
-                BadgeID = badge.BadgeID,
                 Accesos = badge.Accesos,
                 Horario = badge.Horario,
                 UnidadID = badge.UnidadID
