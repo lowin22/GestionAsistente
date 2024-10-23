@@ -23,5 +23,9 @@ namespace GestionAsistentes.ReglasNegocio
             }
             return await horarioAD.RegistrarHorario(horario); // Sin await si no es asíncrono
         }
+        public async Task<List<Horario>> ListarHorariosPorEstacionTrabajo(int estacionTrabajoID)
+        { 
+            return await horarioAD.ListarHorariosPorEstacionTrabajo(estacionTrabajoID);
+        }
     }
 }
