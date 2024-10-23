@@ -1,6 +1,7 @@
 ﻿using GestionAsistentes.AccesoDatos.Contexto;
 using GestionAsistentes.AccesoDatos.Modelos;
 using GestionAsistentes.Entidades;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,24 +28,54 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             this._contexto.BadgesEF.Add(badgeEF);
             return this._contexto.SaveChanges() > 0;
         }
-        public List<Badge> listarBadges()
-        {
-            List<BadgeEF> badgeEFs = _contexto.BadgesEF.ToList();
-            List<Badge> badges = new List<Badge>();
+        //public List<Badge> listarBadges()
+        //{
+        //    List<BadgeEF> badgeEFs = _contexto.BadgesEF.ToList();
+        //    List<Badge> badges = new List<Badge>();
 
-            foreach (BadgeEF badgeEF in badgeEFs)
+        //    foreach (BadgeEF badgeEF in badgeEFs)
+        //    {
+        //        badges.Add(new Badge
+        //        {
+        //            BadgeID = badgeEF.BadgeID,
+        //            Accesos = badgeEF.Accesos,
+        //            Horario = badgeEF.Horario,
+        //            UnidadID = badgeEF.UnidadID
+        //        });
+        //    }
+
+        //    return badges;
+        //}
+
+
+        public async Task<List<Badge>> ListarBadge()
+        {
+            List<Badge> badges = new List<Badge>();
+            List<BadgeEF> badgesEF = this._contexto.BadgesEF
+                .Include(e => e.Unidad)  // Incluir Unidad
+                .ToList();
+
+            foreach (BadgeEF badgeEF in badgesEF)
             {
-                badges.Add(new Badge
+                Badge badge = new Badge
                 {
                     BadgeID = badgeEF.BadgeID,
-                    Accesos = badgeEF.Accesos,
                     Horario = badgeEF.Horario,
-                    UnidadID = badgeEF.UnidadID
-                });
+                    UnidadID = badgeEF.UnidadID,
+                    Unidad = badgeEF.Unidad != null ? new Unidad
+                    {
+                        UnidadID = badgeEF.Unidad.UnidadID,
+                        Nombre = badgeEF.Unidad.Nombre
+                    } : null
+                };
+
+                badges.Add(badge);
             }
 
             return badges;
         }
+
+
         public bool ModificarBadge(Badge badge)
         {
             BadgeEF badgeEF = _contexto.BadgesEF.Find(badge.BadgeID);
@@ -59,7 +90,7 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             badgeEF.UnidadID = badge.UnidadID;
             return _contexto.SaveChanges() > 0;
         }
-        public bool EliminarBadge(int BadgeID)
+        public async Task<bool> EliminarBadge(int BadgeID)
         {
             BadgeEF badgeEF = _contexto.BadgesEF.Find(BadgeID);
             if (badgeEF == null)

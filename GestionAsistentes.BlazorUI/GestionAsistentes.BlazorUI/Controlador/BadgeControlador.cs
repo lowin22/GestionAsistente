@@ -16,6 +16,15 @@ namespace GestionAsistentes.BlazorUI.Controlador
             return await badgeRN.RegistrarBadge(badge);
         }
 
+        public async Task<List<Badge>> ListarBadge()
+        {
+            return await badgeRN.ListarBadge();
+        }
+
+        public async Task<bool> EliminarBadge(int badgeID)
+        {
+            return await badgeRN.EliminarBadge(badgeID);
+        }
 
 
 
