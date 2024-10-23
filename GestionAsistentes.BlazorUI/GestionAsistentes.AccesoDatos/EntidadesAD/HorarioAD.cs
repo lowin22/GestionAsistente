@@ -55,8 +55,44 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                 HoraInicio = x.HoraInicio,
                 HoraFin = x.HoraFin,
                 Dia = x.Dia,
-                EstacionTrabajoID = x.EstacionTrabajoID
+                EstacionTrabajoID = x.EstacionTrabajoID,
+                AsistenteID = x.AsistenteID,
+                Asistente = new Asistente
+                {
+                    AsistenteID = x.Asistente.AsistenteID,
+                    Persona = new Persona
+                    {
+                        PersonaID = x.Asistente.Persona.PersonaID,
+                        Nombre = x.Asistente.Persona.Nombre,
+                        PrimerApellido = x.Asistente.Persona.PrimerApellido,
+                        SegundoApellido = x.Asistente.Persona.SegundoApellido,
+                    },
+                },
             }).ToList();
         }
+        public async Task< List<Horario>> ListarHorariosPorEstacionTrabajo(int estacionTrabajoID)
+        {
+            return _contexto.HorarioEFs.Select(x => new Horario
+            {
+                HorarioID = x.HorarioID,
+                HoraInicio = x.HoraInicio,
+                HoraFin = x.HoraFin,
+                Dia = x.Dia,
+                EstacionTrabajoID = x.EstacionTrabajoID,
+                AsistenteID = x.AsistenteID,
+                Asistente = new Asistente
+                {
+                    AsistenteID = x.Asistente.AsistenteID,
+                    Persona = new Persona
+                    {
+                        PersonaID = x.Asistente.Persona.PersonaID,
+                        Nombre = x.Asistente.Persona.Nombre,
+                        PrimerApellido = x.Asistente.Persona.PrimerApellido,
+                        SegundoApellido = x.Asistente.Persona.SegundoApellido,
+                    },
+                },
+            }).Where(h=>h.EstacionTrabajoID==estacionTrabajoID).ToList();
+        }
+
     }
 }
