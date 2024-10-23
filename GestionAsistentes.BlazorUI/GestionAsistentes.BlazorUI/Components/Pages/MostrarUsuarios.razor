@@ -197,6 +197,12 @@
     {
             Persona = new Persona()
     };
+
+    Usuario actualizarUsuario = new Usuario
+        {
+            Persona = new Persona()
+        };
+
     private Usuario crearUsuario = new Usuario()
     {
         Persona = new Persona()
@@ -209,10 +215,6 @@
 
     async Task EditarUsuario(int usuarioID)
     {
-        Usuario actualizarUsuario = new Usuario
-            {
-                Persona = new Persona()
-            };
 
         actualizarUsuario = listaUsuarios.Find(u => u.UsuarioID == usuarioID);
 

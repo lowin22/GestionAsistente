@@ -62,6 +62,7 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                     BadgeID = badgeEF.BadgeID,
                     Horario = badgeEF.Horario,
                     UnidadID = badgeEF.UnidadID,
+                    Accesos = badgeEF.Accesos,
                     Unidad = badgeEF.Unidad != null ? new Unidad
                     {
                         UnidadID = badgeEF.Unidad.UnidadID,
@@ -76,14 +77,15 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
         }
 
 
-        public bool ModificarBadge(Badge badge)
+        public async Task<bool> ModificarBadge(Badge badge)
         {
-            BadgeEF badgeEF = _contexto.BadgesEF.Find(badge.BadgeID);
+            BadgeEF badgeEF = _contexto.BadgesEF.FirstOrDefault(b => b.BadgeID == badge.BadgeID);
 
             if (badgeEF == null)
             {
                 return false;
             }
+            
             badgeEF.BadgeID = badge.BadgeID;
             badgeEF.Accesos = badge.Accesos;
             badgeEF.Horario = badge.Horario;
@@ -92,12 +94,12 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
         }
         public async Task<bool> EliminarBadge(int BadgeID)
         {
-            BadgeEF badgeEF = _contexto.BadgesEF.Find(BadgeID);
+            BadgeEF badgeEF = this._contexto.BadgesEF.FirstOrDefault(b => b.BadgeID == BadgeID);
             if (badgeEF == null)
             {
                 return false;
             }
-            _contexto.BadgesEF.Remove(badgeEF);
+            this._contexto.BadgesEF.Remove(badgeEF);
             return _contexto.SaveChanges() > 0;
         }
 
