@@ -158,7 +158,7 @@
                 </div>
                 <div class="col-md-6">
                     <label for="EstacionTrabajo">EstacionTrabajo</label>
-                    <InputSelect id="EstacionTrabajo" class="form-select" @bind-Value="horario.EstacionTrabajoID" @oninput="OnEstacionHorarioChanged">
+                    <InputSelect id="EstacionTrabajo" class="form-select" @bind-Value="horario.EstacionTrabajoID" >
                         <option value="">Seleccione la estación de trabajo</option>
                         @foreach (var estacionTrabajo in listaEstacionTrabajos)
                         {
@@ -171,8 +171,8 @@
                     <div class="row">
                         <div class="card mt-4 col-md-6">
                             <label for="diaSemana">Día</label>
-                            <InputSelect id="diaSemana" class="form-select" @bind-Value="horario.Dia">
-                                <option value="">Seleccione el día</option>
+                            <InputSelect id="diaSemana" class="form-select" @bind-Value="horario.Dia" @oninput="OnEstacionHorarioChanged">
+                                <option value="">Seleccione el dia de la semana</option>
                                 @foreach (var dia in horarioControlador.diasDeLaSemana)
                                 {
                                     <option value="@dia">@dia</option>
@@ -182,7 +182,7 @@
 
                         <div class="card mt-4 col-md-6">
                             <label for="horaInicio">Hora de Inicio</label>
-                            <InputSelect id="horaInicio" class="form-select" @bind-Value="horaInicio">
+                            <InputSelect id="horaInicio" class="form-select" @bind-Value="horaInicio" @oninput="OnEstacionHoraFinalChanged">
                                 <option value="">Seleccione la hora de inicio</option>
                                 @foreach (var hora in horarioControlador.horasDelDiaInicio)
                                 {
@@ -193,7 +193,7 @@
 
                         <div class="card mt-4 col-md-6">
                             <label for="horaFinal">Hora de Final</label>
-                            <InputSelect id="horaFinal" class="form-select" @bind-Value="horaFinal">
+                            <InputSelect id="horaFinal" class="form-select" @bind-Value="horaFinal" >
                                 <option value="">Seleccione la hora de finalización</option>
                                 @foreach (var hora in horarioControlador.horasDelDiaFinal)
                                 {
@@ -341,7 +341,7 @@
         horario.Asistente.AsistenteID = asistenteID;
         listaOficinas = await oficinaControlador.ListarOficinas();
     }
-    
+
     private async Task OnEstacionChanged(ChangeEventArgs e)
     {
         if (int.TryParse(e.Value.ToString(), out int oficinaid))
@@ -352,11 +352,20 @@
     }
     private async Task OnEstacionHorarioChanged(ChangeEventArgs e)
     {
-        if (int.TryParse(e.Value.ToString(), out int estacionTrabajoID))
-        {
-           await horarioControlador.ListarHorariosPorEstacionTrabajo(estacionTrabajoID);
+
+     
+        await horarioControlador.ListarHorariosPorEstacionTrabajo(horario.EstacionTrabajoID, e.Value.ToString());
             StateHasChanged(); // Forzar la actualización de la UI
-            
-        }
+        
+
+    }
+    private async Task OnEstacionHoraFinalChanged(ChangeEventArgs e)
+    {
+
+
+        await horarioControlador.verificarHoraSeleccionar(e.Value.ToString());
+        StateHasChanged(); // Forzar la actualización de la UI
+
+
     }
 }
