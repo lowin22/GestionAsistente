@@ -43,7 +43,14 @@ namespace GestionAsistentes.ReglasNegocio
             return await badgeAD.EliminarBadge(badgeID); // Sin await si no es asíncrono
         }
 
-
+        public async Task<bool> ActualizarBadge(Badge badge)
+        {
+            if (badge == null)
+            {
+                throw new ArgumentNullException(nameof(badge));
+            }
+            return await badgeAD.ModificarBadge(badge);
+        }
 
 
     }

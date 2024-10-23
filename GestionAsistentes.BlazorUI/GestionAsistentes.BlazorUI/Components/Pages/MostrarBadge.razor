@@ -9,6 +9,7 @@
         <table class="table table-bordered">
             <thead style="text-align: center;">
                 <tr style="text-align: center">
+                    <th>Acciones</th>
                     <th>Accesos</th>
                     <th>Horario</th>
                     <th>Unidad</th>
@@ -23,7 +24,7 @@
                     {
                         <tr>
                             <td>
-                                <button class="btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                <button class="btn" data-bs-toggle="modal" data-bs-target="#ModificarBadge" @onclick="() => seleccionarEditarUsuario(badge.BadgeID)">
                                     <!-- Icono SVG para editar -->
                                     <svg width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
                                         <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z" />
@@ -36,7 +37,7 @@
                                     </svg>
                                 </button>
                             </td>
-
+                            <td>@badge.Accesos</td>
                             <td>@badge.Horario</td>
                             <td>@badge.Unidad?.Nombre</td>
                         </tr>
@@ -78,11 +79,84 @@
     </div>
 </div>
 
+<div class="modal fade" id="ModificarBadge" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModificarBadge">Actualizar Badge</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <EditForm Model="badge" OnValidSubmit="ModificarBadge" FormName="modificarBadgeForm">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="mb-3">
+                        <label for="accesos" class="form-label">Accesos</label>
+                        <InputText id="accesos" class="form-control" @bind-Value="badge.Accesos" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="horaInicio">Hora de Inicio</label>
+                        <InputSelect id="horaInicio" class="form-select" @bind-Value="horaInicio">
+                            <option value="">Seleccione la hora de inicio</option>
+                            @foreach (var hora in horasDelDiaInicio)
+                            {
+                                <option value="@hora">@hora</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label for="horaFinal">Hora de Final</label>
+                        <InputSelect id="horaFinal" class="form-select" @bind-Value="horaFinal">
+                            <option value="">Seleccione la hora de finalización</option>
+                            @foreach (var hora in horasDelDiaFinal)
+                            {
+                                <option value="@hora">@hora</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="unidadID" class="form-label">Unidad</label>
+                        <InputSelect id="unidadID" class="form-control" @bind-Value="badge.UnidadID">
+                            @foreach (var unidad in listaUnidades)
+                            {
+                                <option value="@unidad.UnidadID">@unidad.Nombre</option>
+                            }
+                        </InputSelect>
+                    </div>
+                       
+
+                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Actualizar badge</button>
+                </EditForm>
+                @if (mensajeExito != null)
+                {
+                    <div class="alert alert-success">
+                        @mensajeExito
+                    </div>
+                }
+                @if (mensajeError != null)
+                {
+                    <div class="alert alert-danger">
+                        @mensajeError
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
     UnidadControlador unidadControlador = new UnidadControlador();
 
     BadgeControlador badgeControlador = new BadgeControlador();
+
+    string horaInicio, horaFinal = "", horario;
+    string mensajeExito;
+    string mensajeError;
 
     List<Badge> listaBadge = new List<Badge>();
 
@@ -103,6 +177,38 @@
             Unidad = new Unidad()
         };
 
+    // Lista de horas (de 7 a 20)
+    private List<string> horasDelDiaInicio = new()
+    {
+        "07:00",
+        "08:00",
+        "09:00",
+        "10:00",
+        "11:00",
+        "12:00",
+        "13:00",
+        "14:00",
+        "15:00",
+        "16:00",
+        "17:00",
+        "18:00"
+    };
+    private List<string> horasDelDiaFinal = new()
+    {
+        "07:00",
+        "08:00",
+        "09:00",
+        "10:00",
+        "11:00",
+        "12:00",
+        "13:00",
+        "14:00",
+        "15:00",
+        "16:00",
+        "17:00",
+        "18:00"
+    };
+
     protected override async Task OnInitializedAsync()
 
     {
@@ -120,14 +226,62 @@
 
     private async Task seleccionarBadgeEliminar(int eliminarBadges)
     {
-        eliminarBadge = listaBadge.Find(x => x.BadgeID == eliminarBadges);
+        eliminarBadge = listaBadge.FirstOrDefault(x => x.BadgeID == eliminarBadges);
     }
 
-    async Task EliminarBadge(int encargadoID)
+    async Task EliminarBadge(int badgeID)
     {
-        await badgeControlador.EliminarBadge(encargadoID);
+        await badgeControlador.EliminarBadge(badgeID);
 
         listaBadge = await badgeControlador.ListarBadge();
+
+        StateHasChanged();
+    }
+
+    async Task seleccionarEditarUsuario(int badgeID)
+    {
+
+        actualizarBadge = listaBadge.Find(b => b.BadgeID == badgeID);
+
+        badge.Accesos = actualizarBadge.Accesos;
+        badge.UnidadID = actualizarBadge.UnidadID;
+        badge.Horario = actualizarBadge.Horario;
+        badge.BadgeID = actualizarBadge.BadgeID;
+
+    }
+
+    private async Task ModificarBadge()
+    {
+
+        try
+        {
+
+            bool exito = false;
+            badge.Horario = horaInicio + " a " + horaFinal;
+
+            exito = await badgeControlador.ActualizarBadge(badge);
+
+            listaBadge = await badgeControlador.ListarBadge();
+
+
+            if (exito)
+            {
+                mensajeExito = "Badge registrado con éxito.";
+                mensajeError = null;
+
+            }
+            else
+            {
+                mensajeExito = null;
+                mensajeError = "Hubo un problema al registrar el badge.";
+            }
+
+        }
+        catch (Exception ex)
+        {
+            mensajeError = $"Error: {ex.Message}";
+            mensajeExito = null;
+        }
 
         StateHasChanged();
     }

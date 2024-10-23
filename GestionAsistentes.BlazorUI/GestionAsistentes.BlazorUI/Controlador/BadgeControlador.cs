@@ -26,7 +26,10 @@ namespace GestionAsistentes.BlazorUI.Controlador
             return await badgeRN.EliminarBadge(badgeID);
         }
 
-
+        public async Task<bool> ActualizarBadge(Badge badge)
+        {
+            return await badgeRN.ActualizarBadge(badge);
+        }
 
 
     }
