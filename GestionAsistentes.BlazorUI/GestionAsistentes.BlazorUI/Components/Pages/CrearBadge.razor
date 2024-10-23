@@ -121,29 +121,30 @@
 
         try
         {
+            bool exito = false;
             badge.Horario = horaInicio + " a " + horaFinal;
             Console.WriteLine("Accesos: " + badge.Accesos);
             Console.WriteLine("Horario: " + badge.Horario);
             Console.WriteLine("Unidad: " + badge.UnidadID);
 
-            // for (int i = 0; i <= cantidadACrear; i++)
-            // {
+            for (int i = 1; i <= cantidadACrear; i++)
+            {
 
-            await badgeControlador.RegistrarBadge(badge);
-            // }
+                exito = await badgeControlador.RegistrarBadge(badge);
+            }
 
 
-            // if (idBadge > 0)
-            // {
-            //     mensajeExito = "Badge registrado con éxito.";
-            //     mensajeError = null;
+            if (exito)
+            {
+                mensajeExito = "Badge registrado con éxito.";
+                mensajeError = null;
 
-            // }
-            // else
-            // {
-            //     mensajeExito = null;
-            //     mensajeError = "Hubo un problema al registrar el badge.";
-            // }
+            }
+            else
+            {
+                mensajeExito = null;
+                mensajeError = "Hubo un problema al registrar el badge.";
+            }
         }
         catch (Exception ex)
         {

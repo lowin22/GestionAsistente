@@ -27,8 +27,21 @@ namespace GestionAsistentes.ReglasNegocio
             return await badgeAD.RegistrarBadge(badge); // Sin await si no es asíncrono
         }
 
+        public async Task<List<Badge>> ListarBadge()
+        {
+            List<Badge> encargados = new List<Badge>();
+            encargados = await this.badgeAD.ListarBadge();
+            return encargados;
+        }
 
-
+        public async Task<bool> EliminarBadge(int badgeID)
+        {
+            if (badgeID == null)
+            {
+                throw new ArgumentNullException(nameof(badgeID));
+            }
+            return await badgeAD.EliminarBadge(badgeID); // Sin await si no es asíncrono
+        }
 
 
 
