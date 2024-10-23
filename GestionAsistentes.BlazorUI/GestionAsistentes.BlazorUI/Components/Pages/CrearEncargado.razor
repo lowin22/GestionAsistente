@@ -4,29 +4,29 @@
 @rendermode InteractiveServer
 <h3>Crear Encargado</h3>
 
-<EditForm Model="encargado" OnValidSubmit="RegistrarEncargado" FormName="crearEncargadoForm">
+<EditForm Model="encargadoControlador.encargado" OnValidSubmit="RegistrarEncargado" FormName="crearEncargadoForm">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
     <div class="mb-3">
         <label for="nombre" class="form-label">Nombre</label>
-        <InputText id="nombre" class="form-control" @bind-Value="encargado.Persona.Nombre" />
+        <InputText id="nombre" class="form-control" @bind-Value="encargadoControlador.encargado.Persona.Nombre" />
     </div>
 
     <div class="mb-3">
         <label for="primerApellido" class="form-label">Primer Apellido</label>
-        <InputText id="primerApellido" class="form-control" @bind-Value="encargado.Persona.PrimerApellido" />
+        <InputText id="primerApellido" class="form-control" @bind-Value="encargadoControlador.encargado.Persona.PrimerApellido" />
     </div>
 
     <div class="mb-3">
         <label for="segundoApellido" class="form-label">Segundo Apellido</label>
-        <InputText id="segundoApellido" class="form-control" @bind-Value="encargado.Persona.SegundoApellido" />
+        <InputText id="segundoApellido" class="form-control" @bind-Value="encargadoControlador.encargado.Persona.SegundoApellido" />
     </div>
 
     <div class="mb-3">
         <label for="unidadID" class="form-label">Unidad</label>
-        <InputSelect id="unidadID" class="form-control" @bind-Value="encargado.Unidad.UnidadID">
-            @foreach (var unidad in listaUnidades)
+        <InputSelect id="unidadID" class="form-control" @bind-Value="encargadoControlador.encargado.Unidad.UnidadID">
+            @foreach (var unidad in encargadoControlador.listaUnidades)
             {
                 <option value="@unidad.UnidadID">@unidad.Nombre</option>
             }
@@ -35,62 +35,30 @@
 
     <button type="submit" class="btn btn-primary">Registrar</button>
 </EditForm>
-@if (mensajeExito != null)
+@if (encargadoControlador.mensajeExito != null)
 {
     <div class="alert alert-success">
-        @mensajeExito
+        @encargadoControlador.mensajeExito
     </div>
 }
-@if (mensajeError != null)
+@if (encargadoControlador.mensajeError != null)
 {
     <div class="alert alert-danger">
-        @mensajeError
+        @encargadoControlador.mensajeError
     </div>
 }
 
 @code {
-    UnidadControlador unidadControlador = new UnidadControlador();
-    string mensajeExito;
-    string mensajeError;
-    List<Unidad> listaUnidades = new List<Unidad>();
+    public EncargadoControlador encargadoControlador = new EncargadoControlador();
+
     protected override async Task OnInitializedAsync()
     {
-        listaUnidades = await unidadControlador.ListarUnidades();
+        encargadoControlador.listarUnidades();
     }
-    Encargado encargado = new Encargado
-        {
-            Persona = new Persona(),// Inicializa la persona dentro del encargado
-            Unidad = new Unidad()// Inicializa la unidad dentro del encargado
-        };
-
+   
     private async Task RegistrarEncargado()
     {
-        EncargadoControlador encargadoControlador = new EncargadoControlador();
-        try
-        {
-            bool exito = await encargadoControlador.RegistrarEncargado(encargado);
-
-            if (exito)
-            {
-                mensajeExito = "Encargado registrado con éxito.";
-                mensajeError = null;
-                encargado = new Encargado
-                    {
-                        Persona = new Persona(),
-                        Unidad = new Unidad()
-                    };
-            }
-            else
-            {
-                mensajeExito = null;
-                mensajeError = "Hubo un problema al registrar el encargado.";
-            }
-        }
-        catch (Exception ex)
-        {
-            mensajeError = $"Error: {ex.Message}";
-            mensajeExito = null;
-        }
+        await encargadoControlador.RegistrarEncargado(encargadoControlador.encargado);
         StateHasChanged();
     }
 }
