@@ -28,25 +28,6 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             this._contexto.BadgesEF.Add(badgeEF);
             return this._contexto.SaveChanges() > 0;
         }
-        //public List<Badge> listarBadges()
-        //{
-        //    List<BadgeEF> badgeEFs = _contexto.BadgesEF.ToList();
-        //    List<Badge> badges = new List<Badge>();
-
-        //    foreach (BadgeEF badgeEF in badgeEFs)
-        //    {
-        //        badges.Add(new Badge
-        //        {
-        //            BadgeID = badgeEF.BadgeID,
-        //            Accesos = badgeEF.Accesos,
-        //            Horario = badgeEF.Horario,
-        //            UnidadID = badgeEF.UnidadID
-        //        });
-        //    }
-
-        //    return badges;
-        //}
-
 
         public async Task<List<Badge>> ListarBadge()
         {
@@ -85,7 +66,7 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             {
                 return false;
             }
-            
+
             badgeEF.BadgeID = badge.BadgeID;
             badgeEF.Accesos = badge.Accesos;
             badgeEF.Horario = badge.Horario;
@@ -102,6 +83,35 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             this._contexto.BadgesEF.Remove(badgeEF);
             return _contexto.SaveChanges() > 0;
         }
+        public async Task<List<Badge>> listarBadgePorUnidad(int unidadId)
+        {
+            // Filtrar los badges por UnidadID antes de traerlos desde la base de datos
+            List<BadgeEF> badgesEF = await this._contexto.BadgesEF
+                .Include(e => e.Unidad)  // Incluir Unidad
+                .Where(b => b.UnidadID == unidadId && b.Ocupado != true)  // Filtrar por UnidadID
+                .ToListAsync();
 
+            List<Badge> badges = new List<Badge>();
+
+            foreach (BadgeEF badgeEF in badgesEF)
+            {
+                Badge badge = new Badge
+                {
+                    BadgeID = badgeEF.BadgeID,
+                    Horario = badgeEF.Horario,
+                    UnidadID = badgeEF.UnidadID,
+                    Accesos = badgeEF.Accesos,
+                    Unidad = badgeEF.Unidad != null ? new Unidad
+                    {
+                        UnidadID = badgeEF.Unidad.UnidadID,
+                        Nombre = badgeEF.Unidad.Nombre
+                    } : null
+                };
+
+                badges.Add(badge);
+            }
+
+            return badges;
+        }
     }
 }

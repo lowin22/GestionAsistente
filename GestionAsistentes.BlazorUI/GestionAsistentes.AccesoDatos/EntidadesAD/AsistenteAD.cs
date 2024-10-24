@@ -13,6 +13,7 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
     public class AsistenteAD
     {
         private readonly GestionAsistenteContexto _contexto;
+        private readonly BadgeAD badgeAD;
         public AsistenteAD()
         {
             this._contexto = new GestionAsistenteContexto();
@@ -33,8 +34,17 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                 Accesos = asistente.Accesos,
                 EncargadoID = asistente.EncargadoID,
                 Contrasenia = asistente.Contrasenia,
-                BadgeID = asistente.BadgeID,
+                BadgeID = asistente.BadgeID
             };
+            BadgeEF badgeEF = _contexto.BadgesEF.Find(asistente.BadgeID);
+            if (badgeEF != null)
+            {
+                badgeEF.Ocupado = true;
+            }
+            else if (badgeEF == null)
+            {
+                badgeEF.Ocupado = false;
+            }
             this._contexto.AsistenteEFs.Add(asistenteEF);
             return this._contexto.SaveChanges() > 0;
         }
@@ -99,6 +109,12 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             // Buscar el asistente por ID
             var asistenteEF = await _contexto.AsistenteEFs
                 .FirstOrDefaultAsync(a => a.AsistenteID == asistente.AsistenteID);
+            if (asistenteEF.BadgeID != null)
+            {
+                int? idBadge = asistenteEF.BadgeID;
+                BadgeEF badgeEF = _contexto.BadgesEF.Find(idBadge);
+                badgeEF.Ocupado = false;
+            }
 
             // Verificar si se encontró el asistente
             if (asistenteEF == null)
@@ -125,6 +141,13 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             asistenteEF.BadgeID = asistente.BadgeID;
 
             // Guardar los cambios en la base de datos
+            BadgeEF badgeEF2 = _contexto.BadgesEF.Find(asistente.BadgeID);
+
+            if (badgeEF2 != null)
+            {
+                badgeEF2.Ocupado = true;
+            }
+
             return await _contexto.SaveChangesAsync() > 0; // Asegúrate de usar SaveChangesAsync para mantener la asynchronía
         }
 

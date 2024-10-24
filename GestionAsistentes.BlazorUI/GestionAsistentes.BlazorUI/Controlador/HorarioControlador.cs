@@ -81,7 +81,8 @@ namespace GestionAsistentes.BlazorUI.Controlador
             horasDelDiaInicio = todasLasHoras.Except(horasNoDisponibles).ToList();
             horasDelDiaFinal = todasLasHoras.Except(horasNoDisponibles).ToList();
         }
-        public async Task verificarHoraSeleccionar(string horaInicio) {
+        public async Task verificarHoraSeleccionar(string horaInicio)
+        {
             horasDelDiaFinal = horasDelDiaInicio;
             // Convierte la hora de inicio a un formato `TimeSpan` para comparación
             TimeSpan horaInicioTimeSpan = TimeSpan.Parse(horaInicio);
@@ -92,7 +93,8 @@ namespace GestionAsistentes.BlazorUI.Controlador
                 .ToList();
         }
 
-        public async Task renderizarHorariosPorOficina(int oficinaID) {
+        public async Task renderizarHorariosPorOficina(int oficinaID)
+        {
             renderizarHorario = await horarioRN.ListarHorariosPorOficina(oficinaID);
             await ListarHorariosPorOficinaAgrupados(oficinaID);
         }

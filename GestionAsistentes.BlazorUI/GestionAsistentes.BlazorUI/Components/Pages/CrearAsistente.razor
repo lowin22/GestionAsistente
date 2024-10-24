@@ -78,11 +78,12 @@
                 <div class="form-floating mb-3">
                     <InputSelect id="BadgeID" class="form-select" @bind-Value="asistente.BadgeID">
                         <option value="">Seleccione el badge</option>
-                        <option value="1">Badge 1</option>
-                        <option value="2">Badge 2</option>
-                        <option value="3">Badge 3</option>
+                        @foreach (var badge in listaBadge)
+                        {
+                            <option value="@badge.BadgeID">@badge.BadgeID</option>
+                        }
                     </InputSelect>
-                    <label for="BadgeID">Badge</label>
+                 
                 </div>
             </div>
         </div>
@@ -118,7 +119,9 @@
     private UnidadControlador unidadControlador = new UnidadControlador();
     private EncargadoControlador encargadoControlador = new EncargadoControlador();
     private List<Unidad> listaUnidades = new List<Unidad>();
+    private BadgeControlador badgeControlador = new BadgeControlador();
     private List<Encargado> listaEncargados = new List<Encargado>();
+    private List<Badge> listaBadge = new List<Badge>();
     private Asistente asistente = new Asistente
         {
             Persona = new Persona()
@@ -139,6 +142,7 @@
         {
             asistente.UnidadID = unidadId;
             await CargarEncargados(unidadId);
+            listaBadge = await badgeControlador.ListarBadgePorUnidad(unidadId);
         }
     }
 

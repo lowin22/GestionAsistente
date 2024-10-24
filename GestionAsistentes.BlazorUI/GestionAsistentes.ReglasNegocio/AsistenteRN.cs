@@ -21,7 +21,7 @@ namespace GestionAsistentes.ReglasNegocio
         {
             if (asistente != null)
             {
-               
+
                 if (asistente.Persona.SegundoApellido == null)
                 {
                     throw new Exception("El segundo apellido no puede ser nulo");
