@@ -17,6 +17,7 @@ namespace GestionAsistentes.AccesoDatos.Modelos
         public string Accesos { get; set; }
         public string Horario { get; set; }
         public int? UnidadID { get; set; }
+        public bool Ocupado { get; set; }
         public virtual UnidadEF Unidad { get; set; }
     }
 }

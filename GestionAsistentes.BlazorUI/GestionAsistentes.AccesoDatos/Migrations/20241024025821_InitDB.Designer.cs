@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GestionAsistentes.AccesoDatos.Migrations
 {
     [DbContext(typeof(GestionAsistenteContexto))]
-    [Migration("20241024013531_InitDB")]
+    [Migration("20241024025821_InitDB")]
     partial class InitDB
     {
         /// <inheritdoc />
@@ -121,6 +121,9 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                     b.Property<string>("Horario")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Ocupado")
+                        .HasColumnType("bit");
 
                     b.Property<int?>("UnidadID")
                         .HasColumnType("int");

@@ -160,7 +160,8 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Accesos = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Horario = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UnidadID = table.Column<int>(type: "int", nullable: true)
+                    UnidadID = table.Column<int>(type: "int", nullable: true),
+                    Ocupado = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
