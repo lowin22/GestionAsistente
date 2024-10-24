@@ -3,46 +3,76 @@
 @using GestionAsistentes.BlazorUI.Controlador
 @using GestionAsistentes.Entidades
 
-<h3>MostrarHorario</h3>
-<div class="container mt-4">
-    <h1 class="mb-4">Horario Semanal</h1>
-    <div class="table-responsive">
-        <table class="table table-bordered">
-            <thead class="table-light">
-                <tr>
-                    <th scope="col" class="text-center">Hora</th>
-                    @foreach (var day in horarioControlador.diasDeLaSemana)
-                    {
-                        <th scope="col" class="text-center">@day</th>
-                    }
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var hour in horarioControlador.horasFijas)
-                {
-                    <tr>
-                        <th scope="row" class="table-light text-center">@hour</th>
-                        @foreach (var dia in horarioControlador.diasDeLaSemana)
-                        {
-                            <td style="min-width: 100px; height: 50px;" class="@GetCellClass(hour, dia)">
-                                @if (HasReservation(hour, dia))
-                                {
-                                    var horario = GetHorario(hour, dia);
-                                    <div class="reservation-info">
-                                        <small>
-                                            @horario.Asistente?.Persona.Nombre
-                                            <br />
-                                            @horario.HoraInicio.ToString("HH:mm") - @horario.HoraFin.ToString("HH:mm")
-                                        </small>
-                                    </div>
-                                }
-                            </td>
-                        }
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+<h3>Mostrar Horarios por Estación de Trabajo</h3>
+
+<div class="accordion" id="accordionHorarios">
+    @foreach (var grupo in horarioControlador.horariosAgrupados)
+    {
+        var estacionId = grupo.Key.EstacionTrabajoID;
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading_@estacionId">
+                <button class="accordion-button @(estacionId != horarioControlador.horariosAgrupados.First().Key.EstacionTrabajoID ? "collapsed" : "")"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#collapse_@estacionId"
+                        aria-expanded="@(estacionId == horarioControlador.horariosAgrupados.First().Key.EstacionTrabajoID ? "true" : "false")"
+                        aria-controls="collapse_@estacionId">
+                    Estación número: @estacionId
+                </button>
+            </h2>
+            <div id="collapse_@estacionId"
+                 class="accordion-collapse collapse @(estacionId == horarioControlador.horariosAgrupados.First().Key.EstacionTrabajoID ? "show" : "")"
+                 aria-labelledby="heading_@estacionId"
+                 data-bs-parent="#accordionHorarios">
+                <div class="accordion-body">
+                    <div class="container mt-4">
+                        <h1 class="mb-4">Horarios de Estación @estacionId.ToString()</h1>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col" class="text-center">Hora</th>
+                                        @foreach (var day in horarioControlador.diasDeLaSemana)
+                                        {
+                                            <th scope="col" class="text-center">@day</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var hour in horarioControlador.horasFijas)
+                                    {
+                                        <tr>
+                                            <th scope="row" class="table-light text-center">@hour</th>
+                                            @foreach (var dia in horarioControlador.diasDeLaSemana)
+                                            {
+                                                <td style="min-width: 100px; height: 50px;" class="@GetCellClass(hour, dia, grupo.ToList())">
+                                                    @if (HasReservation(hour, dia, grupo.ToList()))
+                                                    {
+                                                        var horario = GetHorario(hour, dia, grupo.ToList());
+                                                        if (horario != null)
+                                                        {
+                                                            <div class="reservation-info">
+                                                                <small>
+                                                                    @(horario.Asistente?.Persona?.Nombre ?? "Sin asignar")
+                                                                    <br />
+                                                                    @horario.HoraInicio.ToString("HH:mm") - @horario.HoraFin.ToString("HH:mm")
+                                                                </small>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </td>
+                                            
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>
 
 <style>
@@ -54,40 +84,55 @@
         font-size: 0.8em;
         padding: 2px;
     }
+
+    .accordion-button:not(.collapsed) {
+        background-color: #e7f1ff;
+        color: #0c63e4;
+    }
+
+    .accordion-button:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgb(13 110 253 / 25%);
+    }
+
+    .accordion-item {
+        margin-bottom: 0.5rem;
+    }
 </style>
 
 @code {
     [Parameter]
     public int id { get; set; }
+
     public HorarioControlador horarioControlador = new HorarioControlador();
 
     protected override async Task OnInitializedAsync()
     {
-        await horarioControlador.renderizarHorariosPorOficina(id);
+        await horarioControlador.ListarHorariosPorOficinaAgrupados(id);
     }
 
-    private string GetCellClass(string hour, string dia)
+    private string GetCellClass(string hour, string dia, List<Horario> horarios)
     {
-        return HasReservation(hour, dia) ? "reserved" : "";
+        return HasReservation(hour, dia, horarios) ? "reserved" : "";
     }
 
-    private bool HasReservation(string hour, string dia)
+    private bool HasReservation(string hour, string dia, List<Horario> horarios)
     {
-        if (horarioControlador.renderizarHorario == null) return false;
+        if (horarios == null) return false;
 
         var hourTime = TimeSpan.Parse(hour);
-        return horarioControlador.renderizarHorario.Any(h =>
+        return horarios.Any(h =>
             h.Dia == dia &&
             h.HoraInicio.TimeOfDay <= hourTime &&
             h.HoraFin.TimeOfDay >= hourTime);
     }
 
-    private Horario GetHorario(string hour, string dia)
+    private Horario GetHorario(string hour, string dia, List<Horario> horarios)
     {
-        if (horarioControlador.renderizarHorario == null) return null;
+        if (horarios == null) return null;
 
         var hourTime = TimeSpan.Parse(hour);
-        return horarioControlador.renderizarHorario.FirstOrDefault(h =>
+        return horarios.FirstOrDefault(h =>
             h.Dia == dia &&
             h.HoraInicio.TimeOfDay <= hourTime &&
             h.HoraFin.TimeOfDay >= hourTime);
