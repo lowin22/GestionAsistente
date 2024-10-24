@@ -22,7 +22,9 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             {
                 Fecha = historialAcciones.Fecha,
                 NombrePersona = historialAcciones.NombrePersona,
-                Accion = historialAcciones.Accion
+                Accion = historialAcciones.Accion 
+                //$"{historialAcciones.Accion} en la unidad {historialAcciones.NombreUnidad}" // Concatenación de unidad
+                //historialAcciones.Accion
             };
             this._contexto.HistoriaAccionesEFs.Add(historialAccionesEF);
             return this._contexto.SaveChanges() > 0;
@@ -73,6 +75,25 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                     Fecha = historialAccionesEF.Fecha,
                     NombrePersona = historialAccionesEF.NombrePersona,
                     Accion = historialAccionesEF.Accion
+                });
+            }
+
+            return historialAcciones;
+        }
+        /*Nuevo*/
+        public async Task<List<HistorialAcciones>> ListarHistorial()
+        {
+            List<HistorialAccionesEF> historialAccionesEFs = _contexto.HistoriaAccionesEFs.ToList();
+            List<HistorialAcciones> historialAcciones = new List<HistorialAcciones>();
+
+            foreach (HistorialAccionesEF historialAccionesEF in historialAccionesEFs) // Cambiado a UnidadEF
+            {
+                historialAcciones.Add(new HistorialAcciones
+                {
+                    HistoriaAccionesID = historialAccionesEF.HistoriaAccionesID,//añadir el id tambien
+                    NombrePersona = historialAccionesEF.NombrePersona, // Cambiado a unidadEF
+                    Accion = historialAccionesEF.Accion,
+                    Fecha = historialAccionesEF.Fecha,
                 });
             }
 
