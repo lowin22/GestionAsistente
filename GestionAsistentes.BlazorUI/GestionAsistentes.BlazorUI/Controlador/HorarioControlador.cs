@@ -10,6 +10,12 @@ namespace GestionAsistentes.BlazorUI.Controlador
     {
         private readonly HorarioRN horarioRN;
         private List<Horario> horarios;
+        public List<Horario> renderizarHorario;
+        public List<string> horasFijas = new List<string>
+            {
+                "07:00", "08:00", "09:00", "10:00", "11:00", "12:00",
+                "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"
+            };
         public HorarioControlador()
         {
             horarioRN = new HorarioRN();
@@ -83,6 +89,10 @@ namespace GestionAsistentes.BlazorUI.Controlador
             horasDelDiaFinal = horasDelDiaFinal
                 .Where(h => TimeSpan.Parse(h) > horaInicioTimeSpan)
                 .ToList();
+        }
+
+        public async Task renderizarHorariosPorOficina(int oficinaID) {
+            renderizarHorario = await horarioRN.ListarHorariosPorOficina(oficinaID);
         }
     }
 }

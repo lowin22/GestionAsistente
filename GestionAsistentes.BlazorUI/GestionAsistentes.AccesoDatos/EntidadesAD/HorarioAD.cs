@@ -1,6 +1,7 @@
 ﻿using GestionAsistentes.AccesoDatos.Contexto;
 using GestionAsistentes.AccesoDatos.Modelos;
 using GestionAsistentes.Entidades;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,6 +94,44 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                 },
             }).Where(h=>h.EstacionTrabajoID==estacionTrabajoID).ToList();
         }
-
+        public async Task<List<Horario>> ListarHorariosPorOficina(int oficinaID) {
+            return await _contexto.HorarioEFs
+       .Where(h => h.EstacionTrabajo.OficinaID == oficinaID) // Aplica el filtro primero
+       .Include(h => h.EstacionTrabajo)                      // Incluye las relaciones
+       .ThenInclude(et => et.Oficina)
+       .Include(h => h.Asistente)
+       .ThenInclude(a => a.Persona)
+       .Select(x => new Horario
+       {
+           HorarioID = x.HorarioID,
+           HoraInicio = x.HoraInicio,
+           HoraFin = x.HoraFin,
+           Dia = x.Dia,
+           EstacionTrabajoID = x.EstacionTrabajoID,
+           EstacionTrabajo = new EstacionTrabajo
+           {
+               EstacionTrabajoID = x.EstacionTrabajo.EstacionTrabajoID,
+               OficinaID = x.EstacionTrabajo.OficinaID,
+               Oficina = new Oficina
+               {
+                   OficinaID = x.EstacionTrabajo.Oficina.OficinaID,
+                   Nombre = x.EstacionTrabajo.Oficina.Nombre,
+               },
+           },
+           AsistenteID = x.AsistenteID,
+           Asistente = new Asistente
+           {
+               AsistenteID = x.Asistente.AsistenteID,
+               Persona = new Persona
+               {
+                   PersonaID = x.Asistente.Persona.PersonaID,
+                   Nombre = x.Asistente.Persona.Nombre,
+                   PrimerApellido = x.Asistente.Persona.PrimerApellido,
+                   SegundoApellido = x.Asistente.Persona.SegundoApellido,
+               },
+           },
+       })
+       .ToListAsync(); // Usa ToListAsync() para consultas asincrónicas
+        }
     }
 }

@@ -1,0 +1,95 @@
+﻿@page "/mostrar-horario/{id:int}"
+@using GestionAsistentes.BlazorUI.Components.Layout
+@using GestionAsistentes.BlazorUI.Controlador
+@using GestionAsistentes.Entidades
+
+<h3>MostrarHorario</h3>
+<div class="container mt-4">
+    <h1 class="mb-4">Horario Semanal</h1>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col" class="text-center">Hora</th>
+                    @foreach (var day in horarioControlador.diasDeLaSemana)
+                    {
+                        <th scope="col" class="text-center">@day</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var hour in horarioControlador.horasFijas)
+                {
+                    <tr>
+                        <th scope="row" class="table-light text-center">@hour</th>
+                        @foreach (var dia in horarioControlador.diasDeLaSemana)
+                        {
+                            <td style="min-width: 100px; height: 50px;" class="@GetCellClass(hour, dia)">
+                                @if (HasReservation(hour, dia))
+                                {
+                                    var horario = GetHorario(hour, dia);
+                                    <div class="reservation-info">
+                                        <small>
+                                            @horario.Asistente?.Persona.Nombre
+                                            <br />
+                                            @horario.HoraInicio.ToString("HH:mm") - @horario.HoraFin.ToString("HH:mm")
+                                        </small>
+                                    </div>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .reserved {
+        background-color: #e3f2fd;
+    }
+
+    .reservation-info {
+        font-size: 0.8em;
+        padding: 2px;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+    public HorarioControlador horarioControlador = new HorarioControlador();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await horarioControlador.renderizarHorariosPorOficina(id);
+    }
+
+    private string GetCellClass(string hour, string dia)
+    {
+        return HasReservation(hour, dia) ? "reserved" : "";
+    }
+
+    private bool HasReservation(string hour, string dia)
+    {
+        if (horarioControlador.renderizarHorario == null) return false;
+
+        var hourTime = TimeSpan.Parse(hour);
+        return horarioControlador.renderizarHorario.Any(h =>
+            h.Dia == dia &&
+            h.HoraInicio.TimeOfDay <= hourTime &&
+            h.HoraFin.TimeOfDay >= hourTime);
+    }
+
+    private Horario GetHorario(string hour, string dia)
+    {
+        if (horarioControlador.renderizarHorario == null) return null;
+
+        var hourTime = TimeSpan.Parse(hour);
+        return horarioControlador.renderizarHorario.FirstOrDefault(h =>
+            h.Dia == dia &&
+            h.HoraInicio.TimeOfDay <= hourTime &&
+            h.HoraFin.TimeOfDay >= hourTime);
+    }
+}

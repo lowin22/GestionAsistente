@@ -27,5 +27,9 @@ namespace GestionAsistentes.ReglasNegocio
         { 
             return await horarioAD.ListarHorariosPorEstacionTrabajo(estacionTrabajoID);
         }
+        public async Task<List<Horario>> ListarHorariosPorOficina(int oficinaID)
+        {
+            return await horarioAD.ListarHorariosPorOficina(oficinaID);
+        }
     }
 }
