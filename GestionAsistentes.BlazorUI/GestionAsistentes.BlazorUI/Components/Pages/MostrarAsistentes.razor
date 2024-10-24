@@ -125,9 +125,9 @@
                         <label for="BadgeID">Badge</label>
                         <InputSelect id="BadgeID" class="form-select" @bind-Value="asistente.BadgeID" @oninput="OnUnidadChanged">
                             <option value="">Seleccione el badge</option>
-                            <option value="1">Badge 1</option>
-                            <option value="2">Badge 2</option>
-                            <option value="3">Badge 3</option>
+@*                             @foreach(var badge in listaBadge){
+                                    <option></option>
+                            } *@
                         </InputSelect>
                     </div>
 
