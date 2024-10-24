@@ -123,11 +123,12 @@
                     </div>
                     <div class="mb-3">
                         <label for="BadgeID">Badge</label>
-                        <InputSelect id="BadgeID" class="form-select" @bind-Value="asistente.BadgeID" @oninput="OnUnidadChanged">
+                        <InputSelect id="BadgeID" class="form-select" @bind-Value="asistente.BadgeID" >
                             <option value="">Seleccione el badge</option>
-@*                             @foreach(var badge in listaBadge){
-                                    <option></option>
-                            } *@
+                            @foreach (var badge in listaBadge)
+                            {
+                                <option value="@badge.BadgeID">@badge.BadgeID</option>
+                            }
                         </InputSelect>
                     </div>
 
@@ -221,10 +222,12 @@
     private OficinaControlador oficinaControlador = new OficinaControlador();
     private EstacionTrabajoControlador estacionTrabajoControlador = new EstacionTrabajoControlador();
     private HorarioControlador horarioControlador = new HorarioControlador();
+    private BadgeControlador badgeControlador = new BadgeControlador();
     private List<Asistente> listaAsistentes = new List<Asistente>();
     private List<Unidad> listaUnidades = new List<Unidad>();
     private List<Encargado> listaEncargados = new List<Encargado>();
     private List<Oficina> listaOficinas = new List<Oficina>();
+    private List<Badge> listaBadge = new List<Badge>();
     private List<EstacionTrabajo> listaEstacionTrabajos = new List<EstacionTrabajo>();
     private Horario horario = new Horario()
         {
@@ -233,6 +236,31 @@
                 Persona = new Persona()
             }
         };
+    private int? previousBadgeID;
+    private int? _currentBadgeID;
+
+    // Propiedad para controlar el BadgeID actual y almacenar el anterior
+    private int? CurrentBadgeID
+    {
+        get => _currentBadgeID;
+        set
+        {
+            if (value != _currentBadgeID)
+            {
+                // Guardar el valor anterior antes de cambiar al nuevo valor
+                previousBadgeID = _currentBadgeID;
+
+                // Asignar el nuevo valor
+                previousBadgeID = value;
+
+                // Asignar el nuevo valor a asistente.BadgeID
+                asistente.BadgeID = value;
+            }
+        }
+    }
+
+
+
     string horaInicio, horaFinal = "";
     private int oficinaID;
     private int estacionTrabajoID;
@@ -276,7 +304,9 @@
         if (asistente.UnidadID != 0)
         {
             await CargarEncargados(asistente.UnidadID);
+            listaBadge = await badgeControlador.ListarBadgePorUnidad(asistente.Unidad.UnidadID);           
         }
+
     }
 
     private async Task OnUnidadChanged(ChangeEventArgs e)
@@ -287,6 +317,7 @@
             asistente.EncargadoID = 0; // Reiniciar encargado al cambiar la unidad y agregar opción en blanco
             unidadCambiada = true;
             await CargarEncargados(unidadId);
+            listaBadge = await badgeControlador.ListarBadgePorUnidad(unidadId);
         }
     }
 
@@ -334,12 +365,14 @@
     protected override async Task OnInitializedAsync()
     {
         listaAsistentes = await asistenteControlador.ListarAsistentes();
+
     }
 
     private async void traerOficinas(int asistenteID)
     {
         horario.Asistente.AsistenteID = asistenteID;
         listaOficinas = await oficinaControlador.ListarOficinas();
+      
     }
 
     private async Task OnEstacionChanged(ChangeEventArgs e)
@@ -351,21 +384,14 @@
         }
     }
     private async Task OnEstacionHorarioChanged(ChangeEventArgs e)
-    {
-
-     
+    {     
         await horarioControlador.ListarHorariosPorEstacionTrabajo(horario.EstacionTrabajoID, e.Value.ToString());
             StateHasChanged(); // Forzar la actualización de la UI
-        
-
+  
     }
     private async Task OnEstacionHoraFinalChanged(ChangeEventArgs e)
     {
-
-
         await horarioControlador.verificarHoraSeleccionar(e.Value.ToString());
         StateHasChanged(); // Forzar la actualización de la UI
-
-
     }
 }

@@ -12,7 +12,7 @@ namespace GestionAsistentes.ReglasNegocio
     public class BadgeRN
     {
         private readonly BadgeAD badgeAD;
-        
+
         public BadgeRN()
         {
             badgeAD = new BadgeAD();
@@ -51,11 +51,18 @@ namespace GestionAsistentes.ReglasNegocio
             }
             return await badgeAD.ModificarBadge(badge);
         }
-
+        public async Task<List<Badge>> ListarBadgePorUnidad(int unidadID)
+        {
+            if (unidadID == null)
+            {
+                throw new ArgumentNullException(nameof(unidadID));
+            }
+            return await badgeAD.listarBadgePorUnidad(unidadID);
+        }
 
     }
 
-    
+
 
 
 
