@@ -119,6 +119,9 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("Ocupado")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("UnidadID")
                         .HasColumnType("int");
 

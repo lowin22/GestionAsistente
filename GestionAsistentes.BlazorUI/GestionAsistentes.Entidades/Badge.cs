@@ -13,5 +13,6 @@ namespace GestionAsistentes.Entidades
         public string Horario { get; set; }
         public int? UnidadID { get; set; }
         public Unidad Unidad { get; set; }
+        public bool Ocupado { get; set; }
     }
 }
