@@ -400,7 +400,7 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                     b.HasOne("GestionAsistentes.AccesoDatos.Modelos.BadgeEF", "Badge")
                         .WithMany()
                         .HasForeignKey("BadgeID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("GestionAsistentes.AccesoDatos.Modelos.EncargadoEF", "Encargado")
                         .WithMany()

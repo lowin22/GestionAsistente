@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GestionAsistentes.AccesoDatos.Migrations
 {
     [DbContext(typeof(GestionAsistenteContexto))]
-    [Migration("20241016042737_InitDB")]
+    [Migration("20241024013531_InitDB")]
     partial class InitDB
     {
         /// <inheritdoc />
@@ -403,7 +403,7 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                     b.HasOne("GestionAsistentes.AccesoDatos.Modelos.BadgeEF", "Badge")
                         .WithMany()
                         .HasForeignKey("BadgeID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("GestionAsistentes.AccesoDatos.Modelos.EncargadoEF", "Encargado")
                         .WithMany()

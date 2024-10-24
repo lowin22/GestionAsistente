@@ -253,7 +253,7 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                         column: x => x.BadgeID,
                         principalTable: "Badge",
                         principalColumn: "BadgeID",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Asistente_Encargado_EncargadoID",
                         column: x => x.EncargadoID,

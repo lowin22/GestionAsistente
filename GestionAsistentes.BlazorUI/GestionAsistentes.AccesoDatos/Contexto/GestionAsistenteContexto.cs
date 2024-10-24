@@ -33,7 +33,7 @@ namespace GestionAsistentes.AccesoDatos.Contexto
                 .HasOne(a => a.Persona) // Relación con PersonaEF
                 .WithMany() // Si PersonaEF no tiene relación inversa, simplemente lo omitimos
                 .OnDelete(DeleteBehavior.Restrict); // Configura la eliminación a Restrict
-            
+
             modelBuilder.Entity<AsistenteEF>()
        .HasOne(a => a.Unidad) // Relación con UnidadEF
        .WithMany() // Si UnidadEF no tiene relación inversa, simplemente lo omitimos
@@ -53,12 +53,17 @@ namespace GestionAsistentes.AccesoDatos.Contexto
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.SetNull);
             modelBuilder.Entity<AsistenteEF>()
-     .HasOne(a => a.Unidad)
-     .WithMany()
-     .HasForeignKey(a => a.UnidadID)
-     .IsRequired(false)
-     .OnDelete(DeleteBehavior.SetNull);
-
+                 .HasOne(a => a.Unidad)
+                 .WithMany()
+                 .HasForeignKey(a => a.UnidadID)
+                 .IsRequired(false)
+                 .OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<AsistenteEF>()
+               .HasOne(a => a.Badge)
+               .WithMany()
+               .HasForeignKey(a => a.BadgeID)
+               .IsRequired(false)
+               .OnDelete(DeleteBehavior.SetNull);
             modelBuilder.Entity<EncargadoEF>()
                 .HasOne(e => e.Unidad) // Relación con Unidad
                 .WithMany() // Si Unidad no tiene relación inversa, simplemente lo omitimos
