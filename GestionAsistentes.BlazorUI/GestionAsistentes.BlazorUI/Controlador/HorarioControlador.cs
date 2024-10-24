@@ -11,6 +11,7 @@ namespace GestionAsistentes.BlazorUI.Controlador
         private readonly HorarioRN horarioRN;
         private List<Horario> horarios;
         public List<Horario> renderizarHorario;
+        public List<IGrouping<EstacionTrabajo, Horario>> horariosAgrupados;
         public List<string> horasFijas = new List<string>
             {
                 "07:00", "08:00", "09:00", "10:00", "11:00", "12:00",
@@ -93,6 +94,15 @@ namespace GestionAsistentes.BlazorUI.Controlador
 
         public async Task renderizarHorariosPorOficina(int oficinaID) {
             renderizarHorario = await horarioRN.ListarHorariosPorOficina(oficinaID);
+            await ListarHorariosPorOficinaAgrupados(oficinaID);
+        }
+        public async Task<List<IGrouping<EstacionTrabajo, Horario>>> ListarHorariosPorOficinaAgrupados(int oficinaID)
+        {
+            horariosAgrupados = new();
+            horarios = await horarioRN.ListarHorariosPorOficina(oficinaID);
+            horariosAgrupados = horarios.GroupBy(h => h.EstacionTrabajo).ToList();
+            return horariosAgrupados;
         }
     }
+
 }
