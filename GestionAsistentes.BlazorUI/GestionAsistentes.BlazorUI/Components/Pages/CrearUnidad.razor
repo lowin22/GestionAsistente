@@ -124,6 +124,8 @@
 @code {
     UnidadControlador unidadControlador = new UnidadControlador();
     Unidad unidad = new Unidad();
+    HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
+    HistorialAcciones historialAcciones = new HistorialAcciones();
     string mensajeExito;
     string mensajeError;
     List<Unidad> listaUnidades = new List<Unidad>();
@@ -156,11 +158,11 @@
     {
         try
         {
-
             bool exito = await unidadControlador.RegistrarUnidad(unidad);
 
             if (exito)
             {
+                //await RegistrarHistorial("Registro de nueva unidad", $"Unidad {unidad.Nombre} registrada exitosamente.");
                 mensajeExito = "La unidad fue registrada exitosamente.";
                 mensajeError = null;
                 unidad = new Unidad();
@@ -188,6 +190,7 @@
 
         if (exito)
         {
+            //await RegistrarHistorial("Actualización de unidad", $"Unidad {unidad.Nombre} actualizada exitosamente.");
             mensajeExito = "La unidad fue actualizada exitosamente.";
             mensajeError = null;
             unidad = new Unidad();
@@ -217,7 +220,7 @@
         /*
         await unidadControlador.EliminarUnidad(unidadID);
         await RecargarUnidades();
-        */
+    */
     }
 
     async Task ConfirmarEliminarUnidad()
@@ -226,6 +229,7 @@
 
         if (exito)
         {
+           // await RegistrarHistorial("Eliminación de unidad", $"Unidad con ID {unidadAEliminarID} eliminada exitosamente.");
             mensajeExitoEliminar = "La unidad fue eliminada con éxito.";
             listaUnidades = await unidadControlador.ListarUnidades();  // Actualiza la lista
         }
@@ -252,6 +256,23 @@
         listaUnidades = await unidadControlador.ListarUnidades();
         StateHasChanged();
     }
+
+    /*private async Task RegistrarHistorial(string accion, string descripcion)
+    {
+        HistorialAcciones historialAcciones = new HistorialAcciones
+            {
+                Fecha = DateTime.Now,
+                NombrePersona = "Usuario",
+                Accion = accion
+                // Asignar la fecha actual
+            };
+
+        // Llamar al controlador o servicio que guarda el historial en la base de datos
+        await historialAccionesControlador.RegistrarHistorialAcciones();
+        
+        //unidadControlador.RegistrarHistorial(historial);
+    }*/
+
     /**/
 
     /*

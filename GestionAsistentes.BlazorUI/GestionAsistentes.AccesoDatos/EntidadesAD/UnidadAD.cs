@@ -13,19 +13,38 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
     public class UnidadAD
     {
         private readonly GestionAsistenteContexto _contexto;
+        // Instancia de HistorialAccionesAD
+        private readonly HistorialAccionesAD _historialAccionesAD;
         public UnidadAD() 
         { 
             this._contexto = new GestionAsistenteContexto();
+            this._historialAccionesAD = new HistorialAccionesAD();
         }
         public async Task<bool> RegistrarUnidad(Unidad unidad)
         {
-
             UnidadEF unidadEF = new UnidadEF
             {
                 Nombre = unidad.Nombre
             };
             this._contexto.UnidadEFs.Add(unidadEF);
-            return this._contexto.SaveChanges() >0;
+            /**/
+            bool resultado = this._contexto.SaveChanges() > 0;
+
+            if (resultado)
+            {
+                // Registrar acción en Historial
+                _historialAccionesAD.RegistrarHistorialAcciones(new HistorialAcciones
+                {
+                    Fecha = DateTime.Now,
+                    NombrePersona = "", // NombrePersona vacío por el momento
+                    Accion = "Registrar Unidad" 
+                });
+            }
+
+            return resultado;
+            /**/
+
+            //return this._contexto.SaveChanges() >0;
         }
         public async Task<List<Unidad>> listarUnidades()
         {
@@ -51,10 +70,29 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             {
                 return ("La unidad no se pudo actualizar", false);
             }
-            unidadEF.Nombre = unidad.Nombre; 
-           return this._contexto.SaveChanges() > 0
+            unidadEF.Nombre = unidad.Nombre;
+            /**/
+            bool resultado = this._contexto.SaveChanges() > 0;
+
+            if (resultado)
+            {
+                // Registrar acción en Historial
+                _historialAccionesAD.RegistrarHistorialAcciones(new HistorialAcciones
+                {
+                    Fecha = DateTime.Now,
+                    NombrePersona = "", // NombrePersona vacío por el momento
+                    Accion = "Actualizar Unidad"
+                });
+            }
+
+            return resultado
                 ? ("Actualizado correctamente", true)
                 : ("Error al actualizar", false);
+            /**/
+
+            //return this._contexto.SaveChanges() > 0
+            //    ? ("Actualizado correctamente", true)
+            //    : ("Error al actualizar", false);
         }
         public async Task<(string, bool)> EliminarUnidad(int unidadID)
         {
@@ -64,9 +102,28 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
                return ("No existe el registro de unidad", false);
             }
             this._contexto.UnidadEFs.Remove(unidadEF);
-            return this._contexto.SaveChanges() > 0
+            /**/
+            bool resultado = this._contexto.SaveChanges() > 0;
+
+            if (resultado)
+            {
+                // Registrar acción en Historial
+                _historialAccionesAD.RegistrarHistorialAcciones(new HistorialAcciones
+                {
+                    Fecha = DateTime.Now,
+                    NombrePersona = "", // Nombre vacío por el momento
+                    Accion = "Eliminar Unidad"
+                });
+            }
+
+            return resultado
                 ? ("Eliminado correctamente", true)
                 : ("Error al eliminar", false);
+            /**/
+
+            //return this._contexto.SaveChanges() > 0
+            //    ? ("Eliminado correctamente", true)
+            //    : ("Error al eliminar", false);
         }
     }
 }
