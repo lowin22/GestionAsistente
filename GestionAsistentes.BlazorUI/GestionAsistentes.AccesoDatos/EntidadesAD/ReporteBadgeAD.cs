@@ -22,6 +22,7 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
 
             ReporteBadgeEF reporteBadgeEF = new ReporteBadgeEF
             {
+                Accion = reporteBadge.Accion,
                 NombreUsuario = reporteBadge.NombreUsuario,
                 NumeroBadge = reporteBadge.NumeroBadge,
                 NombreAsistente = reporteBadge.NombreAsistente,
@@ -36,10 +37,11 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             List<ReporteBadgeEF> reporteEFs = _contexto.ReporteBadgeEFs.ToList();
             List<ReporteBadge> reportes = new List<ReporteBadge>();
 
-            foreach (ReporteBadgeEF reporteEF in reporteEFs) // Cambiado a UnidadEF
+            foreach (ReporteBadgeEF reporteEF in reporteEFs) 
             {
                 reportes.Add(new ReporteBadge
                 {
+                    Accion = reporteEF.Accion,
                     NombreUsuario = "Usuario",
                     NumeroBadge = reporteEF.NumeroBadge,
                     NombreAsistente = reporteEF.NombreAsistente, 
