@@ -12,7 +12,6 @@ namespace GestionAsistentes.Entidades
         public DateTime Fecha { get; set; }
         public string NombrePersona { get; set; }
         public string Accion { get; set; }
-        // Prueba
-        //public string NombreUnidad { get; set; }
+        
     }
 }

@@ -10,9 +10,9 @@ namespace GestionAsistentes.BlazorUI.Controlador
         {
             this.historialAccionesRN = new HistorialAccionesRN();
         }
-        public bool RegistrarHistorialAcciones(HistorialAcciones historialAcciones)
+        public async Task<bool> RegistrarHistorialAcciones(HistorialAcciones historialAcciones)
         {
-            return historialAccionesRN.RegistrarHistorialAcciones(historialAcciones);
+            return await historialAccionesRN.RegistrarHistorialAcciones(historialAcciones);
         }
         public List<HistorialAcciones> ListarHistorialPorFecha(DateTime fecha)
         {

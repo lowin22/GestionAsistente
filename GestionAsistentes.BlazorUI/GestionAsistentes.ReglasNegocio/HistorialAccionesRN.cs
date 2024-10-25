@@ -16,7 +16,7 @@ namespace GestionAsistentes.ReglasNegocio
         {
             this.historialAccionesAD = new HistorialAccionesAD();
         }
-        public bool RegistrarHistorialAcciones(HistorialAcciones historialAcciones)
+        public async Task<bool> RegistrarHistorialAcciones(HistorialAcciones historialAcciones)
         {
             if (historialAcciones == null || string.IsNullOrWhiteSpace(historialAcciones.NombrePersona) || string.IsNullOrWhiteSpace(historialAcciones.Accion))
             {
@@ -24,7 +24,7 @@ namespace GestionAsistentes.ReglasNegocio
             }
             /**/
             //historialAcciones.Accion = $"{historialAcciones.Accion} en la unidad {historialAcciones.NombreUnidad}"; // Concatenación
-            return historialAccionesAD.RegistrarHistorialAcciones(historialAcciones);
+            return await historialAccionesAD.RegistrarHistorialAcciones(historialAcciones);
         }
         public List<HistorialAcciones> ListarHistorialPorFecha(DateTime fecha)
         {
