@@ -16,17 +16,17 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
         {
             this._contexto = new GestionAsistenteContexto();
         }
-        public bool RegistrarHistorialAcciones(HistorialAcciones historialAcciones)
+        public async Task<bool> RegistrarHistorialAcciones(HistorialAcciones historialAcciones)
         {
             HistorialAccionesEF historialAccionesEF = new HistorialAccionesEF
             {
                 Fecha = historialAcciones.Fecha,
                 NombrePersona = historialAcciones.NombrePersona,
                 Accion = historialAcciones.Accion 
-                //$"{historialAcciones.Accion} en la unidad {historialAcciones.NombreUnidad}" // Concatenación de unidad
-                //historialAcciones.Accion
+            
             };
             this._contexto.HistoriaAccionesEFs.Add(historialAccionesEF);
+
             return this._contexto.SaveChanges() > 0;
         }
         public List<HistorialAcciones> listarHistorialAcciones(DateTime fecha)

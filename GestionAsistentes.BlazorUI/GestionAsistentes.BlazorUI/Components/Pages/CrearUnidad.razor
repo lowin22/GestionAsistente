@@ -11,8 +11,6 @@
 
 @* <EditForm Model="unidad" OnValidSubmit="RegistrarUnidad" FormName="crearRegistrarUnidad"> *@
 <EditForm Model="unidad" OnValidSubmit="ProcesarUnidad" FormName="crearRegistrarUnidad">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
 
     <div class="mb-3">
         <label for="nombre" class="form-label">Nombre Unidad:</label>
@@ -124,8 +122,13 @@
 @code {
     UnidadControlador unidadControlador = new UnidadControlador();
     Unidad unidad = new Unidad();
+    
     HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
-    HistorialAcciones historialAcciones = new HistorialAcciones();
+    HistorialAcciones historialAcciones = new HistorialAcciones
+    {
+        NombrePersona = "UsuarioSesion"
+    };
+
     string mensajeExito;
     string mensajeError;
     List<Unidad> listaUnidades = new List<Unidad>();
@@ -162,7 +165,12 @@
 
             if (exito)
             {
-                //await RegistrarHistorial("Registro de nueva unidad", $"Unidad {unidad.Nombre} registrada exitosamente.");
+                //Establecer propiedades para historialAcciones de registrar
+                historialAcciones.Accion = "Registrar unidad: " + unidad.Nombre;
+                historialAcciones.Fecha = DateTime.Now;
+
+                await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+
                 mensajeExito = "La unidad fue registrada exitosamente.";
                 mensajeError = null;
                 unidad = new Unidad();
@@ -186,11 +194,17 @@
     /**/
     private async Task ActualizarUnidad()
     {
+        
         var (mensaje, exito) = await unidadControlador.ActualizarUnidad(unidad);
 
         if (exito)
         {
-            //await RegistrarHistorial("Actualización de unidad", $"Unidad {unidad.Nombre} actualizada exitosamente.");
+            
+            historialAcciones.Accion = "Actualizar unidad: " + unidad.Nombre;
+            historialAcciones.Fecha = DateTime.Now;
+
+            await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+
             mensajeExito = "La unidad fue actualizada exitosamente.";
             mensajeError = null;
             unidad = new Unidad();
@@ -225,11 +239,17 @@
 
     async Task ConfirmarEliminarUnidad()
     {
+        var unidadParaEliminar = listaUnidades.Find(x => x.UnidadID == unidadAEliminarID);
+
         var (mensaje, exito) = await unidadControlador.EliminarUnidad(unidadAEliminarID);
 
         if (exito)
         {
-           // await RegistrarHistorial("Eliminación de unidad", $"Unidad con ID {unidadAEliminarID} eliminada exitosamente.");
+            historialAcciones.Accion = "Eliminar unidad: " + unidadParaEliminar.Nombre;
+            historialAcciones.Fecha = DateTime.Now;
+
+            await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+
             mensajeExitoEliminar = "La unidad fue eliminada con éxito.";
             listaUnidades = await unidadControlador.ListarUnidades();  // Actualiza la lista
         }
