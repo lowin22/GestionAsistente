@@ -5,8 +5,6 @@
 <h3>Crear Badge</h3>
 
 <EditForm Model="badge" OnValidSubmit="RegistrarBadge" FormName="crearBadgeForm">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
 
     <div class="mb-3">
         <label for="accesos" class="form-label">Accesos</label>
@@ -15,7 +13,7 @@
 
     <div class="mb-3">
         <label for="horaInicio">Hora de Inicio</label>
-        <InputSelect id="horaInicio" class="form-select" @bind-Value="horaInicio">
+        <InputSelect id="horaInicio" class="form-select" @bind-Value="horaInicio" @oninput="OnEstacionHorarioChanged">
             <option value="">Seleccione la hora de inicio</option>
             @foreach (var hora in horasDelDiaInicio)
             {
@@ -72,7 +70,7 @@
     string mensajeExito;
     string mensajeError;
     string horaInicio, horaFinal = "", horario;
-    int cantidadACrear = 0;
+    int cantidadACrear = 1;
     List<Unidad> listaUnidades = new List<Unidad>();
     protected override async Task OnInitializedAsync()
     {
@@ -80,7 +78,8 @@
     }
     private Badge badge = new Badge()
     {
-        Unidad = new Unidad()
+        Unidad = new Unidad(),
+        Ocupado = false
     };
 
     // Lista de horas (de 7 a 20)
@@ -151,5 +150,17 @@
         StateHasChanged();
     }
 
+    private async Task OnEstacionHorarioChanged(ChangeEventArgs e)
+    {
+        var horaInicioSeleccionada = e.Value?.ToString();
+
+        if (!string.IsNullOrEmpty(horaInicioSeleccionada))
+        {
+            horasDelDiaFinal = horasDelDiaInicio
+                .Where(h => string.Compare(h, horaInicioSeleccionada) > 0)
+                .ToList();
+        }
+        
+    }
 
 }
