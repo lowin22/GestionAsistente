@@ -66,6 +66,9 @@ namespace GestionAsistentes.BlazorUI.Controlador
         {
          this.listaUnidades= await unidadControlador.ListarUnidades();
         }
+        public async Task<bool> registrarEncargado(Encargado encargado) { 
+            return await encargadoRN.RegistrarEncardado(encargado);
+        }
         public async Task<bool> RegistrarEncargado(Encargado encargado)
         {
             bool exito= false;
