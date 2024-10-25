@@ -63,6 +63,7 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                     NombreUsuario = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NumeroBadge = table.Column<int>(type: "int", nullable: false),
                     NombreAsistente = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Accion = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Fecha = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>

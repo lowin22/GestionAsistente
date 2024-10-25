@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GestionAsistentes.AccesoDatos.Migrations
 {
     [DbContext(typeof(GestionAsistenteContexto))]
-    [Migration("20241024025821_InitDB")]
+    [Migration("20241025054352_InitDB")]
     partial class InitDB
     {
         /// <inheritdoc />
@@ -288,6 +288,10 @@ namespace GestionAsistentes.AccesoDatos.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReporteBadgeID"));
+
+                    b.Property<string>("Accion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
