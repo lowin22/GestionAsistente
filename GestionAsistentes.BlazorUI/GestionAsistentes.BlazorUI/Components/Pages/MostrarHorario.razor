@@ -6,72 +6,83 @@
 <h3>Mostrar Horarios por Estación de Trabajo</h3>
 
 <div class="accordion" id="accordionHorarios">
-    @foreach (var grupo in horarioControlador.horariosAgrupados)
+    
+    @foreach (var estacion in horarioControlador.horariosAgrupados)
     {
-        var estacionId = grupo.Key.EstacionTrabajoID;
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="heading_@estacionId">
-                <button class="accordion-button @(estacionId != horarioControlador.horariosAgrupados.First().Key.EstacionTrabajoID ? "collapsed" : "")"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#collapse_@estacionId"
-                        aria-expanded="@(estacionId == horarioControlador.horariosAgrupados.First().Key.EstacionTrabajoID ? "true" : "false")"
-                        aria-controls="collapse_@estacionId">
-                    Estación número: @estacionId
-                </button>
-            </h2>
-            <div id="collapse_@estacionId"
-                 class="accordion-collapse collapse @(estacionId == horarioControlador.horariosAgrupados.First().Key.EstacionTrabajoID ? "show" : "")"
-                 aria-labelledby="heading_@estacionId"
-                 data-bs-parent="#accordionHorarios">
-                <div class="accordion-body">
-                    <div class="container mt-4">
-                        <h1 class="mb-4">Horarios de Estación @estacionId.ToString()</h1>
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th scope="col" class="text-center">Hora</th>
-                                        @foreach (var day in horarioControlador.diasDeLaSemana)
-                                        {
-                                            <th scope="col" class="text-center">@day</th>
-                                        }
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var hour in horarioControlador.horasFijas)
-                                    {
-                                        <tr>
-                                            <th scope="row" class="table-light text-center">@hour</th>
-                                            @foreach (var dia in horarioControlador.diasDeLaSemana)
+        <div class="accordion" id="accordionExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading@(estacion.EstacionTrabajoID)">
+                    <button class="accordion-button" type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapse@(estacion.EstacionTrabajoID)"
+                            aria-expanded="true"
+                            aria-controls="collapse@(estacion.EstacionTrabajoID)">
+                        Accordion Item #@(estacion.EstacionTrabajoID)
+                    </button>
+                </h2>
+               
+        
+        @foreach (var horario in horarioControlador.renderizarHorario)
+        {
+           
+            @if ( estacion.EstacionTrabajoID==horario.EstacionTrabajoID)
+                    {
+                        horarioControlador.horarioTemporal.Add(horario);
+                    }
+                }
+                        <div id="collapse@(estacion.EstacionTrabajoID)"
+                     class="accordion-collapse collapse show"
+                     aria-labelledby="heading@(estacion.EstacionTrabajoID)"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th scope="col" class="text-center">Hora</th>
+                                                @foreach (var day in horarioControlador.diasDeLaSemana)
+                                                {
+                                                    <th scope="col" class="text-center">@day</th>
+                                                }
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var hour in horarioControlador.horasFijas)
                                             {
-                                                <td style="min-width: 100px; height: 50px;" class="@GetCellClass(hour, dia, grupo.ToList())">
-                                                    @if (HasReservation(hour, dia, grupo.ToList()))
+                                                <tr>
+                                                    <th scope="row" class="table-light text-center">@hour</th>
+                                                    @foreach (var dia in horarioControlador.diasDeLaSemana)
                                                     {
-                                                        var horario = GetHorario(hour, dia, grupo.ToList());
-                                                        if (horario != null)
-                                                        {
-                                                            <div class="reservation-info">
-                                                                <small>
-                                                                    @(horario.Asistente?.Persona?.Nombre ?? "Sin asignar")
-                                                                    <br />
-                                                                    @horario.HoraInicio.ToString("HH:mm") - @horario.HoraFin.ToString("HH:mm")
-                                                                </small>
-                                                            </div>
-                                                        }
+                                                <td style="min-width: 100px; height: 50px;" class="@GetCellClass(hour, dia,  horarioControlador.horarioTemporal)">
+                                                    @if (HasReservation(hour, dia, horarioControlador.horarioTemporal))
+                                                            {
+                                                        var horarioD = GetHorario(hour, dia, horarioControlador.horarioTemporal);
+                                                                if (horarioD != null)
+                                                                {
+                                                                    <div class="reservation-info">
+                                                                        <small>
+                                                                            @(horarioD.Asistente?.Persona?.Nombre ?? "Sin asignar")
+                                                                            <br />
+                                                                            @horarioD.HoraInicio.ToString("HH:mm") - @horarioD.HoraFin.ToString("HH:mm")
+                                                                        </small>
+                                                                    </div>
+                                                                }
+                                                            }
+                                                        </td>
+
                                                     }
-                                                </td>
-                                            
+                                                </tr>
                                             }
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+                                        </tbody>
+                                    </table>
+                                </div>
                     </div>
                 </div>
+               
+         
             </div>
         </div>
+
     }
 </div>
 
