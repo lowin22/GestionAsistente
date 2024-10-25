@@ -11,9 +11,10 @@
         <table class="table table-bordered">
             <thead style="text-align: center;">
                 <tr style="text-align: center">
-                    <th>NombreUsuario</th>
-                    <th>NumeroBadge</th>
-                    <th>NombreAsistente</th>
+                    <th>Acción</th>
+                    <th>Usuario</th>
+                    <th>Numero de Badge</th>
+                    <th>Asistente</th>
                     <th>Fecha</th>
                 </tr>
             </thead>
@@ -22,6 +23,7 @@
                     {
                         var index = i; // Capturar el valor de 'i' en una variable local
                         <tr>
+                            <td>@listaReportes[index].Accion</td>
                             <td>@listaReportes[index].NombreUsuario</td>
                             <td>@listaReportes[index].NumeroBadge</td>
                             <td>@listaReportes[index].NombreAsistente</td>

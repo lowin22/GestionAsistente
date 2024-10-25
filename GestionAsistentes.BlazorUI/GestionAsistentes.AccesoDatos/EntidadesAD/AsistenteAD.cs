@@ -14,9 +14,11 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
     {
         private readonly GestionAsistenteContexto _contexto;
         private readonly BadgeAD badgeAD;
+        private readonly ReporteBadgeAD reporteBadgeAD;
         public AsistenteAD()
         {
             this._contexto = new GestionAsistenteContexto();
+            this.reporteBadgeAD = new ReporteBadgeAD();
         }
         public async Task<bool> RegistrarAsistente(Asistente asistente)
         {
@@ -39,7 +41,16 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             BadgeEF badgeEF = _contexto.BadgesEF.Find(asistente.BadgeID);
             if (badgeEF != null)
             {
+                ReporteBadge reporteBadge = new ReporteBadge
+                {
+                    NombreUsuario = "Usuario prueba",
+                    NumeroBadge = badgeEF.BadgeID,
+                    NombreAsistente = asistente.Persona.Nombre,
+                    Accion = "Asignación de tarjeta"
+                };
+                await reporteBadgeAD.RegistrarReporteBadge(reporteBadge);
                 badgeEF.Ocupado = true;
+                
             }
             else if (badgeEF == null)
             {
@@ -145,7 +156,17 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
 
             if (badgeEF2 != null)
             {
+                ReporteBadge reporteBadge = new ReporteBadge
+                {
+                    NombreUsuario = "Usuario prueba",
+                    NumeroBadge = badgeEF2.BadgeID,
+                    NombreAsistente = asistente.Persona.Nombre,
+                    Accion = "Asignación de tarjeta"
+                };
+                await reporteBadgeAD.RegistrarReporteBadge(reporteBadge);
+
                 badgeEF2.Ocupado = true;
+
             }
 
             return await _contexto.SaveChangesAsync() > 0; // Asegúrate de usar SaveChangesAsync para mantener la asynchronía
