@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 
+
 namespace GestionAsistentes.BlazorUI.Controlador
 {
     public class HorarioControlador
@@ -11,7 +12,8 @@ namespace GestionAsistentes.BlazorUI.Controlador
         private readonly HorarioRN horarioRN;
         private List<Horario> horarios;
         public List<Horario> renderizarHorario;
-        public List<IGrouping<EstacionTrabajo, Horario>> horariosAgrupados;
+        public List<EstacionTrabajo> horariosAgrupados;
+        public List<Horario> horarioTemporal = new List<Horario>();
         public List<string> horasFijas = new List<string>
             {
                 "07:00", "08:00", "09:00", "10:00", "11:00", "12:00",
@@ -98,13 +100,22 @@ namespace GestionAsistentes.BlazorUI.Controlador
             renderizarHorario = await horarioRN.ListarHorariosPorOficina(oficinaID);
             await ListarHorariosPorOficinaAgrupados(oficinaID);
         }
-        public async Task<List<IGrouping<EstacionTrabajo, Horario>>> ListarHorariosPorOficinaAgrupados(int oficinaID)
+        public async Task ListarHorariosPorOficinaAgrupados(int oficinaID)
         {
-            horariosAgrupados = new();
-            horarios = await horarioRN.ListarHorariosPorOficina(oficinaID);
-            horariosAgrupados = horarios.GroupBy(h => h.EstacionTrabajo).ToList();
-            return horariosAgrupados;
+           
+            horariosAgrupados = new List<EstacionTrabajo>(); // Inicializa la lista
+            renderizarHorario = await horarioRN.ListarHorariosPorOficina(oficinaID);
+
+            foreach (var horario in renderizarHorario)
+            {
+                // Verifica si el EstacionTrabajo ya existe en la lista agrupada
+                if (!horariosAgrupados.Any(h => h.EstacionTrabajoID == horario.EstacionTrabajo.EstacionTrabajoID)) // Asegúrate de comparar correctamente
+                {
+                    horariosAgrupados.Add(horario.EstacionTrabajo);
+                }
+            }
         }
+
     }
 
 }
