@@ -17,6 +17,7 @@ namespace GestionAsistentes.AccesoDatos.Modelos
         public string NombreUsuario { get; set; }
         public int NumeroBadge { get; set; }
         public string NombreAsistente { get; set; }
+        public string Accion { get; set; }
         public DateTime Fecha { get; set; }
     }
 }
