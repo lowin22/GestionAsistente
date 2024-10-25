@@ -10,10 +10,11 @@
             <thead style="text-align: center;">
                 <tr style="text-align: center">
                     <th>Acciones</th>
+                    <th>Número Badge</th>
                     <th>Accesos</th>
                     <th>Horario</th>
                     <th>Unidad</th>
-
+                    <th>Ocupado</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,9 +38,11 @@
                                     </svg>
                                 </button>
                             </td>
+                            <td>@badge.BadgeID</td>
                             <td>@badge.Accesos</td>
                             <td>@badge.Horario</td>
                             <td>@badge.Unidad?.Nombre</td>
+                            <td>@(badge.Ocupado ? "Sí" : "No")</td>
                         </tr>
                     }
                 }

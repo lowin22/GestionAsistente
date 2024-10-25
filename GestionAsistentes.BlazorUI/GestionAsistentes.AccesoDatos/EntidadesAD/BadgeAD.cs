@@ -23,7 +23,8 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             {
                 Accesos = badge.Accesos,
                 Horario = badge.Horario,
-                UnidadID = badge.UnidadID
+                UnidadID = badge.UnidadID,
+                Ocupado = badge.Ocupado
             };
             this._contexto.BadgesEF.Add(badgeEF);
             return this._contexto.SaveChanges() > 0;
@@ -35,15 +36,17 @@ namespace GestionAsistentes.AccesoDatos.EntidadesAD
             List<BadgeEF> badgesEF = this._contexto.BadgesEF
                 .Include(e => e.Unidad)  // Incluir Unidad
                 .ToList();
-
+            
             foreach (BadgeEF badgeEF in badgesEF)
             {
+
                 Badge badge = new Badge
                 {
                     BadgeID = badgeEF.BadgeID,
                     Horario = badgeEF.Horario,
                     UnidadID = badgeEF.UnidadID,
                     Accesos = badgeEF.Accesos,
+                    Ocupado = badgeEF.Ocupado,
                     Unidad = badgeEF.Unidad != null ? new Unidad
                     {
                         UnidadID = badgeEF.Unidad.UnidadID,
