@@ -90,7 +90,13 @@
                             }
                         </InputSelect>
                     </div>
-                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Actualizar Encargado</button>
+                    <div class="modal-footer justify-content-center">
+                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Actualizar Encargado</button>
+                        <button class="btn btn-danger" data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+                    </div>
+                  
                 </EditForm>
             </div>
         </div>
@@ -129,7 +135,12 @@
                             }
                         </InputSelect>
                     </div>
-                    <button type="submit" class="btn btn-primary " data-bs-dismiss="modal">Registrar Encargado</button>
+                    <div class="modal-footer justify-content-center">
+                        <button type="submit" class="btn btn-primary " data-bs-dismiss="modal">Registrar Encargado</button>
+                        <button class="btn btn-danger" data-bs-dismiss="modal">
+                            Cancelar
+                        </button>
+                    </div>
                 </EditForm>
             </div>
         </div>
@@ -180,13 +191,13 @@
     }
     private async Task RegistrarEncargado()
     {
-        await encargadoControlador.RegistrarEncargado(encargadoControlador.crearEncargado);
+        await encargadoControlador.registrarEncargado(encargadoControlador.crearEncargado);
         encargadoControlador.crearEncargado = new Encargado
             {
                 Persona = new Persona(),
                     Unidad = new Unidad()
             };
-        await encargadoControlador.ListarEncargados();
+        await encargadoControlador.listarEncargados();
         StateHasChanged();
     }
 }
