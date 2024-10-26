@@ -1,0 +1,66 @@
+﻿@page "/register"
+@using Microsoft.AspNetCore.Identity
+@using System.ComponentModel.DataAnnotations
+@inject UserManager<IdentityUser> UserManager
+@inject SignInManager<IdentityUser> SignInManager
+@inject NavigationManager Navigation
+
+<h3>Registro</h3>
+
+<EditForm Model="registerModel" OnValidSubmit="RegisterUser">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText @bind-Value="registerModel.Email" placeholder="Email" />
+    <InputText @bind-Value="registerModel.Password" placeholder="Contraseña" type="password" />
+    <InputText @bind-Value="registerModel.ConfirmPassword" placeholder="Confirmar Contraseña" type="password" />
+
+    <button type="submit">Registrar</button>
+
+    @if (errorMessages.Any())
+    {
+        <div class="alert alert-danger">
+            @foreach (var error in errorMessages)
+            {
+                <div>@error</div>
+            }
+        </div>
+    }
+</EditForm>
+
+@code {
+    private RegisterModel registerModel = new RegisterModel();
+    private List<string> errorMessages = new List<string>();
+
+    private async Task RegisterUser()
+    {
+        var user = new IdentityUser { UserName = registerModel.Email, Email = registerModel.Email };
+        var result = await UserManager.CreateAsync(user, registerModel.Password);
+
+        if (result.Succeeded)
+        {
+            await SignInManager.SignInAsync(user, isPersistent: false);
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            errorMessages.Clear(); // Limpiar errores anteriores
+            foreach (var error in result.Errors)
+            {
+                errorMessages.Add(error.Description); // Agregar errores a la lista
+            }
+        }
+    }
+
+    public class RegisterModel
+    {
+        [Required, EmailAddress]
+        public string Email { get; set; }
+
+        [Required, MinLength(6)]
+        public string Password { get; set; }
+
+        [Required, Compare("Password")]
+        public string ConfirmPassword { get; set; }
+    }
+}
