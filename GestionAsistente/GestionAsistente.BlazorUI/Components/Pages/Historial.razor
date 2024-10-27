@@ -1,0 +1,47 @@
+﻿@page "/historial"
+@using GestionAsistente.BlazorUI.Components.Layout
+@using GestionAsistente.BlazorUI.Controlador
+@using GestionAsistente.Entidades
+@layout LayoutPrincipal
+@rendermode InteractiveServer
+
+<h3 class="mb-4">Historial</h3>
+
+<div class="col-md-12 col-xs-12 col-sm-12" style="text-align: center; overflow-y: auto; top: 0px; left: 0px;">
+    <div class="table-responsive col-md-12 col-xs-12 col-sm-12" style="text-align: center; overflow-y: auto;">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    @* <th>HistorialAccionId</th> *@
+                    <th>Nombre usuario</th>
+                    <th>Acción realizada</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (listaHistorialAcciones != null)
+                {
+                    @foreach (var historialAcciones in listaHistorialAcciones)
+                    {
+                        <tr>
+                            @* <td>@historialAcciones.HistoriaAccionesID</td> *@
+                            <td>@historialAcciones.NombrePersona</td>
+                            <td>@historialAcciones.Accion</td>
+                            <td>@historialAcciones.Fecha</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
+    private List<HistorialAcciones> listaHistorialAcciones = new List<HistorialAcciones>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        listaHistorialAcciones = await historialAccionesControlador.ListarHistorial();
+    }
+}
