@@ -34,6 +34,11 @@ namespace GestionAsistente.ReglasNegocio
             return encargados;
         }
 
+        public async Task<List<Badge>> BuscarBadgesPorNumero(int numBadge)
+        {
+            return await badgeAD.BuscarBadgesPorNumero(numBadge);
+        }
+
         public async Task<bool> EliminarBadge(int badgeID)
         {
             if (badgeID == null)

@@ -60,6 +60,26 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             return badges;
         }
 
+        public async Task<List<Badge>> BuscarBadgesPorNumero(int numBadge)
+        {
+            return await _contexto.BadgesEF
+                .Where(b => b.BadgeID == numBadge) // Asegúrate de que sea el campo correcto
+                .Select(b => new Badge
+                {
+                    BadgeID = b.BadgeID,
+                    Horario = b.Horario,
+                    UnidadID = b.UnidadID,
+                    Accesos = b.Accesos,
+                    Ocupado = b.Ocupado,
+                    Unidad = b.Unidad != null ? new Unidad
+                    {
+                        UnidadID = b.Unidad.UnidadID,
+                        Nombre = b.Unidad.Nombre
+                    } : null
+                })
+                .ToListAsync();
+        }
+
 
         public async Task<bool> ModificarBadge(Badge badge)
         {
