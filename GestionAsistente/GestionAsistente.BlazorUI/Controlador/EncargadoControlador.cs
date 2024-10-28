@@ -48,6 +48,8 @@ namespace GestionAsistente.BlazorUI.Controlador
             encargado.Persona.PrimerApellido = actaulizarEncargado.Persona.PrimerApellido;
             encargado.Persona.SegundoApellido = actaulizarEncargado.Persona.SegundoApellido;
             encargado.UnidadID = actaulizarEncargado.UnidadID;
+            encargado.Unidad.Nombre = actaulizarEncargado.Unidad.Nombre;
+            encargado.Unidad.UnidadID = actaulizarEncargado.Unidad.UnidadID;
 
         }
         public async Task seleccionarEncargadoEliminar(int eliminarEncargadoS)
