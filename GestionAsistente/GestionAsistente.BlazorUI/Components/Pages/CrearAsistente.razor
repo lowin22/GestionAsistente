@@ -1,0 +1,191 @@
+﻿@page "/crear-asistente"
+@using GestionAsistente.BlazorUI.Components.Layout
+@using GestionAsistente.BlazorUI.Controlador
+@using GestionAsistente.Entidades
+
+@layout LayoutPrincipal
+@rendermode InteractiveServer
+
+<div class="container mt-4">
+    <h2 class="mb-4">Registro de Asistente</h2>
+    <EditForm Model="asistente" OnValidSubmit="RegistrarAsistente" FormName="crearAsistenteForm">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="row g-2">
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <InputText id="usuario" class="form-control" @bind-Value="asistente.nombreUsuario" placeholder="Usuario" />
+                    <label for="usuario">Usuario</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <InputText id="nombre" class="form-control" @bind-Value="asistente.Persona.Nombre" placeholder="Nombre" />
+                    <label for="nombre">Nombre</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <InputText id="primer-apellido" class="form-control" @bind-Value="asistente.Persona.PrimerApellido" placeholder="Primer Apellido" />
+                    <label for="primer-apellido">Primer Apellido</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <InputText id="segundo-apellido" class="form-control" @bind-Value="asistente.Persona.SegundoApellido" placeholder="Segundo Apellido" />
+                    <label for="segundo-apellido">Segundo Apellido</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <InputSelect class="form-select" id="unidad" @bind-Value="asistente.UnidadID" @oninput="OnUnidadChanged">
+                        <option value="0">Seleccione una unidad</option>
+                        @foreach (var unidad in listaUnidades)
+                        {
+                            <option value="@unidad.UnidadID">@unidad.Nombre</option>
+                        }
+                    </InputSelect>
+                    <label for="unidad">Unidad</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <InputTextArea id="accesos" class="form-control" @bind-Value="asistente.Accesos" placeholder="Accesos" style="height: 100px" />
+                    <label for="accesos">Accesos</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <InputSelect class="form-select" id="encargado" @bind-Value="asistente.EncargadoID">
+                        <option value="0">Seleccione un encargado</option>
+                        @foreach (var encargado in listaEncargados)
+                        {
+                            <option value="@encargado.EncargadoID">
+                                @($"{encargado.Persona.Nombre} {encargado.Persona.PrimerApellido} {encargado.Persona.SegundoApellido}")
+                            </option>
+                        }
+                    </InputSelect>
+                    <label for="encargado">Encargado</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <InputText id="contrasenia" class="form-control" @bind-Value="asistente.Contrasenia" type="password" placeholder="Contraseña" />
+                    <label for="contrasenia">Contraseña</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <InputSelect id="BadgeID" class="form-select" @bind-Value="asistente.BadgeID">
+                        <option value="">Seleccione el badge</option>
+                        @foreach (var badge in listaBadge)
+                        {
+                            <option value="@badge.BadgeID">@badge.BadgeID</option>
+                        }
+                    </InputSelect>
+                 
+                </div>
+            </div>
+        </div>
+        <div class="d-grid gap-2 col-md-6 mx-auto mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">Registrar Asistente</button>
+        </div>
+    </EditForm>
+
+
+
+    @if (mensajeExito != null)
+    {
+        <div class="alert alert-success">
+            @mensajeExito
+        </div>
+    }
+    @if (mensajeError != null)
+    {
+        <div class="alert alert-danger">
+            @mensajeError
+        </div>
+    }
+</div>
+
+
+@code {
+
+    string mensajeExito;
+    string mensajeError;
+
+    private AsistenteControlador asistenteControlador = new AsistenteControlador();
+    private PersonaControlador personaControlador = new PersonaControlador();
+    private UnidadControlador unidadControlador = new UnidadControlador();
+    private EncargadoControlador encargadoControlador = new EncargadoControlador();
+    private List<Unidad> listaUnidades = new List<Unidad>();
+    private BadgeControlador badgeControlador = new BadgeControlador();
+    private List<Encargado> listaEncargados = new List<Encargado>();
+    private List<Badge> listaBadge = new List<Badge>();
+    private Asistente asistente = new Asistente
+        {
+            Persona = new Persona()
+        };
+
+    protected override async Task OnInitializedAsync()
+    {
+        listaUnidades = await unidadControlador.ListarUnidades();
+        if (asistente.UnidadID != 0)
+        {
+            await CargarEncargados(asistente.UnidadID);
+        }
+    }
+
+    private async Task OnUnidadChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value.ToString(), out int unidadId))
+        {
+            asistente.UnidadID = unidadId;
+            await CargarEncargados(unidadId);
+            listaBadge = await badgeControlador.ListarBadgePorUnidad(unidadId);
+        }
+    }
+
+    private async Task CargarEncargados(int? unidadId)
+    {
+        if (unidadId != 0)
+        {
+            listaEncargados = await encargadoControlador.ListarEncargadosPorID(unidadId);
+        }
+        else
+        {
+            listaEncargados = new List<Encargado>();
+        }
+        asistente.EncargadoID = 0;
+        StateHasChanged();
+    }
+
+    private async Task RegistrarAsistente()
+    {
+        bool exito = await asistenteControlador.RegistrarAsistente(asistente);
+        if (exito)
+        {
+            mensajeExito = "Asistente registrado con éxito.";
+            mensajeError = null;
+            LimpiarFormulario();
+            StateHasChanged();
+        }
+        else
+        {
+
+            mensajeExito = null;
+            mensajeError = "Hubo un problema al registrar el asistente.";
+        
+        }
+        // Aquí puedes agregar lógica adicional, como mostrar un mensaje de éxito o error
+    }
+
+    private void LimpiarFormulario()
+    {
+        asistente = new Asistente
+            {
+                Persona = new Persona()
+            };
+        listaEncargados.Clear();
+     }
+}

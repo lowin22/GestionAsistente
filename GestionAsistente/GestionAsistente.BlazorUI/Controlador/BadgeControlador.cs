@@ -1,0 +1,42 @@
+﻿using GestionAsistente.Entidades;
+using GestionAsistente.ReglasNegocio;
+
+
+namespace GestionAsistente.BlazorUI.Controlador
+{
+    public class BadgeControlador
+    {
+
+        private readonly BadgeRN badgeRN;
+        public BadgeControlador()
+        {
+            badgeRN = new BadgeRN();
+        }
+        public async Task<bool> RegistrarBadge(Badge badge)
+        {
+            return await badgeRN.RegistrarBadge(badge);
+        }
+
+        public async Task<List<Badge>> ListarBadge()
+        {
+            return await badgeRN.ListarBadge();
+        }
+
+        public async Task<bool> EliminarBadge(int badgeID)
+        {
+            return await badgeRN.EliminarBadge(badgeID);
+        }
+
+        public async Task<bool> ActualizarBadge(Badge badge)
+        {
+            return await badgeRN.ActualizarBadge(badge);
+        }
+
+        public async Task<List<Badge>> ListarBadgePorUnidad(int unidadID)
+        {
+            return await badgeRN.ListarBadgePorUnidad(unidadID);
+        }
+
+
+    }
+}
