@@ -137,6 +137,15 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                 BadgeEF badgeEF = _contexto.BadgesEF.Find(idBadge);
                 badgeEF.Ocupado = false;
 
+                ReporteBadge reporteBadge = new ReporteBadge
+                {
+                    NombreUsuario = "Usuario prueba",
+                    NumeroBadge = badgeEF.BadgeID,
+                    NombreAsistente = asistente.Persona.Nombre,
+                    Accion = "Eliminar asignación de tarjeta"
+                };
+                await reporteBadgeAD.RegistrarReporteBadge(reporteBadge);
+
             }
 
             // Verificar si se encontró el asistente
@@ -196,59 +205,61 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             _contexto.AsistenteEFs.Remove(asistenteEF);
             return _contexto.SaveChanges() > 0;
         }
-        public List<Asistente> BuscarAsistentePorNombre(string nombre)
+        public async Task<List<Asistente>> BuscarAsistentePorNombre(string nombre)
         {
             var asistentesEF = _contexto.AsistenteEFs
-                .Include(a => a.Badge)
-                .Include(a => a.Unidad)
-                .Include(a => a.Persona)
-                .Include(a => a.Encargado)
-                     .ThenInclude(e => e.Persona)
-                .Where(a => a.Persona.Nombre == nombre)
-                .ToList();
+            .Include(a => a.Badge)
+            .Include(a => a.Unidad)
+            .Include(a => a.Persona)
+            .Include(a => a.Encargado)
+                .ThenInclude(e => e.Persona)
+            .Where(a => a.Persona.Nombre.Contains(nombre))
+            .ToList();
+
 
             if (asistentesEF == null || !asistentesEF.Any())
             {
                 return new List<Asistente>();
             }
 
-
             return asistentesEF.Select(asistenteEF => new Asistente
             {
-                UnidadID = asistenteEF.UnidadID,
+                AsistenteID = asistenteEF.AsistenteID,
+                EncargadoID = asistenteEF.Encargado?.EncargadoID,
+                nombreUsuario = asistenteEF.nombreUsuario,
                 Accesos = asistenteEF.Accesos,
-                Encargado = asistenteEF.Encargado != null ? new Encargado
-                {
-                    Persona = new Persona
-                    {
-                        Nombre = asistenteEF.Encargado.Persona.Nombre,
-                        PrimerApellido = asistenteEF.Encargado.Persona.PrimerApellido,
-                        SegundoApellido = asistenteEF.Encargado.Persona.SegundoApellido
-                    },
-                    Unidad = new Unidad // Mapeo de Unidad
-                    {
-                        Nombre = asistenteEF.Encargado.Unidad.Nombre
-                    }
-                } : null,
                 Contrasenia = asistenteEF.Contrasenia,
                 BadgeID = asistenteEF.BadgeID,
-                nombreUsuario = asistenteEF.nombreUsuario,
-                Badge = asistenteEF.Badge != null ? new Badge
+                UnidadID = asistenteEF.UnidadID,
+
+                // Mapeo seguro de Persona
+                Persona = asistenteEF.Persona != null ? new Persona
                 {
-                    BadgeID = asistenteEF.Badge.BadgeID,
-                    Accesos = asistenteEF.Badge.Accesos,
-                    Horario = asistenteEF.Badge.Horario,
-                    Unidad = new Unidad
-                    {
-                        UnidadID = asistenteEF.Badge.Unidad.UnidadID,
-                        Nombre = asistenteEF.Badge.Unidad.Nombre,
-                    }
+                    PersonaID = asistenteEF.Persona.PersonaID,
+                    Nombre = asistenteEF.Persona.Nombre ?? string.Empty,
+                    PrimerApellido = asistenteEF.Persona.PrimerApellido ?? string.Empty,
+                    SegundoApellido = asistenteEF.Persona.SegundoApellido ?? string.Empty
                 } : null,
+
+                // Mapeo seguro de Unidad
                 Unidad = asistenteEF.Unidad != null ? new Unidad
                 {
                     UnidadID = asistenteEF.Unidad.UnidadID,
-                    Nombre = asistenteEF.Unidad.Nombre,
+                    Nombre = asistenteEF.Unidad.Nombre ?? string.Empty
                 } : null,
+
+                // Mapeo seguro de Encargado
+                Encargado = asistenteEF.Encargado != null && asistenteEF.Encargado.Persona != null ?
+                            new Encargado
+                            {
+                                EncargadoID = asistenteEF.Encargado.EncargadoID,
+                                Persona = new Persona
+                                {
+                                    Nombre = asistenteEF.Encargado.Persona.Nombre ?? string.Empty,
+                                    PrimerApellido = asistenteEF.Encargado.Persona.PrimerApellido ?? string.Empty,
+                                    SegundoApellido = asistenteEF.Encargado.Persona.SegundoApellido ?? string.Empty
+                                }
+                            } : null,
             }).ToList(); // Convertimos la colección a una lista
         }
         public List<Asistente> BuscarAsistentePorEncargado(string encargado)

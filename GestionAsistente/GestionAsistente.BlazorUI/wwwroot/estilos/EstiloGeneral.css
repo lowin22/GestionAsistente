@@ -52,3 +52,28 @@ thead {
     background-color: #005da4;
     color: white;
 }
+
+#ModalsConfirmacion {
+    display: block; /* Asegúrate de que el modal esté visible */
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco con opacidad */
+    border-radius: 0.5rem; /* Bordes redondeados */
+}
+
+    #ModalsConfirmacion .modal-dialog {
+        max-width: 500px; /* Ancho máximo del modal */
+        margin: auto; /* Centra el modal */
+    }
+
+    #ModalsConfirmacion .modal-content {
+        border: none; /* Sin borde en el contenido del modal */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para dar profundidad */
+    }
+
+    #ModalsConfirmacion .modal-header {
+        border-bottom: 1px solid #e9ecef; /* Línea inferior en el encabezado */
+        background-color: #f8f9fa; /* Fondo del encabezado */
+    }
+
+    #ModalsConfirmacion .modal-footer {
+        border-top: 1px solid #e9ecef; /* Línea superior en el pie del modal */
+    }
