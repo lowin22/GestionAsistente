@@ -48,10 +48,14 @@
                         </tr>
                     }
                 }
-
             </tbody>
         </table>
     </div>
+</div>
+<div style="text-align: center; margin-top: 1rem;">
+    <button @onclick="PaginaAnterior" class="btn btn-secondary" disabled="@(!TienePaginaAnterior)">Anterior</button>
+    <span>Página @paginaActual de @paginasTotales</span>
+    <button @onclick="PaginaSiguiente" class="btn btn-secondary" disabled="@(!TienePaginaSiguiente)">Siguiente</button>
 </div>
 
 <div class="modal fade" id="CrearUsuario" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -184,14 +188,25 @@
 </div>
 
 @code {
-
     private UsuarioControlador usuarioControlador = new UsuarioControlador();
     private UnidadControlador unidadControlador = new UnidadControlador();
     private RolControlador rolControlador = new RolControlador();
 
+    private HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
+    private HistorialAcciones historialAcciones = new HistorialAcciones
+    {
+        NombrePersona = "UsuarioSesion"
+    };
+
     private List<Usuario> listaUsuarios = new List<Usuario>();
     private List<Unidad> listaUnidades = new List<Unidad>();
     private List<Rol> listaRoles = new List<Rol>();
+
+    private List<Usuario> listaUsuariosPagina = new List<Usuario>();
+
+    private int paginaActual = 1;
+    private int tamanioPagina = 10;
+    private int paginasTotales => (int)Math.Ceiling((double)listaUsuarios.Count / tamanioPagina);
 
     private Usuario usuario = new Usuario
     {
@@ -199,9 +214,9 @@
     };
 
     Usuario actualizarUsuario = new Usuario
-        {
-            Persona = new Persona()
-        };
+    {
+        Persona = new Persona()
+    };
 
     private Usuario crearUsuario = new Usuario()
     {
@@ -209,13 +224,12 @@
     };
 
     Usuario eliminarUsuario = new Usuario
-        {
-            Persona = new Persona()
-        };
+    {
+        Persona = new Persona()
+    };
 
     async Task EditarUsuario(int usuarioID)
     {
-
         actualizarUsuario = listaUsuarios.Find(u => u.UsuarioID == usuarioID);
 
         usuario.UsuarioID = actualizarUsuario.UsuarioID;
@@ -228,43 +242,49 @@
         usuario.Contrasenia = actualizarUsuario.Contrasenia;
     }
 
-
     protected override async Task OnInitializedAsync()
     {
         listaUsuarios = await usuarioControlador.ListarUsuarios();
         listaUnidades = await unidadControlador.ListarUnidades();
         listaRoles = await rolControlador.ListarRoles();
+
+        ActualizarListaPaginada();
     }
 
     private async Task RegistrarUsuario()
     {
+        //Establecer propiedades para historialAcciones de registrar
+        historialAcciones.Accion = "Registrar usuario: " + crearUsuario.Persona.Nombre + " " + 
+        crearUsuario.Persona.PrimerApellido + " " + crearUsuario.Persona.SegundoApellido;
+        historialAcciones.Fecha = DateTime.Now;
+
+        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
 
         await usuarioControlador.RegistrarUsuario(crearUsuario);
 
         listaUsuarios = await usuarioControlador.ListarUsuarios();
 
         crearUsuario = new Usuario
-
-            {
-
-                Persona = new Persona()
-
-            };
+        {
+            Persona = new Persona()
+        };
 
         StateHasChanged();
-
     }
 
     private async Task seleccionarUsuarioEliminar(int usuarioID)
     {
-
         eliminarUsuario = listaUsuarios.Find(u => u.UsuarioID == usuarioID);
-
     }
 
     async Task EliminarUsuario(int usuarioID)
-
     {
+        //Establecer propiedades para historialAcciones de registrar
+        historialAcciones.Accion = "Eliminar usuario: " + eliminarUsuario.Persona.Nombre + " " + 
+        eliminarUsuario.Persona.PrimerApellido + " " + eliminarUsuario.Persona.SegundoApellido;
+        historialAcciones.Fecha = DateTime.Now;
+
+        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
 
         await usuarioControlador.EliminarUsuario(usuarioID);
 
@@ -275,13 +295,47 @@
 
     private async Task ActualizarUsuario()
     {
-        
+        //Establecer propiedades para historialAcciones de registrar
+        historialAcciones.Accion = "Actualizar usuario: " + actualizarUsuario.Persona.Nombre + " " + 
+        actualizarUsuario.Persona.PrimerApellido + " " + actualizarUsuario.Persona.SegundoApellido + 
+        " a " + usuario.Persona.Nombre + " " + usuario.Persona.PrimerApellido + " " + usuario.Persona.SegundoApellido;
+        historialAcciones.Fecha = DateTime.Now;
+
+        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+
         await usuarioControlador.ActualizarUsuario(usuario);
 
         listaUsuarios = await usuarioControlador.ListarUsuarios();
 
         StateHasChanged();
-
     }
 
+    private void ActualizarListaPaginada()
+    {
+        listaUsuariosPagina = listaUsuarios
+            .Skip((paginaActual - 1) * tamanioPagina)
+            .Take(tamanioPagina)
+            .ToList();
+    }
+
+    private void PaginaSiguiente()
+    {
+        if (TienePaginaSiguiente)
+        {
+            paginaActual++;
+            ActualizarListaPaginada();
+        }
+    }
+
+    private void PaginaAnterior()
+    {
+        if (TienePaginaAnterior)
+        {
+            paginaActual--;
+            ActualizarListaPaginada();
+        }
+    }
+
+    private bool TienePaginaAnterior => paginaActual > 1;
+    private bool TienePaginaSiguiente => paginaActual < paginasTotales;
 }

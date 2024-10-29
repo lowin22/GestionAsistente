@@ -1,7 +1,6 @@
 ﻿@page "/crear-encargado"
 @using GestionAsistente.BlazorUI.Controlador
 @using GestionAsistente.Entidades
-@using GestionAsistente.BlazorUI.Controlador
 @rendermode InteractiveServer
 <h3>Crear Encargado</h3>
 
@@ -51,6 +50,18 @@
 
 @code {
     public EncargadoControlador encargadoControlador = new EncargadoControlador();
+    public Encargado crearEncargado = new Encargado()
+    {
+        //Persona = new Persona()
+        Persona = new Persona(),
+        Unidad = new Unidad()
+    };
+
+    public HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
+    public HistorialAcciones historialAcciones = new HistorialAcciones
+    {
+        NombrePersona = "UsuarioSesion"
+    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,7 +70,20 @@
    
     private async Task RegistrarEncargado()
     {
+        //Establecer propiedades para historialAcciones de registrar
+        historialAcciones.Accion = "Registrar encargado: " + encargadoControlador.encargado.Persona.Nombre + " " +
+        encargadoControlador.encargado.Persona.PrimerApellido + " " + encargadoControlador.encargado.Persona.SegundoApellido;
+        historialAcciones.Fecha = DateTime.Now;
+
+        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+
         await encargadoControlador.RegistrarEncargado(encargadoControlador.encargado);
+        encargadoControlador.encargado = new Encargado
+        {
+            //Persona = new Persona()
+            Persona = new Persona(),
+            Unidad = new Unidad()
+        };
         StateHasChanged();
     }
 }

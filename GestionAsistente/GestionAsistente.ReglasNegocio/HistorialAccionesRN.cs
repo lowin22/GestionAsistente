@@ -56,5 +56,10 @@ namespace GestionAsistente.ReglasNegocio
             return historialAcciones;
         }
 
+        public async Task<List<HistorialAcciones>> FiltrarHistorial(string accion, string persona, DateTime? fecha)
+        {
+            return await historialAccionesAD.FiltrarHistorial(accion, persona, fecha);
+        }
+
     }
 }

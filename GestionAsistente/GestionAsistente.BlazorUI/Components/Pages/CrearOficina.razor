@@ -46,6 +46,12 @@
     Oficina oficina = new Oficina();
     EstacionTrabajo estacion = new EstacionTrabajo();
 
+    HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
+    HistorialAcciones historialAcciones = new HistorialAcciones
+    {
+        NombrePersona = "UsuarioSesion"
+    };
+
     private async Task RegistrarOficina()
     {
         OficinaControlador oficinaControlador = new OficinaControlador();
@@ -58,11 +64,16 @@
             for (int i = 1; i <= cantidadEstaciones; i++)
             {
                 estacion = new EstacionTrabajo()
-                    {
-                        OficinaID = idOficina,
-                        Numero = i,
-                        Estado = 0
-                    };
+                {
+                    OficinaID = idOficina,
+                    Numero = i,
+                    Estado = 0
+                };
+                //Establecer propiedades para historialAcciones de registrar
+                historialAcciones.Accion = "Registrar oficina: " + oficina.Nombre;
+                historialAcciones.Fecha = DateTime.Now;
+                await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+
                 await estacionTrabajoControlador.RegistrarEstacionTrabajo(estacion);
             }
 

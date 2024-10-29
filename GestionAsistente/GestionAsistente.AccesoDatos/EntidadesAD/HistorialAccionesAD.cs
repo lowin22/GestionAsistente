@@ -1,6 +1,7 @@
 ﻿using GestionAsistente.AccesoDatos.Contexto;
 using GestionAsistente.AccesoDatos.Modelos;
 using GestionAsistente.Entidades;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -99,5 +100,34 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
 
             return historialAcciones;
         }
+
+        public async Task<List<HistorialAcciones>> FiltrarHistorial(string accion, string persona, DateTime? fecha)
+        {
+            var query = _contexto.HistoriaAccionesEFs.AsQueryable();
+
+            if (!string.IsNullOrEmpty(accion))
+            {
+                query = query.Where(a => a.Accion.Contains(accion));
+            }
+
+            if (!string.IsNullOrEmpty(persona))
+            {
+                query = query.Where(a => a.NombrePersona.Contains(persona));
+            }
+
+            if (fecha.HasValue)
+            {
+                query = query.Where(a => a.Fecha.Date == fecha.Value.Date);
+            }
+
+            List<HistorialAccionesEF> historialAccionesEFs = await query.ToListAsync();
+            return historialAccionesEFs.Select(a => new HistorialAcciones
+            {
+                Fecha = a.Fecha,
+                NombrePersona = a.NombrePersona,
+                Accion = a.Accion
+            }).ToList();
+        }
+
     }
 }

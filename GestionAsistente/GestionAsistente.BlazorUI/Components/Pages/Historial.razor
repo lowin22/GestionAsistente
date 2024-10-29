@@ -7,6 +7,27 @@
 
 <h3 class="mb-4">Historial</h3>
 
+<div class="mb-3" style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+    <select @bind="accionFiltro" style="width: 300px;" class="form-select">
+        <option value="">Selecciona una acción</option>
+        <option value="registrar">Registrar</option>
+        <option value="actualizar">Actualizar</option>
+        <option value="eliminar">Eliminar</option>
+    </select>
+
+    <select @bind="personaFiltro" style="width: 300px;" class="form-select">
+        <option value="">Selecciona una persona</option>
+        @foreach (var persona in listaPersonas)
+        {
+            <option value="@persona">@persona</option>
+        }
+    </select>
+
+    <input type="date" @bind="fechaFiltro" style="width: 200px;" class="form-control" />
+
+    <button @onclick="FiltrarHistorial" class="btn btn-primary">Buscar</button>
+</div>
+
 <div class="col-md-12 col-xs-12 col-sm-12" style="text-align: center; overflow-y: auto; top: 0px; left: 0px;">
     <div class="table-responsive col-md-12 col-xs-12 col-sm-12" style="text-align: center; overflow-y: auto;">
         <table class="table table-bordered table-striped">
@@ -36,6 +57,114 @@
     </div>
 </div>
 
+<div style="text-align: center; margin-top: 1rem;">
+    <button @onclick="PaginaAnterior" class="btn btn-secondary" disabled="@(!TienePaginaAnterior)">Anterior</button>
+    <span>Página @paginaActual de @paginasTotales</span>
+    <button @onclick="PaginaSiguiente" class="btn btn-secondary" disabled="@(!TienePaginaSiguiente)">Siguiente</button>
+</div>
+
+@code {
+    private HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
+    private List<HistorialAcciones> listaHistorialAcciones = new List<HistorialAcciones>();
+    private List<HistorialAcciones> listaHistorialAccionesPagina = new List<HistorialAcciones>();
+
+    private List<string> listaPersonas = new List<string>(); // lista para almacenar los nombres de personas
+
+    private string accionFiltro;
+    private string personaFiltro;
+    private DateTime? fechaFiltro;
+
+    private int paginaActual = 1;
+    private int tamanioPagina = 10;
+    private int paginasTotales => (int)Math.Ceiling((double)listaHistorialAcciones.Count / tamanioPagina);
+
+    protected override async Task OnInitializedAsync()
+    {
+        listaHistorialAcciones = await historialAccionesControlador.ListarHistorial();
+
+        listaPersonas = listaHistorialAcciones.Select(h => h.NombrePersona).Distinct().ToList();
+
+        ActualizarListaPaginada();
+    }
+
+    private async Task FiltrarHistorial()
+    {
+        listaHistorialAcciones = await historialAccionesControlador.FiltrarHistorial(accionFiltro, personaFiltro, fechaFiltro);
+
+        paginaActual = 1;
+        ActualizarListaPaginada();
+    }
+
+    private void ActualizarListaPaginada()
+    {
+        listaHistorialAccionesPagina = listaHistorialAcciones
+            .Skip((paginaActual - 1) * tamanioPagina)
+            .Take(tamanioPagina)
+            .ToList();
+    }
+
+    private void PaginaAnterior()
+    {
+        if (TienePaginaAnterior)
+        {
+            paginaActual--;
+            ActualizarListaPaginada();
+        }
+    }
+
+    private void PaginaSiguiente()
+    {
+        if (TienePaginaSiguiente)
+        {
+            paginaActual++;
+            ActualizarListaPaginada();
+        }
+    }
+
+    private bool TienePaginaAnterior => paginaActual > 1;
+    private bool TienePaginaSiguiente => paginaActual < paginasTotales;
+}
+
+@* 
+
+@page "/historial"
+@using GestionAsistente.BlazorUI.Components.Layout
+@using GestionAsistente.BlazorUI.Controlador
+@using GestionAsistente.Entidades
+@layout LayoutPrincipal
+@rendermode InteractiveServer
+
+<h3 class="mb-4">Historial</h3>
+
+<div class="col-md-12 col-xs-12 col-sm-12" style="text-align: center; overflow-y: auto; top: 0px; left: 0px;">
+    <div class="table-responsive col-md-12 col-xs-12 col-sm-12" style="text-align: center; overflow-y: auto;">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    @* <th>HistorialAccionId</th> *@
+                    @* <th>Nombre usuario</th>
+                    <th>Acción realizada</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (listaHistorialAcciones != null)
+                {
+                    @foreach (var historialAcciones in listaHistorialAcciones)
+                    {
+                        <tr>
+                            @* <td>@historialAcciones.HistoriaAccionesID</td> *@
+                            @* <td>@historialAcciones.NombrePersona</td>
+                            <td>@historialAcciones.Accion</td>
+                            <td>@historialAcciones.Fecha</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
 @code {
     private HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
     private List<HistorialAcciones> listaHistorialAcciones = new List<HistorialAcciones>();
@@ -44,4 +173,4 @@
     {
         listaHistorialAcciones = await historialAccionesControlador.ListarHistorial();
     }
-}
+} *@

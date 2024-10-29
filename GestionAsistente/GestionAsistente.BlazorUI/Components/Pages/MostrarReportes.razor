@@ -19,7 +19,7 @@
                 </tr>
             </thead>
             <tbody>
-                    @for (int i = 0; i < listaReportes.Count; i++)
+                    @* @for (int i = 0; i < listaReportes.Count; i++)
                     {
                         var index = i; // Capturar el valor de 'i' en una variable local
                         <tr>
@@ -29,16 +29,36 @@
                             <td>@listaReportes[index].NombreAsistente</td>
                             <td>@listaReportes[index].Fecha</td>
                         </tr>
-                    }
+                    } *@
+                @foreach (var reporte in paginaReportes)
+                {
+                    <tr>
+                        <td>@reporte.Accion</td>
+                        <td>@reporte.NombreUsuario</td>
+                        <td>@reporte.NumeroBadge</td>
+                        <td>@reporte.NombreAsistente</td>
+                        <td>@reporte.Fecha</td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
+</div>
+<div style="text-align: center; margin-top: 1rem;">
+    <button @onclick="PaginaAnterior" class="btn btn-secondary" disabled="@(!TienePaginaAnterior)">Anterior</button>
+    <span>Página @paginaActual de @paginasTotales</span>
+    <button @onclick="PaginaSiguiente" class="btn btn-secondary" disabled="@(!TienePaginaSiguiente)">Siguiente</button>
 </div>
 
 
 @code {
     ReporteControlador reporteControlador = new ReporteControlador();
     List<ReporteBadge> listaReportes = new List<ReporteBadge>();
+    private List<ReporteBadge> paginaReportes = new List<ReporteBadge>();
+
+    private int paginaActual = 1;
+    private int tamanioPagina = 10;
+    private int paginasTotales => (int)Math.Ceiling((double)listaReportes.Count / tamanioPagina);
 
     ReporteBadge reporte = new ReporteBadge
     {    
@@ -47,8 +67,38 @@
     protected override async Task OnInitializedAsync()
     {
         listaReportes = await reporteControlador.ListarReporte();
+
+        ActualizarListaPaginada();
         StateHasChanged();
     }
 
+    private void ActualizarListaPaginada()
+    {
+        paginaReportes = listaReportes
+            .Skip((paginaActual - 1) * tamanioPagina)
+            .Take(tamanioPagina)
+            .ToList();
     }
+
+    private void PaginaSiguiente()
+    {
+        if (TienePaginaSiguiente)
+        {
+            paginaActual++;
+            ActualizarListaPaginada();
+        }
+    }
+
+    private void PaginaAnterior()
+    {
+        if (TienePaginaAnterior)
+        {
+            paginaActual--;
+            ActualizarListaPaginada();
+        }
+    }
+
+    private bool TienePaginaAnterior => paginaActual > 1;
+    private bool TienePaginaSiguiente => paginaActual < paginasTotales;
+}
 

@@ -21,7 +21,7 @@
                 </tr>
             </thead>
             <tbody>
-                @if (listaOficinas != null && cantidadEstaciones != null && listaOficinas.Count == cantidadEstaciones.Count)
+                @* @if (listaOficinas != null && cantidadEstaciones != null && listaOficinas.Count == cantidadEstaciones.Count)
                 {
                    @for (int i = 0; i < listaOficinas.Count; i++)
                     {
@@ -55,10 +55,25 @@
                                             <path d="M6.5 1A.5.5 0 0 1 7 .5h2a.5.5 0 0 1 0 1v.57c1.36.196 2.594.78 3.584 1.64l.012-.013.354-.354-.354-.353a.5.5 0 0 1 .707-.708l1.414 1.415a.5.5 0 1 1-.707.707l-.353-.354-.354.354-.013.012A7 7 0 1 1 7 2.071V1.5a.5.5 0 0 1-.5-.5M8 3a6 6 0 1 0 .001 12A6 6 0 0 0 8 3" />
                                         </svg>
                                     </span>
+                                </NavLink> 
+                            </td>
+                        </tr>
+                    }
+                } *@
+                @if (paginaOficinas != null && paginaOficinas.Count > 0)
+                {
+                    @foreach (var oficina in paginaOficinas)
+                    {
+                        <tr>
+                            <td>
+                                <!-- Botones de acción -->
+                            </td>
+                            <td>@oficina.Nombre</td>
+                            <td>@cantidadEstaciones[listaOficinas.IndexOf(oficina)]</td>
+                            <td>
+                                <NavLink href="@($"/mostrar-horario/{oficina.OficinaID}")">
+                                    <!-- Icono de horario -->
                                 </NavLink>
-
-                                   
-                                
                             </td>
                         </tr>
                     }
@@ -68,6 +83,12 @@
     </div>
 </div>
 
+<!-- Paginación -->
+<div style="text-align: center; margin-top: 1rem;">
+    <button @onclick="PaginaAnterior" class="btn btn-secondary" disabled="@(!TienePaginaAnterior)">Anterior</button>
+    <span>Página @paginaActual de @paginasTotales</span>
+    <button @onclick="PaginaSiguiente" class="btn btn-secondary" disabled="@(!TienePaginaSiguiente)">Siguiente</button>
+</div>
 
 <!-- Modales -->
 <div class="modal fade" id="ConfirmarEliminar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -89,7 +110,6 @@
                 <button class="btn btn-danger" data-bs-dismiss="modal">
                     Cancelar
                 </button>
-
             </div>
         </div>
     </div>
@@ -103,27 +123,25 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="nombre" class="form-label">Nombre</label>
-                        <InputText id="nombre" class="form-control" @bind-Value="oficinaActualizar.Nombre" />
-                    </div>
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <InputText id="nombre" class="form-control" @bind-Value="oficinaActualizar.Nombre" />
+                </div>
 
-                    <div class="mb-3">
-                        <label for="primerApellido" class="form-label">Estaciones de trabajo</label>
-                        <InputNumber id="primerApellido" class="form-control" @bind-Value="cantidadEstacionesActualizar" />
-                    </div>
-                    <button class="btn btn-primary" data-bs-dismiss="modal" @onclick="ActualizarOficina">
-                        Confirmar
-                    </button>
-                    <button class="btn btn-danger" data-bs-dismiss="modal">
-                        Cancelar
-                    </button>
+                <div class="mb-3">
+                    <label for="primerApellido" class="form-label">Estaciones de trabajo</label>
+                    <InputNumber id="primerApellido" class="form-control" @bind-Value="cantidadEstacionesActualizar" />
+                </div>
+                <button class="btn btn-primary" data-bs-dismiss="modal" @onclick="ActualizarOficina">
+                    Confirmar
+                </button>
+                <button class="btn btn-danger" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
             </div>
         </div>
     </div>
 </div>
-
-
 
 @code {
     EstacionTrabajoControlador estacionTrabajoControlador = new EstacionTrabajoControlador();
@@ -132,6 +150,19 @@
     List<int> cantidadEstaciones = new List<int>();
     int cantidadEstacionesActualizar;
     // int cantidadEstaciones;
+
+    //
+    List<Oficina> paginaOficinas = new();
+    // Variables de paginación
+    private int paginaActual = 1;
+    private int tamanioPagina = 10;
+    private int paginasTotales => (int)Math.Ceiling((double)listaOficinas.Count / tamanioPagina);
+
+    HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
+    HistorialAcciones historialAcciones = new HistorialAcciones
+    {
+        NombrePersona = "UsuarioSesion"
+    };
 
     Oficina oficina = new Oficina
     {    // Oficina = new Oficina()
@@ -153,18 +184,31 @@
             // Llenar la lista de estaciones de trabajo para esa oficina
             cantidadEstaciones.Add(await estacionTrabajoControlador.estacionesPorOficina(oficina.OficinaID));
         }
+        ActualizarListaPaginada();
         //StateHasChanged();
         // listaUnidades = await unidadControlador.ListarUnidades();
     }
 
     private async Task EliminarOficina(int oficinaID)
     {
+        //Establecer propiedades para historialAcciones de registrar
+        historialAcciones.Accion = "Eliminar oficina: " + oficinaEliminar.Nombre;
+        historialAcciones.Fecha = DateTime.Now;
+
+        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+
         await oficinaControlador.EliminarOficinas(oficinaID);
         listaOficinas = await oficinaControlador.ListarOficinas();
         StateHasChanged();
     }
     private async Task ActualizarOficina()
     {
+        //Establecer propiedades para historialAcciones de registrar
+        historialAcciones.Accion = "Actualizar oficina: " + oficina.Nombre + " a " + oficinaActualizar.Nombre;
+        historialAcciones.Fecha = DateTime.Now;
+
+        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+
         await oficinaControlador.ActualizarOficina(oficinaActualizar);
         listaOficinas = await oficinaControlador.ListarOficinas();
         StateHasChanged();
@@ -178,10 +222,42 @@
     {
         oficinaActualizar = listaOficinas.Find(x => x.OficinaID == oficinaID);
         //StateHasChanged(); // Refresca la UI después de seleccionar la oficina
+
+        oficina.OficinaID = oficinaActualizar.OficinaID;
+        oficina.Nombre = oficinaActualizar.Nombre;
     }
     async Task EliminarEstaciones(int oficinaID)
     {
         estacionTrabajoControlador.EliminarEstacionesPorOficina(oficinaID);
         //StateHasChanged(); // Refresca la UI después de seleccionar la oficina
     }
+
+    private void ActualizarListaPaginada()
+    {
+        paginaOficinas = listaOficinas
+            .Skip((paginaActual - 1) * tamanioPagina)
+            .Take(tamanioPagina)
+            .ToList();
+    }
+
+    private void PaginaSiguiente()
+    {
+        if (TienePaginaSiguiente)
+        {
+            paginaActual++;
+            ActualizarListaPaginada();
+        }
+    }
+
+    private void PaginaAnterior()
+    {
+        if (TienePaginaAnterior)
+        {
+            paginaActual--;
+            ActualizarListaPaginada();
+        }
+    }
+
+    private bool TienePaginaAnterior => paginaActual > 1;
+    private bool TienePaginaSiguiente => paginaActual < paginasTotales;
 }

@@ -3,7 +3,6 @@
 @using GestionAsistente.Entidades
 @rendermode InteractiveServer
 
-
 <h3>Mostrar Encargado</h3>
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CrearEncargado">
     Crear Encargado
@@ -16,12 +15,10 @@
                     <th>Acciones</th>
                     <th>Nombre Completo</th>
                     <th>Unidad</th>
-
                 </tr>
             </thead>
             <tbody>
                 @if (encargadoControlador.listaEncargados != null)
-
                 {
                     @foreach (var encargado in encargadoControlador.listaEncargados)
                     {
@@ -41,11 +38,12 @@
                                 </button>
                             </td>
                             <td>@encargado.Persona.Nombre @encargado.Persona.PrimerApellido @encargado.Persona.SegundoApellido</td>
-
                             <td>@encargado.Unidad?.Nombre</td>
                         </tr>
                     }
-                }else {
+                }
+                else 
+                {
                     <tr>
                         <td colspan="3">No hay encargados registrados</td>
                     </tr>
@@ -54,7 +52,12 @@
         </table>
     </div>
 </div>
-
+<!--Paginación-->
+<div style="text-align: center; margin-top: 1rem;">
+    <button @onclick="PaginaAnterior" class="btn btn-secondary" disabled="@(!TienePaginaAnterior)">Anterior</button>
+    <span>Página @paginaActual de @paginasTotales</span>
+    <button @onclick="PaginaSiguiente" class="btn btn-secondary" disabled="@(!TienePaginaSiguiente)">Siguiente</button>
+</div>
 
 <!-- Modal -->
 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -84,7 +87,6 @@
                         <label for="unidadID" class="form-label">Unidad</label>
                         <InputSelect id="unidadID" class="form-control" @bind-Value="encargadoControlador.encargado.Unidad.UnidadID">
                             @foreach (var unidad in encargadoControlador.listaUnidades)
-
                             {
                                 <option value="@unidad.UnidadID">@unidad.Nombre</option>
                             }
@@ -96,7 +98,6 @@
                             Cancelar
                         </button>
                     </div>
-                  
                 </EditForm>
             </div>
         </div>
@@ -129,7 +130,6 @@
                         <label for="unidadID" class="form-label">Unidad</label>
                         <InputSelect id="unidadID" class="form-control" @bind-Value="encargadoControlador.crearEncargado.Unidad.UnidadID">
                             @foreach (var unidad in encargadoControlador.listaUnidades)
-
                             {
                                 <option value="@unidad.UnidadID">@unidad.Nombre</option>
                             }
@@ -162,41 +162,156 @@
                     Cancelar
                 </button>
                 <button class="btn btn-danger" data-bs-dismiss="modal" @onclick="() => EliminarEncargado(encargadoControlador.eliminarEncargado.EncargadoID)">
-
                     Confirmar
                 </button>
-
             </div>
         </div>
     </div>
 </div>
+
 @code {
     EncargadoControlador encargadoControlador = new EncargadoControlador();
+    List<Encargado> listaEncargados = new List<Encargado>();
+    //Paginación
+    private List<Encargado> listaEncargadosPagina = new List<Encargado>();
+
+    private int paginaActual = 1;
+    private int tamanioPagina = 10;
+    private int paginasTotales => (int)Math.Ceiling((double)listaEncargados.Count / tamanioPagina);
+    //
+    HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
+    HistorialAcciones historialAcciones = new HistorialAcciones
+    {
+        NombrePersona = "UsuarioSesion"
+    };
+
+    private Encargado encargado = new Encargado()
+    {
+        Persona = new Persona(),
+        Unidad = new Unidad()
+    };
+
+    private Encargado crearEncargado = new Encargado()
+    {
+        //Persona = new Persona()
+        Persona = new Persona(),
+        Unidad = new Unidad()
+    };
+
+    Encargado actualizarEncargado = new Encargado
+    {
+        //Persona = new Persona()
+        Persona = new Persona(),
+        Unidad = new Unidad()
+    };
+
+    Encargado eliminarEncargado = new Encargado
+    {
+        //Persona = new Persona()
+        Persona = new Persona(),
+        Unidad = new Unidad()
+    };
+
     protected override async Task OnInitializedAsync()
     {
         await encargadoControlador.listarEncargados();
         await encargadoControlador.listarUnidades();
+        
+        ActualizarListaPaginada();
     }
+
+    //
+    private void ActualizarListaPaginada()
+    {
+        listaEncargadosPagina = listaEncargados
+            .Skip((paginaActual - 1) * tamanioPagina)
+            .Take(tamanioPagina)
+            .ToList();
+    }
+
+    private void PaginaAnterior()
+    {
+        if (TienePaginaAnterior)
+        {
+            paginaActual--;
+            ActualizarListaPaginada();
+        }
+    }
+
+    private void PaginaSiguiente()
+    {
+        if (TienePaginaSiguiente)
+        {
+            paginaActual++;
+            ActualizarListaPaginada();
+        }
+    }
+
+    private bool TienePaginaAnterior => paginaActual > 1;
+    private bool TienePaginaSiguiente => paginaActual < paginasTotales;
+    //
+
+    async Task EditarEncargado(int encargadoID)
+    {
+        actualizarEncargado = listaEncargados.Find(e => e.EncargadoID == encargadoID);
+
+        encargado.EncargadoID = actualizarEncargado.EncargadoID;
+        encargado.PersonaID = actualizarEncargado.PersonaID;
+        encargado.Persona.Nombre = actualizarEncargado.Persona.Nombre;
+        encargado.Persona.PrimerApellido = actualizarEncargado.Persona.PrimerApellido;
+        encargado.Persona.SegundoApellido = actualizarEncargado.Persona.SegundoApellido;
+        encargado.UnidadID = actualizarEncargado.UnidadID;
+    }
+
+    private async Task seleccionarEncargadoEliminar(int encargadoID)
+    {
+        eliminarEncargado = listaEncargados.Find(e => e.EncargadoID == encargadoID);
+    }
+
     async Task EliminarEncargado(int encargadoID)
     {
+        //Establecer propiedades para historialAcciones de registrar
+        historialAcciones.Accion = "Eliminar encargado: " + encargadoControlador.eliminarEncargado.Persona.Nombre + " " + 
+        encargadoControlador.eliminarEncargado.Persona.PrimerApellido + " " + encargadoControlador.eliminarEncargado.Persona.SegundoApellido;
+        historialAcciones.Fecha = DateTime.Now;
+        
+        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+
         await encargadoControlador.EliminarEncargado(encargadoID);
         await encargadoControlador.listarEncargados();
         StateHasChanged();
     }
     private async Task ActualizarEncargado()
     {
+        //Establecer propiedades para historialAcciones de registrar
+        // historialAcciones.Accion = "Actualizar encargado: " + encargadoControlador.encargado.Persona.Nombre + " " +
+        // encargadoControlador.encargado.Persona.PrimerApellido + " " + encargadoControlador.encargado.Persona.SegundoApellido +
+        // " a " + encargadoControlador.encargado.Persona.Nombre + " " +encargadoControlador.encargado.Persona.PrimerApellido + " " + encargadoControlador.encargado.Persona.SegundoApellido;
+        historialAcciones.Accion = "Actualizar encargado: " + encargadoControlador.actaulizarEncargado.Persona.Nombre + " " +
+        encargadoControlador.actaulizarEncargado.Persona.PrimerApellido + " " + encargadoControlador.actaulizarEncargado.Persona.SegundoApellido +
+        " a " + encargadoControlador.encargado.Persona.Nombre + " " + encargadoControlador.encargado.Persona.PrimerApellido + " " + encargadoControlador.encargado.Persona.SegundoApellido;
+        historialAcciones.Fecha = DateTime.Now;
+        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+
         await encargadoControlador.ActualizarEncargado(encargadoControlador.encargado);
         await encargadoControlador.listarEncargados();
         StateHasChanged();
     }
     private async Task RegistrarEncargado()
     {
+        //Establecer propiedades para historialAcciones de registrar
+        historialAcciones.Accion = "Registrar encargado: " + encargadoControlador.crearEncargado.Persona.Nombre + " " +
+        encargadoControlador.crearEncargado.Persona.PrimerApellido + " " + encargadoControlador.crearEncargado.Persona.SegundoApellido;
+        historialAcciones.Fecha = DateTime.Now;
+
+        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+
         await encargadoControlador.registrarEncargado(encargadoControlador.crearEncargado);
         encargadoControlador.crearEncargado = new Encargado
-            {
-                Persona = new Persona(),
-                    Unidad = new Unidad()
-            };
+        {
+            Persona = new Persona(),
+            Unidad = new Unidad()
+        };
         await encargadoControlador.listarEncargados();
         StateHasChanged();
     }

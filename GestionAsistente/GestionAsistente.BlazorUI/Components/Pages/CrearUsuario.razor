@@ -75,18 +75,24 @@
     private UnidadControlador unidadControlador = new UnidadControlador();
     private RolControlador rolControlador = new RolControlador();
 
+    private HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
+    private HistorialAcciones historialAcciones = new HistorialAcciones
+    {
+        NombrePersona = "UsuarioSesion"
+    };
+
     private List<Usuario> listaUsuarios = new List<Usuario>();
     private List<Unidad> listaUnidades = new List<Unidad>();
     private List<Rol> listaRoles = new List<Rol>();
 
     private Usuario usuario = new Usuario
-        {
-            Persona = new Persona()
-        };
+    {
+        Persona = new Persona()
+    };
     private Usuario crearUsuario = new Usuario()
-        {
-            Persona = new Persona()
-        };
+    {
+        Persona = new Persona()
+    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -97,21 +103,21 @@
 
     private async Task RegistrarUsuario()
     {
+        //Establecer propiedades para historialAcciones de registrar
+        historialAcciones.Accion = "Registrar usuario: " + crearUsuario.Persona.Nombre + " "
+        + crearUsuario.Persona.PrimerApellido + " " + crearUsuario.Persona.SegundoApellido;
+        historialAcciones.Fecha = DateTime.Now;
+
+        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
 
         await usuarioControlador.RegistrarUsuario(crearUsuario);
-
         listaUsuarios = await usuarioControlador.ListarUsuarios();
 
         crearUsuario = new Usuario
-
-            {
-
-                Persona = new Persona()
-
-            };
+        {
+            Persona = new Persona()
+        };
 
         StateHasChanged();
-
     }
-
 }

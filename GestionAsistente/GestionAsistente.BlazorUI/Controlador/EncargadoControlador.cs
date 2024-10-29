@@ -32,13 +32,19 @@ namespace GestionAsistente.BlazorUI.Controlador
         {
             encargadoRN = new EncargadoRN();
         }
+
+        public Encargado actaulizarEncargado = new Encargado
+        {
+            Persona = new Persona(),
+            Unidad = new Unidad()
+        };
         public async Task EditarEncargado(int encargadoID)
 
         {
-            Encargado actaulizarEncargado = new Encargado
-            {
-                Persona = new Persona()
-            };
+            //Encargado actaulizarEncargado = new Encargado
+            //{
+            //    Persona = new Persona()
+            //};
 
             actaulizarEncargado = listaEncargados.Find(x => x.EncargadoID == encargadoID);
 

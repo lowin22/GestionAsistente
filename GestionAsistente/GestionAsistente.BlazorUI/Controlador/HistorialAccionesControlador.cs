@@ -30,5 +30,10 @@ namespace GestionAsistente.BlazorUI.Controlador
         {
             return await historialAccionesRN.ListarHistorial();
         }
+        public async Task<List<HistorialAcciones>> FiltrarHistorial(string accion, string persona, DateTime? fecha)
+        {
+            return await historialAccionesRN.FiltrarHistorial(accion, persona, fecha);
+        }
+
     }
 }
