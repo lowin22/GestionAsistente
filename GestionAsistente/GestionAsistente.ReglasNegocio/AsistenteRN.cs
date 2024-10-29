@@ -49,6 +49,13 @@ namespace GestionAsistente.ReglasNegocio
             return asistentes;
         }
 
+        public async Task<List<Asistente>> BuscarAsistentePorNombre(string nombre)
+        {
+            List<Asistente> asistentes = new List<Asistente>();
+            asistentes = await this.asistenteAD.BuscarAsistentePorNombre(nombre);
+            return asistentes;
+        }
+
         public async Task<bool> EliminarAsistente(int? asistenteID)
         {
             return await asistenteAD.EliminarAsistente(asistenteID);
@@ -58,5 +65,6 @@ namespace GestionAsistente.ReglasNegocio
         {
             return await asistenteAD.ModificarAsistente(asistente);
         }
+
     }
 }

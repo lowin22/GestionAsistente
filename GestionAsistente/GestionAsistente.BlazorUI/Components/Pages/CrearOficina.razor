@@ -3,6 +3,7 @@
 @using GestionAsistente.BlazorUI.Controlador
 @using GestionAsistente.Entidades
 @rendermode InteractiveServer
+
 <h3>Crear Oficina</h3>
 
 <EditForm Model="oficina" OnValidSubmit="RegistrarOficina" FormName="crearOficinaForm">
@@ -21,12 +22,36 @@
 
     <button type="submit" class="btn btn-primary">Registrar</button>
 </EditForm>
+
+@* <!-- Loader.razor -->
+<div class="loader" style="display: @(IsLoading ? "block" : "none");">
+    <div class="spinner-border" role="status">
+        <span class="sr-only">Cargando...</span>
+    </div>
+</div> *@
+
 @if (mensajeExito != null)
 {
-    <div class="alert alert-success">
-        @mensajeExito
+    <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmación</h5>
+                    <button type="button" class="close" @onclick="CerrarModal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>@mensajeExito</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @onclick="CerrarModal">Aceptar</button>
+                </div>
+            </div>
+        </div>
     </div>
 }
+
 @if (mensajeError != null)
 {
     <div class="alert alert-danger">
@@ -37,17 +62,16 @@
 @code {
     string mensajeExito;
     string mensajeError;
-    // protected override async Task OnInitializedAsync()
-    // {
-
-    // };
-
     int cantidadEstaciones;
     Oficina oficina = new Oficina();
     EstacionTrabajo estacion = new EstacionTrabajo();
+    bool isLoading = false; // Variable para controlar el estado de carga
 
     private async Task RegistrarOficina()
     {
+        isLoading = true; // Inicia el loader
+        StateHasChanged(); // Actualiza el estado de la interfaz
+
         OficinaControlador oficinaControlador = new OficinaControlador();
         EstacionTrabajoControlador estacionTrabajoControlador = new EstacionTrabajoControlador();
 
@@ -58,24 +82,18 @@
             for (int i = 1; i <= cantidadEstaciones; i++)
             {
                 estacion = new EstacionTrabajo()
-                    {
-                        OficinaID = idOficina,
-                        Numero = i,
-                        Estado = 0
-                    };
+                {
+                    OficinaID = idOficina,
+                    Numero = i,
+                    Estado = 0
+                };
                 await estacionTrabajoControlador.RegistrarEstacionTrabajo(estacion);
             }
-
 
             if (idOficina > 0)
             {
                 mensajeExito = "Oficina registrada con éxito.";
                 mensajeError = null;
-
-                // oficina = new Encargado
-                //     {
-                //         Persona = new Persona()
-                //     };
             }
             else
             {
@@ -88,6 +106,18 @@
             mensajeError = $"Error: {ex.Message}";
             mensajeExito = null;
         }
-        StateHasChanged();
+        finally
+        {
+            isLoading = false; // Detiene el loader
+            StateHasChanged(); // Actualiza la interfaz una vez más
+        }
     }
+
+    private void CerrarModal()
+    {
+        mensajeExito = null;
+        StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
+    }
+
+
 }

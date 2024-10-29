@@ -23,44 +23,97 @@
                 </tr>
             </thead>
             <tbody>
-                @if (listaAsistentes == null || !listaAsistentes.Any())
+
+                <tr> 
+                <th></th>
+                    <th></th>
+                <th>
+                        <input type="search" @bind="asistenteABuscar" @oninput="BusquedaAsincrona" placeholder="Buscar por nombre" style="width: 80%; text-align:center" />
+                </th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+
+                @if (string.IsNullOrEmpty(asistenteABuscar))
                 {
-                    <tr>
-                        <td colspan="8">No se encontraron asistentes.</td>
-                    </tr>
-                }
-                else
-                {
-                    @foreach (var asistente in listaAsistentes)
+
+                    @if (listaAsistentes == null || !listaAsistentes.Any())
                     {
                         <tr>
-                            <td>
-
-                                <button @onclick="() => EliminarAsistente(asistente.AsistenteID)">Eliminar</button>
-                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#ActualizarAsistente" @onclick="() => PrepararActualizacion(asistente.AsistenteID)">
-                                    Actualizar
-                                </button>
-                            </td>
-                            <td>@asistente.nombreUsuario</td>
-                            <td>@($"{asistente.Persona?.Nombre} {asistente.Persona?.PrimerApellido} {asistente.Persona?.SegundoApellido}")</td>
-                            <td>@asistente.Contrasenia</td>
-                            <td>@($"{asistente.Encargado?.Persona.Nombre} {asistente.Encargado?.Persona.PrimerApellido} {asistente.Encargado?.Persona.SegundoApellido}")</td>
-                            <td>@asistente.Accesos</td>
-                            <td>@asistente.BadgeID</td>
-                            <td>@asistente.Unidad?.Nombre</td>
-                            <td>
-                                <button class="btn" data-bs-toggle="modal" data-bs-target="#horario" @onclick="() => traerOficinas(asistente.AsistenteID)">
-
-                                    <span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stopwatch" viewBox="0 0 16 16">
-                                            <path d="M8.5 5.6a.5.5 0 1 0-1 0v2.9h-3a.5.5 0 0 0 0 1H8a.5.5 0 0 0 .5-.5z" />
-                                            <path d="M6.5 1A.5.5 0 0 1 7 .5h2a.5.5 0 0 1 0 1v.57c1.36.196 2.594.78 3.584 1.64l.012-.013.354-.354-.354-.353a.5.5 0 0 1 .707-.708l1.414 1.415a.5.5 0 1 1-.707.707l-.353-.354-.354.354-.013.012A7 7 0 1 1 7 2.071V1.5a.5.5 0 0 1-.5-.5M8 3a6 6 0 1 0 .001 12A6 6 0 0 0 8 3" />
-                                        </svg>
-                                    </span>
-                                </button>
-                            </td>
+                            <td colspan="8">No se encontraron asistentes.</td>
                         </tr>
                     }
+                    else
+                    {
+                        @foreach (var asistente in listaAsistentes)
+                        {
+                            <tr>
+                                <td>
+
+                                    <button @onclick="() => EliminarAsistente(asistente.AsistenteID)">Eliminar</button>
+                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#ActualizarAsistente" @onclick="() => PrepararActualizacion(asistente.AsistenteID)">
+                                        Actualizar
+                                    </button>
+                                </td>
+                                <td>@asistente.nombreUsuario</td>
+                                <td>@($"{asistente.Persona?.Nombre} {asistente.Persona?.PrimerApellido} {asistente.Persona?.SegundoApellido}")</td>
+                                <td>@asistente.Contrasenia</td>
+                                <td>@($"{asistente.Encargado?.Persona.Nombre} {asistente.Encargado?.Persona.PrimerApellido} {asistente.Encargado?.Persona.SegundoApellido}")</td>
+                                <td>@asistente.Accesos</td>
+                                <td>@asistente.BadgeID</td>
+                                <td>@asistente.Unidad?.Nombre</td>
+                                <td>
+                                    <button class="btn" data-bs-toggle="modal" data-bs-target="#horario" @onclick="() => traerOficinas(asistente.AsistenteID)">
+
+                                        <span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stopwatch" viewBox="0 0 16 16">
+                                                <path d="M8.5 5.6a.5.5 0 1 0-1 0v2.9h-3a.5.5 0 0 0 0 1H8a.5.5 0 0 0 .5-.5z" />
+                                                <path d="M6.5 1A.5.5 0 0 1 7 .5h2a.5.5 0 0 1 0 1v.57c1.36.196 2.594.78 3.584 1.64l.012-.013.354-.354-.354-.353a.5.5 0 0 1 .707-.708l1.414 1.415a.5.5 0 1 1-.707.707l-.353-.354-.354.354-.013.012A7 7 0 1 1 7 2.071V1.5a.5.5 0 0 1-.5-.5M8 3a6 6 0 1 0 .001 12A6 6 0 0 0 8 3" />
+                                            </svg>
+                                        </span>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                }else if (asistenteABuscar != null && asistentesEncontrados.Any())
+                {
+                        @foreach (var asistente in asistentesEncontrados)
+                        {
+                            <tr>
+                                <td>
+
+                                    <button @onclick="() => EliminarAsistente(asistente.AsistenteID)">Eliminar</button>
+                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#ActualizarAsistente" @onclick="() => PrepararActualizacion(asistente.AsistenteID)">
+                                        Actualizar
+                                    </button>
+                                </td>
+                                <td>@asistente.nombreUsuario</td>
+                                <td>@($"{asistente.Persona?.Nombre} {asistente.Persona?.PrimerApellido} {asistente.Persona?.SegundoApellido}")</td>
+                                <td>@asistente.Contrasenia</td>
+                                <td>@($"{asistente.Encargado?.Persona.Nombre} {asistente.Encargado?.Persona.PrimerApellido} {asistente.Encargado?.Persona.SegundoApellido}")</td>
+                                <td>@asistente.Accesos</td>
+                                <td>@asistente.BadgeID</td>
+                                <td>@asistente.Unidad?.Nombre</td>
+                                <td>
+                                    <button class="btn" data-bs-toggle="modal" data-bs-target="#horario" @onclick="() => traerOficinas(asistente.AsistenteID)">
+
+                                        <span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stopwatch" viewBox="0 0 16 16">
+                                                <path d="M8.5 5.6a.5.5 0 1 0-1 0v2.9h-3a.5.5 0 0 0 0 1H8a.5.5 0 0 0 .5-.5z" />
+                                                <path d="M6.5 1A.5.5 0 0 1 7 .5h2a.5.5 0 0 1 0 1v.57c1.36.196 2.594.78 3.584 1.64l.012-.013.354-.354-.354-.353a.5.5 0 0 1 .707-.708l1.414 1.415a.5.5 0 1 1-.707.707l-.353-.354-.354.354-.013.012A7 7 0 1 1 7 2.071V1.5a.5.5 0 0 1-.5-.5M8 3a6 6 0 1 0 .001 12A6 6 0 0 0 8 3" />
+                                            </svg>
+                                        </span>
+                                    </button>
+                                </td>
+                            </tr>
+                        }                  
+
                 }
             </tbody>
         </table>
@@ -228,6 +281,10 @@
     private List<Oficina> listaOficinas = new List<Oficina>();
     private List<Badge> listaBadge = new List<Badge>();
     private List<EstacionTrabajo> listaEstacionTrabajos = new List<EstacionTrabajo>();
+
+    private string asistenteABuscar;
+    private List<Asistente> asistentesEncontrados = new List<Asistente>();
+
     private Horario horario = new Horario()
         {
             Asistente = new Asistente()
@@ -424,4 +481,21 @@
         await horarioControlador.verificarHoraSeleccionar(e.Value.ToString());
         StateHasChanged(); // Forzar la actualización de la UI
     }
+
+
+    private async Task BusquedaAsincrona(ChangeEventArgs e)
+    {
+        var nombreABuscar = e.Value?.ToString();
+
+        if (!string.IsNullOrEmpty(nombreABuscar))
+        {
+            asistentesEncontrados = await asistenteControlador.BuscarAsistentePorNombre(nombreABuscar);
+        }
+        else
+        {
+            asistentesEncontrados.Clear();
+        }
+    }
+
+
 }
