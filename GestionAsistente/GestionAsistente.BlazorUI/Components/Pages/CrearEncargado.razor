@@ -36,21 +36,54 @@
 
     <button type="submit" class="btn btn-primary">Registrar</button>
 </EditForm>
+
 @if (encargadoControlador.mensajeExito != null)
 {
-    <div class="alert alert-success">
-        @encargadoControlador.mensajeExito
+    <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content custom-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmación</h5>
+                    <button type="button" class="close" @onclick="CerrarModal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>@mensajeExito</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btnAceptar" @onclick="CerrarModal">Aceptar</button>
+                </div>
+            </div>
+        </div>
     </div>
 }
+
 @if (encargadoControlador.mensajeError != null)
 {
-    <div class="alert alert-danger">
-        @encargadoControlador.mensajeError
+    <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content custom-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmación</h5>
+                    <button type="button" class="close" @onclick="CerrarModalError" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>@mensajeError Error al registrar</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btnAceptar" @onclick="CerrarModalError">Aceptar</button>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
 @code {
     public EncargadoControlador encargadoControlador = new EncargadoControlador();
+    private string mensajeExito, mensajeError;
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,7 +92,40 @@
    
     private async Task RegistrarEncargado()
     {
-        await encargadoControlador.RegistrarEncargado(encargadoControlador.encargado);
-        StateHasChanged();
+
+        bool exito = await encargadoControlador.RegistrarEncargado(encargadoControlador.encargado);
+        if (exito)
+        {
+            mensajeExito = "Asistente registrado con éxito.";
+            mensajeError = null;
+            LimpiarFormulario();
+            StateHasChanged();
+        }
+        else
+        {
+
+            mensajeExito = null;
+            mensajeError = "Hubo un problema al registrar el asistente.";
+
+        }
+
     }
+
+    private void LimpiarFormulario()
+    {
+        
+    }
+
+    private void CerrarModal()
+    {
+        mensajeExito = null;
+        StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
+    }
+
+    private void CerrarModalError()
+    {
+        mensajeError = null;
+        StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
+    }
+
 }

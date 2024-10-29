@@ -40,6 +40,10 @@
     color: white;
 }
 
+#btn{
+    background-color: #005da4;
+}
+
 #navbar {
     background-color: #eaeaea;
     lighting-color: #989d96;
@@ -53,27 +57,36 @@ thead {
     color: white;
 }
 
-#ModalsConfirmacion {
-    display: block; /* Asegúrate de que el modal esté visible */
-    background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco con opacidad */
-    border-radius: 0.5rem; /* Bordes redondeados */
+.custom-modal {
+    background-color: #fefefe /* Color de fondo suave */
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 5px 50px rgba(0, 0, 0, 0.2); /* Sombra */
+    border: 1px solid #ddd; /* Borde gris suave */
 }
 
-    #ModalsConfirmacion .modal-dialog {
-        max-width: 500px; /* Ancho máximo del modal */
-        margin: auto; /* Centra el modal */
+.modal-header {
+    border-bottom: 1px solid #ddd; /* Borde inferior del encabezado */
+    background-color: #005da4;
+    color: white;
+}
+
+.modal-footer {
+    border-top: 1px solid #ddd; /* Borde superior del pie */
+}
+
+.modal-body {
+    padding: 15px; /* Padding para el contenido del cuerpo */
+}
+
+
+
+.close {
+    background-color: #005da4;
+    color: white;
+    border-color: #005da4;
+}
+
+    .close:hover {
+        color: #000; /* Color al pasar el mouse */
     }
 
-    #ModalsConfirmacion .modal-content {
-        border: none; /* Sin borde en el contenido del modal */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para dar profundidad */
-    }
-
-    #ModalsConfirmacion .modal-header {
-        border-bottom: 1px solid #e9ecef; /* Línea inferior en el encabezado */
-        background-color: #f8f9fa; /* Fondo del encabezado */
-    }
-
-    #ModalsConfirmacion .modal-footer {
-        border-top: 1px solid #e9ecef; /* Línea superior en el pie del modal */
-    }

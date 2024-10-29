@@ -96,14 +96,44 @@
 
     @if (mensajeExito != null)
     {
-        <div class="alert alert-success">
-            @mensajeExito
+        <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content custom-modal">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmación</h5>
+                        <button type="button" class="close" @onclick="CerrarModal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>@mensajeExito</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary btnAceptar" @onclick="CerrarModal">Aceptar</button>
+                    </div>
+                </div>
+            </div>
         </div>
     }
     @if (mensajeError != null)
     {
-        <div class="alert alert-danger">
-            @mensajeError
+        <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content custom-modal">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmación</h5>
+                        <button type="button" class="close" @onclick="CerrarModalError" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>@mensajeError Error al registrar</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary btnAceptar" @onclick="CerrarModalError">Aceptar</button>
+                    </div>
+                </div>
+            </div>
         </div>
     }
 </div>
@@ -111,8 +141,7 @@
 
 @code {
 
-    string mensajeExito;
-    string mensajeError;
+    private string mensajeExito, mensajeError;
 
     private AsistenteControlador asistenteControlador = new AsistenteControlador();
     private PersonaControlador personaControlador = new PersonaControlador();
@@ -189,4 +218,17 @@
             };
         listaEncargados.Clear();
     }
+
+    private void CerrarModal()
+    {
+        mensajeExito = null;
+        StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
+    }
+
+    private void CerrarModalError()
+    {
+        mensajeError = null;
+        StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
+    }
+
 }
