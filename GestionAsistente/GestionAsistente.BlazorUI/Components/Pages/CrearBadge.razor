@@ -13,7 +13,7 @@
 
     <div class="mb-3">
         <label for="horaInicio">Hora de Inicio</label>
-        <InputSelect id="horaInicio" class="form-select" @bind-Value="horaInicio" @oninput="OnEstacionHorarioChanged">
+        <InputSelect id="horaInicio" class="form-select" @bind-Value="horaInicio" @oninput="OnHorarioChanged">
             <option value="">Seleccione la hora de inicio</option>
             @foreach (var hora in horasDelDiaInicio)
             {
@@ -49,7 +49,7 @@
     </div>
 
 
-    <button type="submit" class="btn btn-primary">Registrar</button>
+    <button type="submit" class="btn btn-primary" disabled="@EsFormularioInvalido()">Registrar</button>
 </EditForm>
 @if (mensajeExito != null)
 {
@@ -70,6 +70,7 @@
     string mensajeExito;
     string mensajeError;
     string horaInicio, horaFinal = "", horario;
+    string simboloRangoHoras = "a";
     int cantidadACrear = 1;
     List<Unidad> listaUnidades = new List<Unidad>();
     protected override async Task OnInitializedAsync()
@@ -95,11 +96,12 @@
         "14:00",
         "15:00",
         "16:00",
-        "17:00",
-        "18:00"
+        "17:00"
     };
-    private List<string> horasDelDiaFinal = new()
+
+    private List<string> horasDelDiaCompletas = new()
     {
+
         "07:00",
         "08:00",
         "09:00",
@@ -112,6 +114,11 @@
         "16:00",
         "17:00",
         "18:00"
+
+    };
+
+    private List<string> horasDelDiaFinal = new()
+    {
     };
 
 
@@ -121,7 +128,7 @@
         try
         {
             bool exito = false;
-            badge.Horario = horaInicio + " a " + horaFinal;
+            badge.Horario = $"{horaInicio} {simboloRangoHoras} {horaFinal}";
 
             for (int i = 1; i <= cantidadACrear; i++)
             {
@@ -150,17 +157,26 @@
         StateHasChanged();
     }
 
-    private async Task OnEstacionHorarioChanged(ChangeEventArgs e)
+    private async Task OnHorarioChanged(ChangeEventArgs e)
     {
         var horaInicioSeleccionada = e.Value?.ToString();
 
         if (!string.IsNullOrEmpty(horaInicioSeleccionada))
         {
-            horasDelDiaFinal = horasDelDiaInicio
+            horasDelDiaFinal = horasDelDiaCompletas
                 .Where(h => string.Compare(h, horaInicioSeleccionada) > 0)
                 .ToList();
         }
-        
+
+        horaFinal = horasDelDiaFinal.FirstOrDefault();
+
+        StateHasChanged();
+
+    }
+
+    private bool EsFormularioInvalido()
+    {
+        return string.IsNullOrEmpty(badge.Accesos) || string.IsNullOrEmpty(horaInicio) || string.IsNullOrEmpty(horaFinal) || cantidadACrear <= 0;
     }
 
 }
