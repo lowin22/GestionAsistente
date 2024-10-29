@@ -3,24 +3,24 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.34818.151
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionAsistente.BlazorUI", "GestionAsistente.BlazorUI\GestionAsistente.BlazorUI.csproj", "{D3A395E6-BC01-4AEA-BBBD-402D992D3E8A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GestionAsistente.BlazorUI", "GestionAsistente.BlazorUI\GestionAsistente.BlazorUI.csproj", "{D3A395E6-BC01-4AEA-BBBD-402D992D3E8A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{22C27BF6-0AE7-4BB5-AB4C-1B07535930CB} = {22C27BF6-0AE7-4BB5-AB4C-1B07535930CB}
 		{8F498629-85B6-4734-94C3-81FBA90CD022} = {8F498629-85B6-4734-94C3-81FBA90CD022}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionAsistente.AccesoDatos", "GestionAsistente.AccesoDatos\GestionAsistente.AccesoDatos.csproj", "{81FC9A4A-7A3B-4FFE-8934-EA53EC2453F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GestionAsistente.AccesoDatos", "GestionAsistente.AccesoDatos\GestionAsistente.AccesoDatos.csproj", "{81FC9A4A-7A3B-4FFE-8934-EA53EC2453F8}"
 	ProjectSection(ProjectDependencies) = postProject
 		{22C27BF6-0AE7-4BB5-AB4C-1B07535930CB} = {22C27BF6-0AE7-4BB5-AB4C-1B07535930CB}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionAsistente.ReglasNegocio", "GestionAsistente.ReglasNegocio\GestionAsistente.ReglasNegocio.csproj", "{8F498629-85B6-4734-94C3-81FBA90CD022}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GestionAsistente.ReglasNegocio", "GestionAsistente.ReglasNegocio\GestionAsistente.ReglasNegocio.csproj", "{8F498629-85B6-4734-94C3-81FBA90CD022}"
 	ProjectSection(ProjectDependencies) = postProject
 		{22C27BF6-0AE7-4BB5-AB4C-1B07535930CB} = {22C27BF6-0AE7-4BB5-AB4C-1B07535930CB}
 		{81FC9A4A-7A3B-4FFE-8934-EA53EC2453F8} = {81FC9A4A-7A3B-4FFE-8934-EA53EC2453F8}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestionAsistente.Entidades", "GestionAsistente.Entidades\GestionAsistente.Entidades.csproj", "{22C27BF6-0AE7-4BB5-AB4C-1B07535930CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GestionAsistente.Entidades", "GestionAsistente.Entidades\GestionAsistente.Entidades.csproj", "{22C27BF6-0AE7-4BB5-AB4C-1B07535930CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
