@@ -57,7 +57,7 @@
             <div class="col-md-6">
                 <div class="form-floating mb-3">
                     <InputSelect class="form-select" id="encargado" @bind-Value="asistente.EncargadoID">
-                        <option value="0">Seleccione un encargado</option>
+                        <option value="">Seleccione un encargado</option>
                         @foreach (var encargado in listaEncargados)
                         {
                             <option value="@encargado.EncargadoID">
@@ -83,7 +83,7 @@
                             <option value="@badge.BadgeID">@badge.BadgeID</option>
                         }
                     </InputSelect>
-                 
+
                 </div>
             </div>
         </div>
@@ -156,12 +156,13 @@
         {
             listaEncargados = new List<Encargado>();
         }
-        asistente.EncargadoID = 0;
+
         StateHasChanged();
     }
 
     private async Task RegistrarAsistente()
     {
+
         bool exito = await asistenteControlador.RegistrarAsistente(asistente);
         if (exito)
         {
@@ -175,7 +176,7 @@
 
             mensajeExito = null;
             mensajeError = "Hubo un problema al registrar el asistente.";
-        
+
         }
         // Aquí puedes agregar lógica adicional, como mostrar un mensaje de éxito o error
     }
@@ -187,5 +188,5 @@
                 Persona = new Persona()
             };
         listaEncargados.Clear();
-     }
+    }
 }

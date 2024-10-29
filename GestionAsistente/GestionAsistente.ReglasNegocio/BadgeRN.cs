@@ -56,7 +56,7 @@ namespace GestionAsistente.ReglasNegocio
             }
             return await badgeAD.ModificarBadge(badge);
         }
-        public async Task<List<Badge>> ListarBadgePorUnidad(int unidadID)
+        public async Task<List<Badge>> ListarBadgePorUnidad(int? unidadID)
         {
             if (unidadID == null)
             {
@@ -64,11 +64,10 @@ namespace GestionAsistente.ReglasNegocio
             }
             return await badgeAD.listarBadgePorUnidad(unidadID);
         }
+        public async Task<Badge> ObtenerBadgePorId(int? badgeID)
+        {
+            return await badgeAD.ObtenerBadgePorId(badgeID);
+        }
 
     }
-
-
-
-
-
 }

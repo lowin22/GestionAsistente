@@ -35,22 +35,22 @@
                     {
                         <tr>
                             <td>
-                                 
+
                                 <button @onclick="() => EliminarAsistente(asistente.AsistenteID)">Eliminar</button>
                                 <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#ActualizarAsistente" @onclick="() => PrepararActualizacion(asistente.AsistenteID)">
                                     Actualizar
                                 </button>
                             </td>
-                            <td>@asistente.AsistenteID</td>
+                            <td>@asistente.nombreUsuario</td>
                             <td>@($"{asistente.Persona?.Nombre} {asistente.Persona?.PrimerApellido} {asistente.Persona?.SegundoApellido}")</td>
                             <td>@asistente.Contrasenia</td>
                             <td>@($"{asistente.Encargado?.Persona.Nombre} {asistente.Encargado?.Persona.PrimerApellido} {asistente.Encargado?.Persona.SegundoApellido}")</td>
-                            <td>@asistente.Accesos</td>                                             
-                            <td>@asistente.BadgeID</td>                                                                               
+                            <td>@asistente.Accesos</td>
+                            <td>@asistente.BadgeID</td>
                             <td>@asistente.Unidad?.Nombre</td>
                             <td>
                                 <button class="btn" data-bs-toggle="modal" data-bs-target="#horario" @onclick="() => traerOficinas(asistente.AsistenteID)">
-                                    
+
                                     <span>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stopwatch" viewBox="0 0 16 16">
                                             <path d="M8.5 5.6a.5.5 0 1 0-1 0v2.9h-3a.5.5 0 0 0 0 1H8a.5.5 0 0 0 .5-.5z" />
@@ -101,6 +101,7 @@
                     <div class="mb-3">
                         <label for="unidadID" class="form-label">Unidad</label>
                         <InputSelect id="unidadID" class="form-control" @bind-Value="asistente.UnidadID" @oninput="OnUnidadChanged">
+                            <option value="0">-- Seleccione una unidad --</option>
                             @foreach (var unidad in listaUnidades)
                             {
                                 <option value="@unidad.UnidadID">@unidad.Nombre</option>
@@ -109,8 +110,8 @@
                     </div>
                     <div class="mb-3">
                         <label for="encargadoID" class="form-label">Encargado</label>
-                        <InputSelect id="encargadoID" class="form-control" @bind-Value="asistente.EncargadoID" disabled="@(!listaEncargados.Any())">
-                            <option value="0">-- Seleccione un encargado --</option> <!-- Opción en blanco -->
+                        <InputSelect id="encargadoID" class="form-control" @bind-Value="asistente.EncargadoID">
+                            <option value="">-- Seleccione un encargado --</option>
                             @foreach (var encargado in listaEncargados)
                             {
                                 <option value="@encargado.EncargadoID">@($"{encargado?.Persona.Nombre} {encargado?.Persona.PrimerApellido} {encargado?.Persona.SegundoApellido}")</option>
@@ -123,16 +124,15 @@
                     </div>
                     <div class="mb-3">
                         <label for="BadgeID">Badge</label>
-                        <InputSelect id="BadgeID" class="form-select" @bind-Value="asistente.BadgeID" >
-                            <option value="">Seleccione el badge</option>
+                        <InputSelect id="BadgeID" class="form-select" @bind-Value="asistente.BadgeID">
+                            <option value="">-- Seleccione el badge --</option>
                             @foreach (var badge in listaBadge)
                             {
                                 <option value="@badge.BadgeID">@badge.BadgeID</option>
                             }
                         </InputSelect>
                     </div>
-
-                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @onclick="GuardarActualizacionAsistente" disabled="@(!puedeGuardar())">Guardar Cambios</button>
+                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @onclick="GuardarActualizacionAsistente">Guardar Cambios</button>
                 </EditForm>
             </div>
         </div>
@@ -159,7 +159,7 @@
                 </div>
                 <div class="col-md-6">
                     <label for="EstacionTrabajo">EstacionTrabajo</label>
-                    <InputSelect id="EstacionTrabajo" class="form-select" @bind-Value="horario.EstacionTrabajoID" >
+                    <InputSelect id="EstacionTrabajo" class="form-select" @bind-Value="horario.EstacionTrabajoID">
                         <option value="">Seleccione la estación de trabajo</option>
                         @foreach (var estacionTrabajo in listaEstacionTrabajos)
                         {
@@ -194,7 +194,7 @@
 
                         <div class="card mt-4 col-md-6">
                             <label for="horaFinal">Hora de Final</label>
-                            <InputSelect id="horaFinal" class="form-select" @bind-Value="horaFinal" >
+                            <InputSelect id="horaFinal" class="form-select" @bind-Value="horaFinal">
                                 <option value="">Seleccione la hora de finalización</option>
                                 @foreach (var hora in horarioControlador.horasDelDiaFinal)
                                 {
@@ -207,7 +207,6 @@
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @onclick="GuardarHorarioAsistente">Guardar horario</button>
-
             </div>
         </div>
     </div>
@@ -236,30 +235,6 @@
                 Persona = new Persona()
             }
         };
-    private int? previousBadgeID;
-    private int? _currentBadgeID;
-
-    // Propiedad para controlar el BadgeID actual y almacenar el anterior
-    private int? CurrentBadgeID
-    {
-        get => _currentBadgeID;
-        set
-        {
-            if (value != _currentBadgeID)
-            {
-                // Guardar el valor anterior antes de cambiar al nuevo valor
-                previousBadgeID = _currentBadgeID;
-
-                // Asignar el nuevo valor
-                previousBadgeID = value;
-
-                // Asignar el nuevo valor a asistente.BadgeID
-                asistente.BadgeID = value;
-            }
-        }
-    }
-
-
 
     string horaInicio, horaFinal = "";
     private int oficinaID;
@@ -268,26 +243,34 @@
     private string horaInicioSeleccionada;
     private string horaFinalSeleccionada;
     private Asistente asistente = new Asistente
-                    {
-                        Persona = new Persona(),
-                        Encargado = new Encargado()
-                        {
-                            Persona = new Persona()
-                        }
-                    };
+        {
+            Persona = new Persona(),
+            Encargado = new Encargado()
+            {
+                Persona = new Persona()
+            }
 
+        };
 
+    Asistente asistenteActualizado = new Asistente
+        {
+            Persona = new Persona(),
+            Encargado = new Encargado()
+            {
+                Persona = new Persona()
+            }
+        };
     private bool unidadCambiada = false;
 
 
     private async Task GuardarHorarioAsistente()
-    {            
+    {
         horario.AsistenteID = asistente.AsistenteID;
         horario.HoraInicio = DateTime.Parse(horaInicio);
         horario.HoraFin = DateTime.Parse(horaFinal);
         await horarioControlador.RegistrarHorario(horario);
         // Limpiar el formulario
-        LimpiarFormulario();         
+        LimpiarFormulario();
     }
     private void LimpiarFormulario()
     {
@@ -300,36 +283,80 @@
     private async Task PrepararActualizacion(int asistenteID)
     {
         listaUnidades = await unidadControlador.ListarUnidades();
-        asistente = listaAsistentes.Find(a => a.AsistenteID == asistenteID);
-        if (asistente.UnidadID != 0)
+
+        asistenteActualizado = listaAsistentes.Find(a => a.AsistenteID == asistenteID);
+
+        asistente.AsistenteID = asistenteActualizado.AsistenteID;
+        asistente.nombreUsuario = asistenteActualizado.nombreUsuario;
+        asistente.Persona.Nombre = asistenteActualizado.Persona.Nombre;
+        asistente.Persona.PrimerApellido = asistenteActualizado.Persona.PrimerApellido;
+        asistente.Persona.SegundoApellido = asistenteActualizado.Persona.SegundoApellido;
+        asistente.Contrasenia = asistenteActualizado.Contrasenia;
+        asistente.EncargadoID = asistenteActualizado.EncargadoID;
+        asistente.Accesos = asistenteActualizado.Accesos;
+        asistente.BadgeID = asistenteActualizado.BadgeID;
+        asistente.UnidadID = asistenteActualizado.UnidadID;
+        asistente.Persona.PersonaID = asistenteActualizado.Persona.PersonaID;
+        if (asistente.UnidadID != 0 && asistente.UnidadID != null)
         {
             await CargarEncargados(asistente.UnidadID);
-            listaBadge = await badgeControlador.ListarBadgePorUnidad(asistente.Unidad.UnidadID);           
+            await CargarBadge(asistenteActualizado.UnidadID, asistente.BadgeID);
         }
 
     }
-
     private async Task OnUnidadChanged(ChangeEventArgs e)
     {
         if (int.TryParse(e.Value.ToString(), out int unidadId))
         {
+            // Actualizar el valor de UnidadID en el modelo
             asistente.UnidadID = unidadId;
-            asistente.EncargadoID = 0; // Reiniciar encargado al cambiar la unidad y agregar opción en blanco
-            unidadCambiada = true;
-            await CargarEncargados(unidadId);
-            listaBadge = await badgeControlador.ListarBadgePorUnidad(unidadId);
+
+            // Si se seleccionó una unidad válida
+            if (unidadId != 0)
+            {
+                // Cargar los encargados y los badges
+                await CargarEncargados(unidadId);
+                await CargarBadge(unidadId, asistente.BadgeID);
+            }
+            else
+            {
+                // Si se seleccionó la opción por defecto
+                // Limpiar los valores de EncargadoID y BadgeID
+                asistente.EncargadoID = 0;
+                asistente.BadgeID = 0;
+
+                // Limpiar las listas de encargados y badges
+                listaEncargados = new List<Encargado>();
+                listaBadge = new List<Badge>();
+            }
         }
     }
-
     private async Task CargarEncargados(int? unidadId)
     {
-        if (unidadId != 0)
+        if (unidadId != null)
         {
             listaEncargados = await encargadoControlador.ListarEncargadosPorID(unidadId);
         }
         else
         {
             listaEncargados = new List<Encargado>();
+        }
+    }
+    private async Task CargarBadge(int? unidadId, int? badgeID)
+    {
+        if (unidadId != 0)
+        {
+            listaBadge = await badgeControlador.ListarBadgePorUnidad(unidadId);
+            if (badgeID != null)
+            {
+                Badge badgeAsignado = await badgeControlador.ObtenerBadgePorId(badgeID);
+                listaBadge.Add(badgeAsignado);
+            }
+
+        }
+        else
+        {
+            listaBadge = new List<Badge>();
         }
     }
 
@@ -345,11 +372,14 @@
 
     private async Task GuardarActualizacionAsistente()
     {
-        // Verificación para asegurarse de que se seleccionó un encargado
-        if (asistente.EncargadoID == 0 && unidadCambiada)
+        if (asistente.UnidadID == 0)
         {
-            // No se ha seleccionado un encargado
-            return;
+            asistente.Unidad = null;
+            asistente.UnidadID = null;
+            asistente.Badge = null;
+            asistente.BadgeID = null;
+            asistente.Encargado = null;
+            asistente.EncargadoID = null;
         }
 
         bool actualizado = await asistenteControlador.ActualizarAsistente(asistente);
@@ -372,7 +402,7 @@
     {
         horario.Asistente.AsistenteID = asistenteID;
         listaOficinas = await oficinaControlador.ListarOficinas();
-      
+
     }
 
     private async Task OnEstacionChanged(ChangeEventArgs e)
@@ -384,10 +414,10 @@
         }
     }
     private async Task OnEstacionHorarioChanged(ChangeEventArgs e)
-    {     
+    {
         await horarioControlador.ListarHorariosPorEstacionTrabajo(horario.EstacionTrabajoID, e.Value.ToString());
-            StateHasChanged(); // Forzar la actualización de la UI
-  
+        StateHasChanged(); // Forzar la actualización de la UI
+
     }
     private async Task OnEstacionHoraFinalChanged(ChangeEventArgs e)
     {

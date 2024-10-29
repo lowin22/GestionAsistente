@@ -36,7 +36,7 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             List<BadgeEF> badgesEF = this._contexto.BadgesEF
                 .Include(e => e.Unidad)  // Incluir Unidad
                 .ToList();
-            
+
             foreach (BadgeEF badgeEF in badgesEF)
             {
 
@@ -106,7 +106,7 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             this._contexto.BadgesEF.Remove(badgeEF);
             return _contexto.SaveChanges() > 0;
         }
-        public async Task<List<Badge>> listarBadgePorUnidad(int unidadId)
+        public async Task<List<Badge>> listarBadgePorUnidad(int? unidadId)
         {
             // Filtrar los badges por UnidadID antes de traerlos desde la base de datos
             List<BadgeEF> badgesEF = await this._contexto.BadgesEF
@@ -135,6 +135,35 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             }
 
             return badges;
+        }
+        public async Task<Badge> ObtenerBadgePorId(int? badgeID)
+        {
+            // Buscar un BadgeEF que coincida con el badgeID
+            BadgeEF badgeEF = await this._contexto.BadgesEF
+                .Include(e => e.Unidad)  // Incluir Unidad
+                .FirstOrDefaultAsync(b => b.BadgeID == badgeID);  // Filtrar por BadgeID
+
+            // Verificar si se encontró el badge
+            if (badgeEF == null)
+            {
+                return null; // o puedes lanzar una excepción si prefieres
+            }
+
+            // Mapear BadgeEF a Badge
+            Badge badge = new Badge
+            {
+                BadgeID = badgeEF.BadgeID,
+                Horario = badgeEF.Horario,
+                UnidadID = badgeEF.UnidadID,
+                Accesos = badgeEF.Accesos,
+                Unidad = badgeEF.Unidad != null ? new Unidad
+                {
+                    UnidadID = badgeEF.Unidad.UnidadID,
+                    Nombre = badgeEF.Unidad.Nombre
+                } : null
+            };
+
+            return badge;
         }
     }
 }

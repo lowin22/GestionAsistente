@@ -50,69 +50,80 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                 };
                 await reporteBadgeAD.RegistrarReporteBadge(reporteBadge);
                 badgeEF.Ocupado = true;
-                
+
             }
-            else if (badgeEF == null)
-            {
-                badgeEF.Ocupado = false;
-            }
+
             this._contexto.AsistenteEFs.Add(asistenteEF);
             return this._contexto.SaveChanges() > 0;
         }
         public async Task<List<Asistente>> listarAsistentes()
         {
-            List<AsistenteEF> asistenteEFs = _contexto.AsistenteEFs
-                .Include(a => a.Persona)
-                .Include(a => a.Encargado)          // Incluir Encargado
-                    .ThenInclude(e => e.Persona)    // Incluir Persona del Encargado
-                .Include(a => a.Unidad)             // Incluir Unidad
-                .Include(a => a.Badge)              // Incluir Badge
-                .ToList();
-
-            List<Asistente> asistentes = new List<Asistente>();
-
-            foreach (AsistenteEF asistenteEF in asistenteEFs)
+            try
             {
-                // Mapear las propiedades de Asistente
-                Asistente asistente = new Asistente
+                List<AsistenteEF> asistenteEFs = await _contexto.AsistenteEFs
+                    .Include(a => a.Persona)
+                    .Include(a => a.Encargado)
+                    .Include(a => a.Encargado.Persona)
+                    .Include(a => a.Unidad)
+                    .Include(a => a.Badge)
+                    .ToListAsync(); // Usar versión asíncrona
+
+                List<Asistente> asistentes = new List<Asistente>();
+
+                foreach (AsistenteEF asistenteEF in asistenteEFs)
                 {
-                    AsistenteID = asistenteEF.AsistenteID,
-                    EncargadoID = asistenteEF.Encargado.EncargadoID,
-                    Persona = new Persona // Mapeo de Persona asistente
-                    {
-                        PersonaID = asistenteEF.Persona.PersonaID,
-                        Nombre = asistenteEF.Persona.Nombre,
-                        PrimerApellido = asistenteEF.Persona.PrimerApellido,
-                        SegundoApellido = asistenteEF.Persona.SegundoApellido
-                    },
+                    if (asistenteEF == null) continue;
 
-                    UnidadID = asistenteEF.UnidadID,
-                    // Mapeo de nombre de la Unidad
-                    Unidad = asistenteEF.Unidad != null ? new Unidad // Asegúrate de que tu clase Asistente tenga una propiedad Unidad
+                    var asistente = new Asistente
                     {
-                        UnidadID = asistenteEF.Unidad.UnidadID, // Asumiendo que Unidad tiene UnidadID
-                        Nombre = asistenteEF.Unidad.Nombre // Mapeo del nombre de la unidad
-                    } : null,
-                    nombreUsuario = asistenteEF.nombreUsuario,
-                    Accesos = asistenteEF.Accesos,
-                    Contrasenia = asistenteEF.Contrasenia,
-                    BadgeID = asistenteEF.BadgeID,
-                    Encargado = asistenteEF.Encargado != null ? new Encargado // Mapeo de Encargado
-                    {
-                        EncargadoID = asistenteEF.Encargado.EncargadoID,
-                        Persona = new Persona // Mapeo de Persona
+                        AsistenteID = asistenteEF.AsistenteID,
+                        EncargadoID = asistenteEF.Encargado?.EncargadoID,
+                        nombreUsuario = asistenteEF.nombreUsuario,
+                        Accesos = asistenteEF.Accesos,
+                        Contrasenia = asistenteEF.Contrasenia,
+                        BadgeID = asistenteEF.BadgeID,
+                        UnidadID = asistenteEF.UnidadID,
+
+                        // Mapeo seguro de Persona
+                        Persona = asistenteEF.Persona != null ? new Persona
                         {
-                            Nombre = asistenteEF.Encargado.Persona.Nombre,
-                            PrimerApellido = asistenteEF.Encargado.Persona.PrimerApellido,
-                            SegundoApellido = asistenteEF.Encargado.Persona.SegundoApellido
-                        }
-                    } : null
-                };
+                            PersonaID = asistenteEF.Persona.PersonaID,
+                            Nombre = asistenteEF.Persona.Nombre ?? string.Empty,
+                            PrimerApellido = asistenteEF.Persona.PrimerApellido ?? string.Empty,
+                            SegundoApellido = asistenteEF.Persona.SegundoApellido ?? string.Empty
+                        } : null,
 
-                asistentes.Add(asistente);
+                        // Mapeo seguro de Unidad
+                        Unidad = asistenteEF.Unidad != null ? new Unidad
+                        {
+                            UnidadID = asistenteEF.Unidad.UnidadID,
+                            Nombre = asistenteEF.Unidad.Nombre ?? string.Empty
+                        } : null,
+
+                        // Mapeo seguro de Encargado
+                        Encargado = asistenteEF.Encargado != null && asistenteEF.Encargado.Persona != null ?
+                            new Encargado
+                            {
+                                EncargadoID = asistenteEF.Encargado.EncargadoID,
+                                Persona = new Persona
+                                {
+                                    Nombre = asistenteEF.Encargado.Persona.Nombre ?? string.Empty,
+                                    PrimerApellido = asistenteEF.Encargado.Persona.PrimerApellido ?? string.Empty,
+                                    SegundoApellido = asistenteEF.Encargado.Persona.SegundoApellido ?? string.Empty
+                                }
+                            } : null
+                    };
+
+                    asistentes.Add(asistente);
+                }
+
+                return asistentes;
             }
-
-            return asistentes;
+            catch (Exception ex)
+            {
+                // Aquí puedes manejar la excepción como prefieras
+                throw new Exception($"Error al listar asistentes: {ex.Message}");
+            }
         }
 
         public async Task<bool> ModificarAsistente(Asistente asistente)
@@ -125,6 +136,7 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                 int? idBadge = asistenteEF.BadgeID;
                 BadgeEF badgeEF = _contexto.BadgesEF.Find(idBadge);
                 badgeEF.Ocupado = false;
+
             }
 
             // Verificar si se encontró el asistente
@@ -152,20 +164,20 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             asistenteEF.BadgeID = asistente.BadgeID;
 
             // Guardar los cambios en la base de datos
-            BadgeEF badgeEF2 = _contexto.BadgesEF.Find(asistente.BadgeID);
+            BadgeEF badgeEFActual = _contexto.BadgesEF.Find(asistente.BadgeID);
 
-            if (badgeEF2 != null)
+            if (badgeEFActual != null)
             {
                 ReporteBadge reporteBadge = new ReporteBadge
                 {
                     NombreUsuario = "Usuario prueba",
-                    NumeroBadge = badgeEF2.BadgeID,
+                    NumeroBadge = badgeEFActual.BadgeID,
                     NombreAsistente = asistente.Persona.Nombre,
                     Accion = "Asignación de tarjeta"
                 };
                 await reporteBadgeAD.RegistrarReporteBadge(reporteBadge);
 
-                badgeEF2.Ocupado = true;
+                badgeEFActual.Ocupado = true;
 
             }
 

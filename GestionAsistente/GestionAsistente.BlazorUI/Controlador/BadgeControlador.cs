@@ -36,11 +36,14 @@ namespace GestionAsistente.BlazorUI.Controlador
             return await badgeRN.ActualizarBadge(badge);
         }
 
-        public async Task<List<Badge>> ListarBadgePorUnidad(int unidadID)
+        public async Task<List<Badge>> ListarBadgePorUnidad(int? unidadID)
         {
             return await badgeRN.ListarBadgePorUnidad(unidadID);
         }
 
-
+        public async Task<Badge> ObtenerBadgePorId(int? badgeID)
+        {
+            return await badgeRN.ObtenerBadgePorId(badgeID);
+        }
     }
 }
