@@ -40,7 +40,7 @@
                     {
                         <tr>
                             <td>
-                                <button class="btn" data-bs-toggle="modal" data-bs-target="#ModificarBadge" @onclick="() => seleccionarEditarUsuario(badge.BadgeID)">
+                            <button class="btn" data-bs-toggle="modal" data-bs-target="#ModificarBadge" @onclick="() => seleccionarEditarBadge(badge.BadgeID)">
                                     <!-- Icono SVG para editar -->
                                     <svg width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
                                         <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z" />
@@ -67,7 +67,7 @@
                     {
                         <tr>
                             <td>
-                                <button class="btn" data-bs-toggle="modal" data-bs-target="#ModificarBadge" @onclick="() => seleccionarEditarUsuario(badge.BadgeID)">
+                            <button class="btn" data-bs-toggle="modal" data-bs-target="#ModificarBadge" @onclick="() => seleccionarEditarBadge(badge.BadgeID)">
                                     <!-- Icono SVG para editar -->
                                     <svg width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
                                         <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z" />
@@ -203,6 +203,7 @@
     string horaInicio, horaFinal = "", horario;
     string mensajeExito;
     string mensajeError;
+    string simboloRangoHoras = "a";
     private string badgeABuscar;
     private List<Badge> badgesBuscar = new List<Badge>();
 
@@ -238,11 +239,12 @@
         "14:00",
         "15:00",
         "16:00",
-        "17:00",
-        "18:00"
+        "17:00"
     };
+
     private List<string> horasDelDiaFinal = new()
     {
+
         "07:00",
         "08:00",
         "09:00",
@@ -255,6 +257,25 @@
         "16:00",
         "17:00",
         "18:00"
+
+    };
+
+    private List<string> horasDelDiaCompletas = new()
+    {
+
+        "07:00",
+        "08:00",
+        "09:00",
+        "10:00",
+        "11:00",
+        "12:00",
+        "13:00",
+        "14:00",
+        "15:00",
+        "16:00",
+        "17:00",
+        "18:00"
+
     };
 
     protected override async Task OnInitializedAsync()
@@ -301,16 +322,23 @@
     }
 
 
-    async Task seleccionarEditarUsuario(int badgeID)
+    async Task seleccionarEditarBadge(int badgeID)
     {
 
         actualizarBadge = listaBadge.Find(b => b.BadgeID == badgeID);
+
+        //partir las horas en dos variables para mostrarlas en el formulario
+        var horas = actualizarBadge.Horario.Split(simboloRangoHoras);
 
         badge.Accesos = actualizarBadge.Accesos;
         badge.UnidadID = actualizarBadge.UnidadID;
         badge.Horario = actualizarBadge.Horario;
         badge.BadgeID = actualizarBadge.BadgeID;
+        badge.Ocupado = actualizarBadge.Ocupado;
 
+        //actualizar la variable horainicio y horafinal para la parte visual cuando se actualiza el badge
+        horaInicio = horas[0].Trim();
+        horaFinal = horas[1].Trim();
     }
 
     private async Task ModificarBadge()
@@ -320,7 +348,7 @@
         {
 
             bool exito = false;
-            badge.Horario = horaInicio + " a " + horaFinal;
+            badge.Horario = $"{horaInicio} {simboloRangoHoras} {horaFinal}";
 
             exito = await badgeControlador.ActualizarBadge(badge);
 
@@ -347,6 +375,28 @@
         }
 
         StateHasChanged();
+    }
+
+    private async Task OnHorarioChanged(ChangeEventArgs e)
+    {
+        var horaInicioSeleccionada = e.Value?.ToString();
+
+        if (!string.IsNullOrEmpty(horaInicioSeleccionada))
+        {
+            horasDelDiaFinal = horasDelDiaCompletas
+                .Where(h => string.Compare(h, horaInicioSeleccionada) > 0)
+                .ToList();
+        }
+
+        horaFinal = horasDelDiaFinal.FirstOrDefault();
+
+        StateHasChanged();
+
+    }
+
+    private bool EsFormularioInvalido()
+    {
+        return string.IsNullOrEmpty(badge.Accesos) || string.IsNullOrEmpty(horaInicio) || string.IsNullOrEmpty(horaFinal);
     }
 
 }
