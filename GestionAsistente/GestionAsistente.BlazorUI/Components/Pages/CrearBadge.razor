@@ -36,6 +36,7 @@
     <div class="mb-3">
         <label for="unidadID" class="form-label">Unidad</label>
         <InputSelect id="unidadID" class="form-control" @bind-Value="badge.UnidadID">
+            <option value="">Sin unidad</option>
             @foreach (var unidad in listaUnidades)
             {
                 <option value="@unidad.UnidadID">@unidad.Nombre</option>

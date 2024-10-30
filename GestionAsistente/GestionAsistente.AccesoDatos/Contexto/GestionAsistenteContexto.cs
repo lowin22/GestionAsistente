@@ -12,7 +12,7 @@ namespace GestionAsistente.AccesoDatos.Contexto
     public class GestionAsistenteContexto : DbContext
     {
         public GestionAsistenteContexto() : base(new DbContextOptionsBuilder<GestionAsistenteContexto>()
-            .UseSqlServer("Data Source=163.178.107.10;Initial Catalog=GestionAsistenteDaVinciCodersTwo;User ID=laboratorios;Password=_)Ui7%-cX!?xw=t\"$\r\n;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False").Options)
+            .UseSqlServer("Data Source=163.178.107.10;Initial Catalog=CredentialsGestionAsistenteDaVinciCoders;User ID=laboratorios;Password=_)Ui7%-cX!?xw=t\"$\r\n;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False").Options)
         {
         }
         public DbSet<PersonaEF> PersonaEFs { get; set; }
