@@ -1,4 +1,5 @@
 ﻿@page "/mostrar-usuarios"
+@using GestionAsistente.AccesoDatos.Modelos
 @using GestionAsistente.BlazorUI.Components.Layout
 @using GestionAsistente.BlazorUI.Controlador
 @using GestionAsistente.BlazorUI.Data
@@ -8,11 +9,9 @@
 @layout LayoutPrincipal
 @rendermode InteractiveServer
 @inject UserManager<ApplicationUser> UserManager
+@inject RoleManager<IdentityRole> RolManager
 
 <h3 class="mb-4">Mostrar Usuarios</h3>
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CrearUsuario">
-    Crear Usuario
-</button>
 <div class="col-md-12 col-xs-12 col-sm-12" style="text-align: center; overflow-y: auto; top: 0px; left: 0px;">
     <div class="table-responsive col-md-12 col-xs-12 col-sm-12" style="text-align: center; overflow-y: auto;">
         <table class="table table-bordered table-striped">
@@ -21,6 +20,7 @@
                     <th>Opciones</th>
                     <th>Nombre Usuario</th>
                     <th>Rol</th>
+                    <th>Unidad</th>
                 </tr>
             </thead>
             <tbody>
@@ -50,8 +50,8 @@
                             </td>
                             <td>@usuario.UserName</td>
                             <td>@rol</td>
-@*                             <td>@usuario.Rol?.Nombre</td>
-                            <td>@usuario.Unidad?.Nombre</td> *@
+                            <td>@usuario.Unidad?.Nombre</td>
+                            
                         </tr>
                     }
                 }
@@ -60,58 +60,6 @@
         </table>
     </div>
 </div>
-
-@* <div class="modal fade" id="CrearUsuario" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="CrearUsuario">Registrar Usuario</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <EditForm Model="crearUsuario" OnValidSubmit="RegistrarUsuario" FormName="crearUsuarioForm">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary />
-                    <div class="mb-3">
-                        <label for="nombre" class="form-label">Nombre</label>
-                        <InputText id="nombre" class="form-control" @bind-Value="crearUsuario.Persona.Nombre" />
-                    </div>
-                    <div class="mb-3">
-                        <label for="primerApellido" class="form-label">Primer Apellido</label>
-                        <InputText id="primerApellido" class="form-control" @bind-Value="crearUsuario.Persona.PrimerApellido" />
-                    </div>
-                    <div class="mb-3">
-                        <label for="segundoApellido" class="form-label">Segundo Apellido</label>
-                        <InputText id="segundoApellido" class="form-control" @bind-Value="crearUsuario.Persona.SegundoApellido" />
-                    </div>
-                    <div class="mb-3">
-                        <label for="contrasenia" class="form-label">Contraseña</label>
-                        <InputText type="password" id="contrasenia" class="form-control" @bind-Value="crearUsuario.Contrasenia" />
-                    </div>
-                    <div class="mb-3">
-                        <label for="unidadID" class="form-label">Unidad</label>
-                        <InputSelect id="unidadID" class="form-control" @bind-Value="crearUsuario.UnidadID">
-                            @foreach (var unidad in listaUnidades)
-                            {
-                                <option value="@unidad.UnidadID">@unidad.Nombre</option>
-                            }
-                        </InputSelect>
-                    </div>
-                    <div class="mb-3">
-                        <label for="rolID" class="form-label">Rol</label>
-                        <InputSelect id="rolID" class="form-control" @bind-Value="crearUsuario.RolID">
-                            @foreach (var rol in listaRoles)
-                            {
-                                <option value="@rol.RolID">@rol.Nombre</option>
-                            }
-                        </InputSelect>
-                    </div>
-                    <button type="submit" class="btn btn-primary " data-bs-dismiss="modal">Registrar Usuario</button>
-                </EditForm>
-            </div>
-        </div>
-    </div>
-</div> *@
 
 <div class="modal fade" id="EditarUsuario" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -124,18 +72,32 @@
                 <EditForm Model="usuario" OnValidSubmit="ActualizarUsuario" FormName="actualizarUsuarioForm">
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Nombre Usuario</label>
-                        <InputText id="nombre" class="form-control" @bind-Value="usuario.UserName" />
+                        <InputText id="nombre" class="form-control" @bind-Value="actualizarUsuario.UserName" />
                     </div>
-@*                     <div class="mb-3">
+
+                    <div class="mb-3">
                         <label for="rolID" class="form-label">Rol</label>
-                        <InputSelect id="rolID" class="form-control" @bind-Value="rolId">
-                            @foreach (var rol in listaRoles)
+                        <InputSelect id="rolID" class="form-control" @bind-Value="rolName">
+                             <option value="">Sin rol</option>
+                            @foreach (var rol in listaRolesAsignar)
                             {
-                                <option value="@rol.RolID">@rol.Nombre</option>
+                                <option value="@rol.Name">@rol.Name</option>
                             }
                         </InputSelect>
-                    </div> *@
-                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Actualizar Encargado</button>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="unidadID" class="form-label">Unidad</label>
+                        <InputSelect id="unidadID" class="form-control" @bind-Value="actualizarUsuario.UnidadID">
+                            <option value="">Sin unidad</option>
+                            @foreach (var unidad in listaUnidades)
+                            {
+                                <option value="@unidad.UnidadID">@unidad.Nombre</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Actualizar Usuario</button>
                 </EditForm>
             </div>
         </div>
@@ -173,41 +135,51 @@
     private UnidadControlador unidadControlador = new UnidadControlador();
     private RolControlador rolControlador = new RolControlador();
 
+    List<Unidad> listaUnidades = new List<Unidad>();
+
     private List<ApplicationUser> listaUsuarios = new List<ApplicationUser>();
 
-    private ApplicationUser usuarioEliminar = new ApplicationUser();
+    private ApplicationUser usuarioEliminar = new ApplicationUser
+    {
+  
 
-    private int rolId = 0;
+    };
 
-    // private List<Rol> listaRoles = new List<Rol>();
+    private string rolName = "0";
+
+    private List<IdentityRole> listaRolesAsignar = new List<IdentityRole>();
 
     private List<string> listaRoles = new List<string>();
 
-    private ApplicationUser usuario = new ApplicationUser();
+    private ApplicationUser usuario = new ApplicationUser
+    {
+           
+    };
 
-    private ApplicationUser actualizarUsuario = new ApplicationUser();
+    private ApplicationUser actualizarUsuario = new ApplicationUser
+    {
+           
+    };
 
     async Task EditarUsuario(string userId)
     {
 
         actualizarUsuario = await UserManager.FindByIdAsync(userId);
 
-        usuario.UserName = actualizarUsuario.UserName;
+        var roles = await UserManager.GetRolesAsync(actualizarUsuario);
 
-        // usuario.UsuarioID = actualizarUsuario.UsuarioID;
-        // usuario.PersonaID = actualizarUsuario.Persona.PersonaID;
-        // usuario.Persona.Nombre = actualizarUsuario.Persona.Nombre;
-        // usuario.Persona.PrimerApellido = actualizarUsuario.Persona.PrimerApellido;
-        // usuario.Persona.SegundoApellido = actualizarUsuario.Persona.SegundoApellido;
-        // usuario.UnidadID = actualizarUsuario.UnidadID;
-        // usuario.RolID = actualizarUsuario.RolID;
-        // usuario.Contrasenia = actualizarUsuario.Contrasenia;
+        rolName = roles.FirstOrDefault();
+        
     }
 
 
     protected override async Task OnInitializedAsync()
     {
-        listaUsuarios = await UserManager.Users.ToListAsync();
+        listaUsuarios = listaUsuarios = await UserManager.Users
+        .Include(u => u.Unidad)
+        .ToListAsync();
+
+        listaRolesAsignar = await RolManager.Roles.ToListAsync();
 
         foreach (var usuario in listaUsuarios)
         {
@@ -215,6 +187,9 @@
             var cadenaRoles = string.Join(", ", roles);
             listaRoles.Add(cadenaRoles);
         }
+
+
+        listaUnidades = await unidadControlador.ListarUnidades();
 
         // listaRoles = await rolControlador.ListarRoles();
     }
@@ -261,7 +236,9 @@
         //vaciar la lista de roles
         listaRoles.Clear();
 
-        listaUsuarios = await UserManager.Users.ToListAsync();
+        listaUsuarios = listaUsuarios = await UserManager.Users
+        .Include(u => u.Unidad)
+        .ToListAsync();
 
         foreach (var usuario in listaUsuarios)
         {
@@ -276,11 +253,46 @@
     private async Task ActualizarUsuario()
     {
         
-        // await usuarioControlador.ActualizarUsuario(usuario);
+        var result = await UserManager.UpdateAsync(actualizarUsuario);
 
-        // listaUsuarios = await usuarioControlador.ListarUsuarios();
+        if (result.Succeeded)
+        {
+            Console.WriteLine("Se actualizo correctamente usuario");
+        }
+        else
+        {
+            Console.WriteLine("Fallo del usuarios");
+        }
 
-        // StateHasChanged();
+        //Limpiar roles
+
+        var rolesActuales = await UserManager.GetRolesAsync(actualizarUsuario);
+
+        if (rolesActuales.Count > 0)
+        {
+            await UserManager.RemoveFromRolesAsync(actualizarUsuario, rolesActuales);
+        }
+
+        if (!string.IsNullOrEmpty(rolName))
+        {
+            //Agregar nuevo rol
+            result = await UserManager.AddToRoleAsync(actualizarUsuario, rolName);
+        }
+        
+        listaUsuarios = await UserManager.Users
+        .Include(u => u.Unidad)
+        .ToListAsync();
+
+        listaRoles.Clear();
+
+        foreach (var usuario in listaUsuarios)
+        {
+            var roles = await UserManager.GetRolesAsync(usuario);
+            var cadenaRoles = string.Join(", ", roles);
+            listaRoles.Add(cadenaRoles);
+        }
+
+        StateHasChanged();
 
     }
 
