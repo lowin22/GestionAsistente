@@ -85,6 +85,12 @@
     public EncargadoControlador encargadoControlador = new EncargadoControlador();
     private string mensajeExito, mensajeError;
 
+    public HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
+    public HistorialAcciones historialAcciones = new HistorialAcciones
+    {
+        NombrePersona = "UsuarioSesion"
+    };
+
     protected override async Task OnInitializedAsync()
     {
         encargadoControlador.listarUnidades();
@@ -100,6 +106,13 @@
             mensajeError = null;
             LimpiarFormulario();
             StateHasChanged();
+
+            //Establecer propiedades para historialAcciones de registrar
+            historialAcciones.Accion = "Registrar encargado: " + encargadoControlador.encargado.Persona.Nombre + " " +
+            encargadoControlador.encargado.Persona.PrimerApellido + " " + encargadoControlador.encargado.Persona.SegundoApellido;
+            historialAcciones.Fecha = DateTime.Now;
+
+            await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
         }
         else
         {
