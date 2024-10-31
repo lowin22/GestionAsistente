@@ -4,10 +4,11 @@
     <div id="top-header">
         <div class="container-fluid">
             <div class="row align-items-center">
-                <div class="col">UNIVERSIDAD DE COSTA RICA</div>
+                <div class="col">
+                    <img src="/logoUCR.png" alt="Logo UCR" height="45%" width="45%" />
+                </div>
                 <div class="col text-end">
-                    LanammeUCR
-                    <span class="ms-2 small">Laboratorio Nacional de Materiales y Modelos Estructurales</span>
+                    <img src="/logoLanamme.png" alt="Logo Lanamme" height="45%" width="45%" />
                 </div>
             </div>
         </div>
@@ -20,15 +21,29 @@
 </header>
 
 
-   
-
-
-
-
 <!-- Contenido dinámico -->
+<style>
+    /* Establece la imagen de fondo en el body */
+    body {
+        background-image: url('/background.png');
+        background-size: cover; /* Cubre toda la pantalla */
+        background-repeat: no-repeat; /* Evita que se repita */
+        background-position: center; /* Centra la imagen */
+        margin: 0; /* Elimina márgenes del body */
+        height: 100vh; /* Asegura que ocupe toda la altura de la pantalla */
+    }
+
+    /* Opcional: Si necesitas ajustar el main */
+    main.container {
+        
+        
+    }
+</style>
+
 <main class="container my-4">
     @Body
 </main>
+
 
 <!-- Pie de página -->
 <footer class="footer">
