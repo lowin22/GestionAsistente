@@ -21,16 +21,17 @@
                     <th>Nombre Usuario</th>
                     <th>Rol</th>
                     <th>Unidad</th>
+                    <th>Activo</th>
                 </tr>
             </thead>
             <tbody>
 
-                @if (listaUsuarios != null)
+                @if (listaUsuariosPaginacion != null)
 
                 {
-                    @for (int i = 0; i < listaUsuarios.Count; i++)
+                    @for (int i = 0; i < listaUsuariosPaginacion.Count; i++)
                     {
-                        var usuario = listaUsuarios[i];
+                        var usuario = listaUsuariosPaginacion[i];
                         var rol = listaRoles[i];
                         
                         <tr>
@@ -51,7 +52,7 @@
                             <td>@usuario.UserName</td>
                             <td>@rol</td>
                             <td>@usuario.Unidad?.Nombre</td>
-                            
+                            <td>@(usuario.EmailConfirmed ? "Sí" : "No")</td>
                         </tr>
                     }
                 }
@@ -72,7 +73,7 @@
                 <EditForm Model="usuario" OnValidSubmit="ActualizarUsuario" FormName="actualizarUsuarioForm">
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Nombre Usuario</label>
-                        <InputText id="nombre" class="form-control" @bind-Value="actualizarUsuario.UserName" />
+                        <InputText id="nombre" class="form-control" @bind-Value="usuario.UserName" />
                     </div>
 
                     <div class="mb-3">
@@ -88,7 +89,7 @@
 
                     <div class="mb-3">
                         <label for="unidadID" class="form-label">Unidad</label>
-                        <InputSelect id="unidadID" class="form-control" @bind-Value="actualizarUsuario.UnidadID">
+                        <InputSelect id="unidadID" class="form-control" @bind-Value="usuario.UnidadID">
                             <option value="">Sin unidad</option>
                             @foreach (var unidad in listaUnidades)
                             {
@@ -97,7 +98,16 @@
                         </InputSelect>
                     </div>
 
+                    <div class="mb-3">
+                        <label>Activo</label>
+                        <InputCheckbox @bind-Value="usuario.EmailConfirmed" />
+                    </div>
+
+                    <button class="btn btn-danger" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
                     <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Actualizar Usuario</button>
+                
                 </EditForm>
             </div>
         </div>
@@ -153,7 +163,7 @@
     private int pageSize = 10;
     private int totalItems;
     private int totalPages;
-    private List<Usuario> listaUsuariosPaginacion = new List<Usuario>();
+    private List<ApplicationUser> listaUsuariosPaginacion = new List<ApplicationUser>();
 
     private HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
     private HistorialAcciones historialAcciones = new HistorialAcciones
@@ -163,7 +173,7 @@
 
     private ApplicationUser usuarioEliminar = new ApplicationUser
     {
-  
+
 
     };
 
@@ -175,12 +185,12 @@
 
     private ApplicationUser usuario = new ApplicationUser
     {
-           
+
     };
 
     private ApplicationUser actualizarUsuario = new ApplicationUser
     {
-           
+
     };
 
     async Task EditarUsuario(string userId)
@@ -188,18 +198,34 @@
 
         actualizarUsuario = await UserManager.FindByIdAsync(userId);
 
+        //asignar propiedades al usuario
+        usuario.UserName = actualizarUsuario.UserName;
+        usuario.UnidadID = actualizarUsuario.UnidadID;
+        usuario.EmailConfirmed = actualizarUsuario.EmailConfirmed;
+
         var roles = await UserManager.GetRolesAsync(actualizarUsuario);
 
         rolName = roles.FirstOrDefault();
-        
+
     }
 
 
     protected override async Task OnInitializedAsync()
     {
-        listaUsuarios = listaUsuarios = await UserManager.Users
+        //Inicio Listar usuarios que no sean administradores 
+        var listaTodosUsuarios = await UserManager.Users
         .Include(u => u.Unidad)
         .ToListAsync();
+
+        foreach (var user in listaTodosUsuarios)
+        {
+            var roles = await UserManager.GetRolesAsync(user);
+            if (!roles.Contains("Administrador"))
+            {
+                listaUsuarios.Add(user);
+            }
+        }
+        //FIN Listar usuarios que no sean administradores
 
         listaRolesAsignar = await RolManager.Roles.ToListAsync();
 
@@ -208,6 +234,8 @@
             var roles = await UserManager.GetRolesAsync(usuario);
             var cadenaRoles = string.Join(", ", roles);
             listaRoles.Add(cadenaRoles);
+
+            //usuario-> nombre, cadena Roles -> Rol
         }
 
 
@@ -249,17 +277,17 @@
         if (result.Succeeded)
         {
             Console.WriteLine("Usuario eliminado.");
+
+            //Establecer propiedades para historialAcciones de registrar
+            historialAcciones.Accion = "Eliminar usuario: " + usuarioEliminar.UserName;
+            historialAcciones.Fecha = DateTime.Now;
+
+            await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
         }
         else
         {
             Console.WriteLine("No se logro eliminar el usuario.");
         }
-         
-        //Establecer propiedades para historialAcciones de registrar
-        historialAcciones.Accion = "Eliminar usuario: " + usuarioEliminar.UserName;
-        historialAcciones.Fecha = DateTime.Now;
-
-        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
 
         //vaciar la lista de roles
         listaRoles.Clear();
@@ -280,24 +308,30 @@
 
     private async Task ActualizarUsuario()
     {
-        
+        //colocar antes que se actualicen las propiedades del usuario
+        historialAcciones.Accion = "Actualizar usuario: " + actualizarUsuario.UserName +
+    " a " + usuario.UserName;
+
+        //actualizar las propiedades asignadas en el formulario
+        actualizarUsuario.UserName = usuario.UserName;
+        actualizarUsuario.UnidadID = usuario.UnidadID;
+        actualizarUsuario.EmailConfirmed = usuario.EmailConfirmed;
+
         var result = await UserManager.UpdateAsync(actualizarUsuario);
 
         if (result.Succeeded)
         {
             Console.WriteLine("Se actualizo correctamente usuario");
+
+            //Establecer propiedades para historialAcciones de registrar
+            historialAcciones.Fecha = DateTime.Now;
+
+            await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
         }
         else
         {
             Console.WriteLine("Fallo del usuarios");
         }
-
-        //Establecer propiedades para historialAcciones de registrar
-        historialAcciones.Accion = "Actualizar usuario: " + actualizarUsuario.UserName +
-        " a " + usuario.UserName; 
-        historialAcciones.Fecha = DateTime.Now;
-
-        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
 
         //Limpiar roles
 
@@ -313,7 +347,7 @@
             //Agregar nuevo rol
             result = await UserManager.AddToRoleAsync(actualizarUsuario, rolName);
         }
-        
+
         listaUsuarios = await UserManager.Users
         .Include(u => u.Unidad)
         .ToListAsync();
@@ -330,10 +364,14 @@
         StateHasChanged();
 
     }
+      
+    //Usuario [10, 10, 10,10]
+    //Roles [10, 10, 10, 10]
 
+    //Nueva lista paginacion [10] 0, 1,2, 3,4,5
     private async Task CargarPagina()
     {
-        var allUsuarios = await usuarioControlador.ListarUsuarios();
+        List<ApplicationUser> allUsuarios = listaUsuarios;
         totalItems = allUsuarios.Count;
         totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
