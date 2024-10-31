@@ -83,6 +83,12 @@
     EstacionTrabajo estacion = new EstacionTrabajo();
     bool isLoading = false; // Variable para controlar el estado de carga
 
+    HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
+    HistorialAcciones historialAcciones = new HistorialAcciones
+    {
+        NombrePersona = "UsuarioSesion"
+    };
+
     private async Task RegistrarOficina()
     {
         isLoading = true; // Inicia el loader
@@ -104,6 +110,11 @@
                     Estado = 0
                 };
                 await estacionTrabajoControlador.RegistrarEstacionTrabajo(estacion);
+
+                //Establecer propiedades para historialAcciones de registrar
+                historialAcciones.Accion = "Registrar oficina: " + oficina.Nombre;
+                historialAcciones.Fecha = DateTime.Now;
+                await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
             }
 
             if (idOficina > 0)

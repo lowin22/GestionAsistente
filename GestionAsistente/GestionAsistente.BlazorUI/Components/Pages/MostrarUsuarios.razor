@@ -128,6 +128,15 @@
         </div>
     </div>
 </div>
+<div class="mt-3 text-center">
+    <button @onclick="() => CambiarPagina(currentPage - 1)" class="btn btn-secondary" disabled="@(currentPage == 1)">
+        Anterior
+    </button>
+    <span class="mx-2">Página @currentPage de @totalPages</span>
+    <button @onclick="() => CambiarPagina(currentPage + 1)" class="btn btn-secondary" disabled="@(currentPage == totalPages)">
+        Siguiente
+    </button>
+</div>
 
 @code {
 
@@ -138,6 +147,19 @@
     List<Unidad> listaUnidades = new List<Unidad>();
 
     private List<ApplicationUser> listaUsuarios = new List<ApplicationUser>();
+
+    // Propiedades de paginación
+    private int currentPage = 1;
+    private int pageSize = 10;
+    private int totalItems;
+    private int totalPages;
+    private List<Usuario> listaUsuariosPaginacion = new List<Usuario>();
+
+    private HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
+    private HistorialAcciones historialAcciones = new HistorialAcciones
+    {
+        NombrePersona = "UsuarioSesion"
+    };
 
     private ApplicationUser usuarioEliminar = new ApplicationUser
     {
@@ -232,6 +254,12 @@
         {
             Console.WriteLine("No se logro eliminar el usuario.");
         }
+         
+        //Establecer propiedades para historialAcciones de registrar
+        historialAcciones.Accion = "Eliminar usuario: " + usuarioEliminar.UserName;
+        historialAcciones.Fecha = DateTime.Now;
+
+        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
 
         //vaciar la lista de roles
         listaRoles.Clear();
@@ -263,6 +291,13 @@
         {
             Console.WriteLine("Fallo del usuarios");
         }
+
+        //Establecer propiedades para historialAcciones de registrar
+        historialAcciones.Accion = "Actualizar usuario: " + actualizarUsuario.UserName +
+        " a " + usuario.UserName; 
+        historialAcciones.Fecha = DateTime.Now;
+
+        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
 
         //Limpiar roles
 
@@ -296,4 +331,24 @@
 
     }
 
+    private async Task CargarPagina()
+    {
+        var allUsuarios = await usuarioControlador.ListarUsuarios();
+        totalItems = allUsuarios.Count;
+        totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+        listaUsuariosPaginacion = allUsuarios
+            .Skip((currentPage - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+    }
+
+    private async Task CambiarPagina(int nuevaPagina)
+    {
+        if (nuevaPagina > 0 && nuevaPagina <= totalPages)
+        {
+            currentPage = nuevaPagina;
+            await CargarPagina();
+        }
+    }
 }

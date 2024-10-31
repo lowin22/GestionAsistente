@@ -156,6 +156,12 @@
             Persona = new Persona()
         };
 
+    public HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
+    public HistorialAcciones historialAcciones = new HistorialAcciones
+        {
+            NombrePersona = "UsuarioSesion"
+        };
+
     protected override async Task OnInitializedAsync()
     {
         listaUnidades = await unidadControlador.ListarUnidades();
@@ -195,6 +201,13 @@
         bool exito = await asistenteControlador.RegistrarAsistente(asistente);
         if (exito)
         {
+            //Establecer propiedades para historialAcciones de registrar
+            historialAcciones.Accion = "Registrar asistente: " + asistente.Persona.Nombre + " " +
+            asistente.Persona.PrimerApellido + " " + asistente.Persona.SegundoApellido;
+            historialAcciones.Fecha = DateTime.Now;
+
+            await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+
             mensajeExito = "Asistente registrado con éxito.";
             mensajeError = null;
             LimpiarFormulario();

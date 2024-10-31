@@ -79,6 +79,12 @@
     private List<Unidad> listaUnidades = new List<Unidad>();
     private List<Rol> listaRoles = new List<Rol>();
 
+    private HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
+    private HistorialAcciones historialAcciones = new HistorialAcciones
+    {
+        NombrePersona = "UsuarioSesion"
+    };
+
     private Usuario usuario = new Usuario
         {
             Persona = new Persona()
@@ -103,12 +109,16 @@
         listaUsuarios = await usuarioControlador.ListarUsuarios();
 
         crearUsuario = new Usuario
+        {
+            Persona = new Persona()
+        };
 
-            {
+        //Establecer propiedades para historialAcciones de registrar
+        historialAcciones.Accion = "Registrar usuario: " + crearUsuario.Persona.Nombre + " "
+        + crearUsuario.Persona.PrimerApellido + " " + crearUsuario.Persona.SegundoApellido;
+        historialAcciones.Fecha = DateTime.Now;
 
-                Persona = new Persona()
-
-            };
+        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
 
         StateHasChanged();
 

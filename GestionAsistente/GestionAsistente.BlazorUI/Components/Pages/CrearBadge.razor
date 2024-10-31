@@ -104,6 +104,13 @@
     string simboloRangoHoras = "a";
     int cantidadACrear = 1;
     List<Unidad> listaUnidades = new List<Unidad>();
+
+    public HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
+    public HistorialAcciones historialAcciones = new HistorialAcciones
+    {
+        NombrePersona = "UsuarioSesion"
+    };
+
     protected override async Task OnInitializedAsync()
     {
         listaUnidades = await unidadControlador.ListarUnidades();
@@ -165,6 +172,12 @@
             {
 
                 exito = await badgeControlador.RegistrarBadge(badge);
+
+                //Establecer propiedades para historialAcciones de registrar
+                historialAcciones.Accion = "Registrar badge: " + badge.BadgeID;
+                historialAcciones.Fecha = DateTime.Now;
+
+                await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
             }
 
 
