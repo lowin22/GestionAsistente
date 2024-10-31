@@ -1,7 +1,16 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Authorization
 
-<PageTitle>Home</PageTitle>
+@attribute [Authorize(Roles = "Usuario, Administrador")]
 
-<h1>Hello, world!</h1>
+<PageTitle>Auth</PageTitle>
 
-Welcome to your new app.
+<h1>You are authenticated</h1>
+
+
+<AuthorizeView Roles="Usuario">
+    Hola Hello @context.User.Identity?.Name!, eres Encargado
+</AuthorizeView>
+<AuthorizeView Roles="Administrador">
+    Hola @context.User.Identity?.Name!, eres administrador
+</AuthorizeView>

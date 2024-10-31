@@ -288,7 +288,8 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                 Badge = asistenteEF.Badge != null ? new Badge
                 {
                     BadgeID = asistenteEF.Badge.BadgeID,
-                    Accesos = asistenteEF.Badge?.Accesos,
+                    Activo = asistenteEF.Badge.Activo,
+                    Justificacion = asistenteEF.Badge.Justificacion,
                     Horario = asistenteEF.Badge?.Horario,
                     Unidad = asistenteEF.Badge?.Unidad != null ? new Unidad
                     {

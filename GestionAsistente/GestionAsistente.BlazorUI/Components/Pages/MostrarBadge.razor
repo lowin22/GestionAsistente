@@ -57,7 +57,7 @@
                                 </button>
                             </td>
                             <td>@badge.BadgeID</td>
-                            <td>@badge.Accesos</td>
+                            <td>@badge.Justificacion</td>
                             <td>@badge.Horario</td>
                             <td>@badge.Unidad?.Nombre</td>
                             <td>@(badge.Ocupado ? "Sí" : "No")</td>
@@ -84,7 +84,7 @@
                                 </button>
                             </td>
                             <td>@badge.BadgeID</td>
-                            <td>@badge.Accesos</td>
+                            <td>@badge.Justificacion</td>
                             <td>@badge.Horario</td>
                             <td>@badge.Unidad?.Nombre</td>
                             <td>@(badge.Ocupado ? "Sí" : "No")</td>
@@ -142,7 +142,7 @@
 
                     <div class="mb-3">
                         <label for="accesos" class="form-label">Accesos</label>
-                        <InputText id="accesos" class="form-control" @bind-Value="badge.Accesos" />
+                        <InputText id="accesos" class="form-control" @bind-Value="badge.Justificacion" />
                     </div>
 
                     <div class="mb-3">
@@ -334,7 +334,7 @@
         //partir las horas en dos variables para mostrarlas en el formulario
         var horas = actualizarBadge.Horario.Split(simboloRangoHoras);
 
-        badge.Accesos = actualizarBadge.Accesos;
+        badge.Justificacion = actualizarBadge.Justificacion;
         badge.UnidadID = actualizarBadge.UnidadID;
         badge.Horario = actualizarBadge.Horario;
         badge.BadgeID = actualizarBadge.BadgeID;
@@ -400,7 +400,7 @@
 
     private bool EsFormularioInvalido()
     {
-        return string.IsNullOrEmpty(badge.Accesos) || string.IsNullOrEmpty(horaInicio) || string.IsNullOrEmpty(horaFinal);
+        return string.IsNullOrEmpty(badge.Justificacion) || string.IsNullOrEmpty(horaInicio) || string.IsNullOrEmpty(horaFinal);
     }
 
 }

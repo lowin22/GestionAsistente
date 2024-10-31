@@ -111,11 +111,14 @@ namespace GestionAsistente.BlazorUI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BadgeID"));
 
-                    b.Property<string>("Accesos")
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Horario")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Horario")
+                    b.Property<string>("Justificacion")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
