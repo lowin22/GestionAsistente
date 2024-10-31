@@ -1,5 +1,8 @@
-﻿@inherits LayoutComponentBase
-
+﻿@using GestionAsistente.BlazorUI.Data
+@using Microsoft.AspNetCore.Identity
+@inherits LayoutComponentBase
+@inject SignInManager<ApplicationUser> SignInManager
+@inject NavigationManager NavigationManager
 <header id="header">
     <div id="top-header">
         <div class="container-fluid">
@@ -108,7 +111,8 @@
             </ul>
         </div>
         <div>
-            <button id="boton-salir">Salir</button>
+            <input type="button" @onclick="test" value="salie"/>
+            <button type="button" id="boton-salir" @onclick="LogoutUser">Salir</button>
         </div>
     </div>
     
@@ -125,3 +129,15 @@
         2024 Laboratorio Nacional de Materiales y Modelos Estructurales
     </footer>
 
+@code {
+    private async Task test()
+    {
+        Console.WriteLine("Hola");
+    }
+    private async Task LogoutUser()
+    {
+        Console.WriteLine("Saliendo");
+        await SignInManager.SignOutAsync(); // Cierra sesión en Identity
+        NavigationManager.NavigateTo("/Account/Login", true); // Redirige al login
+    }
+}

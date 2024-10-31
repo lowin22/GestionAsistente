@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Folder Include="Controlador\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
   <ItemGroup>

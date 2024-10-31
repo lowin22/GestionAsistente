@@ -14,7 +14,9 @@ namespace GestionAsistente.AccesoDatos.Modelos
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BadgeID { get; set; }
-        public string Accesos { get; set; }
+        
+        public bool Activo { get; set; }
+        public string Justificacion { get; set; }
         public string Horario { get; set; }
         public int? UnidadID { get; set; }
         public bool Ocupado { get; set; }

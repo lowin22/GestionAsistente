@@ -21,7 +21,8 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
         {
             BadgeEF badgeEF = new BadgeEF
             {
-                Accesos = badge.Accesos,
+                Activo = badge.Activo,
+                Justificacion = badge.Justificacion,
                 Horario = badge.Horario,
                 UnidadID = badge.UnidadID,
                 Ocupado = badge.Ocupado
@@ -45,7 +46,8 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                     BadgeID = badgeEF.BadgeID,
                     Horario = badgeEF.Horario,
                     UnidadID = badgeEF.UnidadID,
-                    Accesos = badgeEF.Accesos,
+                    Justificacion = badgeEF.Justificacion,
+                    Activo = badgeEF.Activo,
                     Ocupado = badgeEF.Ocupado,
                     Unidad = badgeEF.Unidad != null ? new Unidad
                     {
@@ -69,7 +71,8 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                     BadgeID = b.BadgeID,
                     Horario = b.Horario,
                     UnidadID = b.UnidadID,
-                    Accesos = b.Accesos,
+                    Justificacion= b.Justificacion,
+                    Activo = b.Activo,
                     Ocupado = b.Ocupado,
                     Unidad = b.Unidad != null ? new Unidad
                     {
@@ -91,7 +94,8 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             }
 
             badgeEF.BadgeID = badge.BadgeID;
-            badgeEF.Accesos = badge.Accesos;
+            badgeEF.Activo = badge.Activo;
+            badgeEF.Justificacion = badge.Justificacion;
             badgeEF.Horario = badge.Horario;
             badgeEF.UnidadID = badge.UnidadID;
             return _contexto.SaveChanges() > 0;
@@ -123,7 +127,8 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                     BadgeID = badgeEF.BadgeID,
                     Horario = badgeEF.Horario,
                     UnidadID = badgeEF.UnidadID,
-                    Accesos = badgeEF.Accesos,
+                    Justificacion = badgeEF.Justificacion,
+                    Activo = badgeEF.Activo,
                     Unidad = badgeEF.Unidad != null ? new Unidad
                     {
                         UnidadID = badgeEF.Unidad.UnidadID,
@@ -155,7 +160,8 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                 BadgeID = badgeEF.BadgeID,
                 Horario = badgeEF.Horario,
                 UnidadID = badgeEF.UnidadID,
-                Accesos = badgeEF.Accesos,
+                Justificacion = badgeEF.Justificacion,
+                Activo = badgeEF.Activo,
                 Unidad = badgeEF.Unidad != null ? new Unidad
                 {
                     UnidadID = badgeEF.Unidad.UnidadID,
