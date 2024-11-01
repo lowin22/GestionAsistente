@@ -1,8 +1,14 @@
 ﻿@page "/mostrar-encargado"
 @using GestionAsistente.BlazorUI.Controlador
+@using GestionAsistente.BlazorUI.Data
 @using GestionAsistente.Entidades
 @rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
 
+@attribute [Authorize(Roles = "Usuario, Administrador")]
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
 
 <h3>Mostrar Encargado</h3>
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CrearEncargado">
@@ -181,7 +187,9 @@
 </div>
 @code {
     EncargadoControlador encargadoControlador = new EncargadoControlador();
-
+    private string? userName;
+    private int? unidad;
+    private ApplicationUser usuarioIdentity = new ApplicationUser { };
     HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
     HistorialAcciones historialAcciones = new HistorialAcciones
     {
@@ -196,6 +204,20 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            userName = user.Identity.Name;
+
+            usuarioIdentity = await UserManager.FindByNameAsync(userName);
+
+            unidad = usuarioIdentity.UnidadID;
+
+            // unidad = user.Identity.
+        }
+        encargadoControlador.unidad = unidad;
         await encargadoControlador.listarEncargados();
         await encargadoControlador.listarUnidades();
     }
