@@ -1,16 +1,56 @@
 ﻿@page "/auth"
 
+@using GestionAsistente.BlazorUI.Data
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
 
-@attribute [Authorize(Roles = "Administrador")]
+@attribute [Authorize(Roles = "Usuario, Administrador")]
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
 
 <PageTitle>Auth</PageTitle>
 
 <h1>You are authenticated</h1>
 
-<AuthorizeView Roles="usuario">
+<AuthorizeView Roles="Usuario">
     Hola Hello @context.User.Identity?.Name!, eres Encargado
+
+    <>Usuario desde code @userName, unidad: @unidad</>
+
 </AuthorizeView>
 <AuthorizeView Roles="Administrador">
+
     Hola @context.User.Identity?.Name!, eres administrador
+
+
+    <>Usuario desde code @userName, unidad: @unidad</>
+
 </AuthorizeView>
+@*  @onclick="() => EditarUsuario(usuario.Id) *@
+
+
+@code{
+
+    private string? userName;
+    private int? unidad;
+    private ApplicationUser usuarioIdentity = new ApplicationUser { };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            userName = user.Identity.Name;
+
+            usuarioIdentity = await UserManager.FindByNameAsync(userName);
+
+            unidad = usuarioIdentity.UnidadID;
+
+            // unidad = user.Identity.
+        }
+    }
+
+
+}

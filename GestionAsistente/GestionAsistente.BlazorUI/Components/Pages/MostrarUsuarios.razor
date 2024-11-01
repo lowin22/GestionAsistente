@@ -26,12 +26,12 @@
             </thead>
             <tbody>
 
-                @if (listaUsuariosPaginacion != null)
+                @if (listaUsuarios != null)
 
                 {
-                    @for (int i = 0; i < listaUsuariosPaginacion.Count; i++)
+                    @for (int i = 0; i < listaUsuarios.Count; i++)
                     {
-                        var usuario = listaUsuariosPaginacion[i];
+                        var usuario = listaUsuarios[i];
                         var rol = listaRoles[i];
                         
                         <tr>
