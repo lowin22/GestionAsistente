@@ -2,7 +2,10 @@
 @using Microsoft.AspNetCore.Identity
 @inherits LayoutComponentBase
 @inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
 <header id="header">
     <div id="top-header">
         <div class="container-fluid">
@@ -58,18 +61,13 @@
                     </ul>
 
                 </li>
-                @* <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Unidades
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/mostrar-unidades">Listar</a></li>
-                        <li><a class="dropdown-item" href="/crear-unidad">Crear</a></li>
-                    </ul>
-                </li> *@
-                <li>
-                    <a class="nav-link" href="/crear-unidad">Unidades</a>
-                </li>
+              
+                 @if (isAdministrator)
+                {
+                    <li>
+                        <a class="nav-link" href="/crear-unidad">Unidades</a>
+                    </li>
+                }
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                        Encargado
@@ -88,17 +86,23 @@
                         <li><a class="dropdown-item" href="/crear-badge">Crear</a></li>
                     </ul>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Reporte
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/mostrar-reportes">Ver reporte</a></li>
-                    </ul>
-                </li>
-                <li>
-                    <a class="nav-link" href="/historial">Historial</a>
-                </li>
+                 @if (isAdministrator)
+                {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Reporte
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/mostrar-reportes">Ver reporte</a></li>
+                        </ul>
+                    </li>
+                }
+                @if (isAdministrator)
+                {
+                    <li>
+                        <a class="nav-link" href="/historial">Historial</a>
+                    </li>
+                }
                 <li>
                     <a class="nav-link" href="/ayuda">Ayuda</a>
                 </li>
@@ -108,14 +112,11 @@
                 <li>
                     <a class="nav-link" href="Account/Login">Iniciar seccion</a>
                 </li>
-                <li>
-                    <a class="nav-link" href="/auth">Auth</a>
-                </li>
             </ul>
         </div>
         <div>
-            <input type="button" @onclick="test" value="salie"/>
-            <button type="button" id="boton-salir" @onclick="LogoutUser">Salir</button>
+          
+            <button type="button" id="boton-salir" @onclick="Salir">Salir</button>
         </div>
     </div>
     
@@ -133,14 +134,30 @@
     </footer>
 
 @code {
-    private async Task test()
+    private string? userName;
+    private bool isAdministrator = false;
+    private ApplicationUser usuarioIdentity = new ApplicationUser { };
+   
+    protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine("Hola");
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            // Obtiene el usuario actual de Identity
+            usuarioIdentity = await UserManager.GetUserAsync(user);
+
+            if (usuarioIdentity != null)
+            {
+                isAdministrator = await UserManager.IsInRoleAsync(usuarioIdentity, "Administrador");
+            }
+        }
     }
-    private async Task LogoutUser()
+
+    private async Task Salir()
     {
-        Console.WriteLine("Saliendo");
-        await SignInManager.SignOutAsync(); // Cierra sesión en Identity
-        NavigationManager.NavigateTo("/Account/Login", true); // Redirige al login
+        await SignInManager.SignOutAsync();
+        NavigationManager.NavigateTo("/");
     }
 }
