@@ -210,9 +210,9 @@
         if (user.Identity?.IsAuthenticated ?? false)
         {
             userName = user.Identity.Name;
-
+            Console.WriteLine(userName);
             usuarioIdentity = await UserManager.FindByNameAsync(userName);
-
+            Console.WriteLine(usuarioIdentity);
             unidad = usuarioIdentity.UnidadID;
 
             // unidad = user.Identity.
