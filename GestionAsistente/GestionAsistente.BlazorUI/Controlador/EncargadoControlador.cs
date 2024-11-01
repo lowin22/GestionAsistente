@@ -11,6 +11,7 @@ namespace GestionAsistente.BlazorUI.Controlador
         public List<Encargado> listaEncargados = new List<Encargado>();
         public string mensajeExito;
         public string mensajeError;
+        public int? unidad;
         public Encargado encargado = new Encargado
         {
             Persona = new Persona(),// Inicializa la persona dentro del encargado
@@ -61,12 +62,19 @@ namespace GestionAsistente.BlazorUI.Controlador
         }
         public async Task listarEncargados()
         {
-        
-            this.listaEncargados = await encargadoRN.ListarEncargados();
+            if(unidad == null)
+                this.listaEncargados = await encargadoRN.ListarEncargados();
+            else if(unidad != null)
+                this.listaEncargados = await encargadoRN.ListarEncargadosPorID(unidad);
         }
         public async Task listarUnidades()
         {
          this.listaUnidades= await unidadControlador.ListarUnidades();
+            if (unidad != null)
+            {
+                this.listaUnidades= listaUnidades.Where(x => x.UnidadID == unidad).ToList();
+            }
+
         }
         public async Task<bool> registrarEncargado(Encargado encargado) { 
             return await encargadoRN.RegistrarEncardado(encargado);
