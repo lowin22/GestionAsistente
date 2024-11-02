@@ -6,122 +6,225 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserManager<ApplicationUser> UserManager
-<header id="header">
-    <div id="top-header">
-        <div class="container-fluid">
-            <div class="row align-items-center">
-                <div class="col">UNIVERSIDAD DE COSTA RICA</div>
-                <div class="col text-end">
-                    LanammeUCR
-                    <span class="ms-2 small">Laboratorio Nacional de Materiales y Modelos Estructurales</span>
+
+    @using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Usuario, Administrador")]
+<AuthorizeView Roles="Usuario">
+    <header id="header">
+        <div id="top-header">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col">UNIVERSIDAD DE COSTA RICA</div>
+                    <div class="col text-end">
+                        LanammeUCR
+                        <span class="ms-2 small">Laboratorio Nacional de Materiales y Modelos Estructurales</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div id="bottom-header">
-        <div class="container-fluid">
-            <h2 class="m-0">Sistema de Gestión de Asistentes</h2>
+        <div id="bottom-header">
+            <div class="container-fluid">
+                <h2 class="m-0">Sistema de Gestión de Asistentes</h2>
+            </div>
         </div>
-    </div>
-</header>
+    </header>
 
-<nav id="navbar" class="navbar navbar-expand-lg navbar-light">
-    <div class="container-fluid">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Usuarios
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/mostrar-usuarios">Listar</a></li>
-                        <li><a class="dropdown-item" href="/crear-usuarios">Crear</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Asistentes
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/mostrar-asistentes">Listar</a></li>
-                        <li><a class="dropdown-item" href="/crear-asistente">Crear</a></li>
-                    </ul>
-
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Oficinas
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/mostrar-oficinas">Listar</a></li>
-                        <li><a class="dropdown-item" href="/crear-oficina">Crear</a></li>
-                    </ul>
-
-                </li>
-              
-                 @if (isAdministrator)
-                {
-                    <li>
-                        <a class="nav-link" href="/crear-unidad">Unidades</a>
-                    </li>
-                }
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                       Encargado
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/mostrar-encargado">Listar</a></li>
-                        <li><a class="dropdown-item" href="/crear-encargado">Crear</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Badge
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/mostrar-badge">Listar</a></li>
-                        <li><a class="dropdown-item" href="/crear-badge">Crear</a></li>
-                    </ul>
-                </li>
-                 @if (isAdministrator)
-                {
+    <nav id="navbar" class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Reporte
+                            Usuarios
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="/mostrar-reportes">Ver reporte</a></li>
+                            <li><a class="dropdown-item" href="/mostrar-usuarios">Listar</a></li>
+                            <li><a class="dropdown-item" href="/crear-usuarios">Crear</a></li>
                         </ul>
                     </li>
-                }
-                @if (isAdministrator)
-                {
-                    <li>
-                        <a class="nav-link" href="/historial">Historial</a>
-                    </li>
-                }
-                <li>
-                    <a class="nav-link" href="/ayuda">Ayuda</a>
-                </li>
-                <li>
-                    <a class="nav-link" href="Account/register">Registrarse</a>
-                </li>
-                <li>
-                    <a class="nav-link" href="Account/Login">Iniciar seccion</a>
-                </li>
-            </ul>
-        </div>
-        <div>
-          
-            <button type="button" id="boton-salir" @onclick="Salir">Salir</button>
-        </div>
-    </div>
-    
-</nav>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Asistentes
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/mostrar-asistentes">Listar</a></li>
+                            <li><a class="dropdown-item" href="/crear-asistente">Crear</a></li>
+                        </ul>
 
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Oficinas
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/mostrar-oficinas">Listar</a></li>
+                            <li><a class="dropdown-item" href="/crear-oficina">Crear</a></li>
+                        </ul>
+
+                    </li>
+
+              
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Encargado
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/mostrar-encargado">Listar</a></li>
+                            <li><a class="dropdown-item" href="/crear-encargado">Crear</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Badge
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/mostrar-badge">Listar</a></li>
+                            <li><a class="dropdown-item" href="/crear-badge">Crear</a></li>
+                        </ul>
+                    </li>
+                 
+                 
+                    <li>
+                        <a class="nav-link" href="/ayuda">Ayuda</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="Account/register">Registrarse</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="Account/Login">Iniciar seccion</a>
+                    </li>
+                </ul>
+            </div>
+            <div>
+
+                <button type="button" id="boton-salir" @onclick="Salir">Salir</button>
+            </div>
+        </div>
+
+    </nav>
+   
+</AuthorizeView>
+<AuthorizeView Roles="Administrador">
+    <header id="header">
+        <div id="top-header">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col">UNIVERSIDAD DE COSTA RICA</div>
+                    <div class="col text-end">
+                        LanammeUCR
+                        <span class="ms-2 small">Laboratorio Nacional de Materiales y Modelos Estructurales</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="bottom-header">
+            <div class="container-fluid">
+                <h2 class="m-0">Sistema de Gestión de Asistentes</h2>
+            </div>
+        </div>
+    </header>
+
+    <nav id="navbar" class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Usuarios
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/mostrar-usuarios">Listar</a></li>
+                            <li><a class="dropdown-item" href="/crear-usuarios">Crear</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Asistentes
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/mostrar-asistentes">Listar</a></li>
+                            <li><a class="dropdown-item" href="/crear-asistente">Crear</a></li>
+                        </ul>
+
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Oficinas
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/mostrar-oficinas">Listar</a></li>
+                            <li><a class="dropdown-item" href="/crear-oficina">Crear</a></li>
+                        </ul>
+
+                    </li>
+
+                 
+                    
+                        <li>
+                            <a class="nav-link" href="/crear-unidad">Unidades</a>
+                        </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Encargado
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/mostrar-encargado">Listar</a></li>
+                            <li><a class="dropdown-item" href="/crear-encargado">Crear</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Badge
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/mostrar-badge">Listar</a></li>
+                            <li><a class="dropdown-item" href="/crear-badge">Crear</a></li>
+                        </ul>
+                    </li>
+                    
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Reporte
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="/mostrar-reportes">Ver reporte</a></li>
+                            </ul>
+                        </li>
+                    
+                   
+                    
+                        <li>
+                            <a class="nav-link" href="/historial">Historial</a>
+                        </li>
+                    
+                    <li>
+                        <a class="nav-link" href="/ayuda">Ayuda</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="Account/register">Registrarse</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="Account/Login">Iniciar seccion</a>
+                    </li>
+                </ul>
+            </div>
+            <div>
+
+                <button type="button" id="boton-salir" @onclick="Salir">Salir</button>
+            </div>
+        </div>
+
+    </nav>
+   
+
+</AuthorizeView>
 
     <!-- Contenido dinámico -->
     <main class="container my-4">
@@ -138,23 +241,6 @@
     private bool isAdministrator = false;
     private ApplicationUser usuarioIdentity = new ApplicationUser { };
    
-    protected override async Task OnInitializedAsync()
-    {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        if (user.Identity != null && user.Identity.IsAuthenticated)
-        {
-            // Obtiene el usuario actual de Identity
-            usuarioIdentity = await UserManager.GetUserAsync(user);
-
-            if (usuarioIdentity != null)
-            {
-                isAdministrator = await UserManager.IsInRoleAsync(usuarioIdentity, "Administrador");
-            }
-        }
-    }
-
     private async Task Salir()
     {
         await SignInManager.SignOutAsync();
