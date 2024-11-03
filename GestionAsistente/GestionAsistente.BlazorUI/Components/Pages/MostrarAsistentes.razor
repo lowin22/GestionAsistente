@@ -1,9 +1,16 @@
 ﻿@page "/mostrar-asistentes"
 @using GestionAsistente.BlazorUI.Components.Layout
 @using GestionAsistente.BlazorUI.Controlador
+@using GestionAsistente.BlazorUI.Data
 @using GestionAsistente.Entidades
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
 @layout LayoutPrincipal
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Usuario, Administrador")]
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
+
 
 <h2 class="mb-4">Mostrar Asistentes</h2>
 <div class="col-md-12 col-xs-12 col-sm-12" style="text-align: center; overflow-y: auto; top: 0px; left: 0px;">
@@ -275,7 +282,9 @@
 </div>
 
 @code {
-
+    private string? userName;
+    private int? unidad;
+    private ApplicationUser usuarioIdentity = new ApplicationUser { };
     private AsistenteControlador asistenteControlador = new AsistenteControlador();
     private UnidadControlador unidadControlador = new UnidadControlador();
     private EncargadoControlador encargadoControlador = new EncargadoControlador();
@@ -339,6 +348,33 @@
     private int totalItems;
     private int totalPages;
 
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            userName = user.Identity.Name;
+
+            usuarioIdentity = await UserManager.FindByNameAsync(userName);
+
+            unidad = usuarioIdentity.UnidadID;
+        }
+        if (unidad == null)
+        {
+            listaAsistentes = await asistenteControlador.ListarAsistentes();
+        }
+        else if (unidad != null)
+        {
+            listaAsistentes = await asistenteControlador.ListarAsistentes();
+            listaAsistentes = listaAsistentes.Where(a => a.UnidadID == unidad).ToList();
+        }
+
+
+    }
+
     private async Task GuardarHorarioAsistente()
     {
         horario.AsistenteID = asistente.AsistenteID;
@@ -359,6 +395,11 @@
     private async Task PrepararActualizacion(int asistenteID)
     {
         listaUnidades = await unidadControlador.ListarUnidades();
+        if (unidad != null)
+        {
+            listaUnidades.Where(a => a.UnidadID == unidad).ToList();
+        }
+
 
         asistenteActualizado = listaAsistentes.Find(a => a.AsistenteID == asistenteID);
 
@@ -384,24 +425,18 @@
     {
         if (int.TryParse(e.Value.ToString(), out int unidadId))
         {
-            // Actualizar el valor de UnidadID en el modelo
             asistente.UnidadID = unidadId;
 
-            // Si se seleccionó una unidad válida
             if (unidadId != 0)
             {
-                // Cargar los encargados y los badges
                 await CargarEncargados(unidadId);
                 await CargarBadge(unidadId, asistente.BadgeID);
             }
             else
             {
-                // Si se seleccionó la opción por defecto
-                // Limpiar los valores de EncargadoID y BadgeID
                 asistente.EncargadoID = 0;
                 asistente.BadgeID = 0;
 
-                // Limpiar las listas de encargados y badges
                 listaEncargados = new List<Encargado>();
                 listaBadge = new List<Badge>();
             }
@@ -409,30 +444,54 @@
     }
     private async Task CargarEncargados(int? unidadId)
     {
-        if (unidadId != null)
-        {
-            listaEncargados = await encargadoControlador.ListarEncargadosPorID(unidadId);
+        //unidad del usuario
+        if (unidad == null)
+        {   //unidad seleccionada
+            if (unidadId != null)
+            {
+                listaEncargados = await encargadoControlador.ListarEncargadosPorID(unidadId);
+            }
+            else
+            {
+                listaEncargados = new List<Encargado>();
+            }
+
         }
-        else
+        else if (unidad != null)
         {
-            listaEncargados = new List<Encargado>();
+            listaEncargados = await encargadoControlador.ListarEncargadosPorID(unidad);
         }
+
+
     }
     private async Task CargarBadge(int? unidadId, int? badgeID)
     {
-        if (unidadId != 0)
+
+        if (unidad == null)
+        {   //unidad seleccionada
+            if (unidadId != 0)
+            {
+                listaBadge = await badgeControlador.ListarBadgePorUnidad(unidadId);
+                if (badgeID != null)
+                {
+                    Badge badgeAsignado = await badgeControlador.ObtenerBadgePorId(badgeID);
+                    listaBadge.Add(badgeAsignado);
+                }
+
+            }
+            else
+            {
+                listaBadge = new List<Badge>();
+            }
+        }
+        else if (unidad != null)
         {
-            listaBadge = await badgeControlador.ListarBadgePorUnidad(unidadId);
+            listaBadge = await badgeControlador.ListarBadgePorUnidad(unidad);
             if (badgeID != null)
             {
                 Badge badgeAsignado = await badgeControlador.ObtenerBadgePorId(badgeID);
                 listaBadge.Add(badgeAsignado);
             }
-
-        }
-        else
-        {
-            listaBadge = new List<Badge>();
         }
     }
 
@@ -476,11 +535,6 @@
         return !unidadCambiada || asistente.EncargadoID != 0;
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        listaAsistentes = await asistenteControlador.ListarAsistentes();
-
-    }
 
     private async void traerOficinas(int asistenteID)
     {
