@@ -2,6 +2,7 @@
 @using GestionAsistente.BlazorUI.Components.Layout
 @using GestionAsistente.BlazorUI.Controlador
 @using GestionAsistente.Entidades
+@rendermode InteractiveServer
 
 <h3>Mostrar Horarios por Estación de Trabajo</h3>
 
@@ -24,6 +25,7 @@
         
         @foreach (var horario in horarioControlador.renderizarHorario)
         {
+            
            
             @if ( estacion.EstacionTrabajoID==horario.EstacionTrabajoID)
                     {
@@ -35,6 +37,11 @@
                      aria-labelledby="heading@(estacion.EstacionTrabajoID)"
                      data-bs-parent="#accordionExample">
                     <div class="accordion-body">
+                        <button class="btn btn-danger"
+                                @onclick="@(async () => await limpiarHararioEstacion(estacion.EstacionTrabajoID))"
+                                aria-label="Limpiar Horario de Estación @estacion.EstacionTrabajoID">
+                            Limpiar Horario
+                        </button>
                                 <div class="table-responsive">
                                     <table class="table table-bordered">
                                         <thead class="table-light">
@@ -82,7 +89,7 @@
          
             </div>
         </div>
-
+        horarioControlador.horarioTemporal.Clear();
     }
 </div>
 
@@ -148,4 +155,17 @@
             h.HoraInicio.TimeOfDay <= hourTime &&
             h.HoraFin.TimeOfDay >= hourTime);
     }
+    private async Task limpiarHararioEstacion(int estacionTrabajoID)
+    {
+       
+        // Espera a que termine la operación de limpieza
+        var resultado = await this.horarioControlador.limpiarHararioEstacion(estacionTrabajoID);
+        if (resultado)
+        {
+            // Solo si la limpieza fue exitosa, actualiza la lista
+            await horarioControlador.ListarHorariosPorOficinaAgrupados(id);
+            StateHasChanged();
+        }
+    }
+   
 }
