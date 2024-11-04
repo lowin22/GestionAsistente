@@ -133,5 +133,14 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
        })
        .ToListAsync(); // Usa ToListAsync() para consultas asincrónicas
         }
+        public async Task<bool> limpiarHararioEstacion(int estacionTrabajoID)
+        {
+            var horarios = await _contexto.HorarioEFs
+        .Where(h => h.EstacionTrabajoID == estacionTrabajoID)
+        .ToListAsync();
+
+            _contexto.HorarioEFs.RemoveRange(horarios);
+            return await _contexto.SaveChangesAsync() > 0;
+        }
     }
 }

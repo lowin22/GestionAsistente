@@ -1,7 +1,5 @@
 ﻿using GestionAsistente.Entidades;
 using GestionAsistente.ReglasNegocio;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 
 
@@ -114,6 +112,11 @@ namespace GestionAsistente.BlazorUI.Controlador
                     horariosAgrupados.Add(horario.EstacionTrabajo);
                 }
             }
+        }
+        public async Task<bool> limpiarHararioEstacion(int estacionTrabajoID)
+        {
+            return await horarioRN.limpiarHararioEstacion(estacionTrabajoID);
+            
         }
 
     }
