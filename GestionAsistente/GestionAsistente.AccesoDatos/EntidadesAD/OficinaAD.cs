@@ -59,7 +59,7 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
 
 
 
-        public Oficina BuscarOficina(string nombre)
+        public async Task<bool> ExisteOficina(string nombre)
         {
             var oficina = _contexto.OficinaEFs
               .Where(x => x.Nombre == nombre)
@@ -70,22 +70,60 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                 }).FirstOrDefault();
             if (oficina == null)
             {
-                return null;
+                return false;
             }
-            return oficina;
+            return true;
         }
-        public async Task<(string, bool)> ModificarOficina(Oficina oficina)
+
+        public async Task<(string, bool)> ModificarOficina(Oficina oficina, int cantidadEstaciones)
         {
-            OficinaEF oficinaEF = _contexto.OficinaEFs.Find(oficina.OficinaID);
+            // Buscar la oficina en la base de datos
+            OficinaEF oficinaEF = await _contexto.OficinaEFs.FindAsync(oficina.OficinaID);
             if (oficinaEF == null)
             {
-                return ("El encargado no se pudo actualizar", false);
+                return ("La oficina no se pudo actualizar", false);
             }
+
+            // Actualizar el nombre de la oficina
             oficinaEF.Nombre = oficina.Nombre;
-            return this._contexto.SaveChanges() > 0
-        ? ("Actualizado correctamente", true)
-        : ("Error al actualizar", false);
+
+            // Obtener estaciones de trabajo actuales asociadas a esta oficina
+            var estacionesActuales = _contexto.EstacionTrabajoEFs
+                .Where(et => et.OficinaID == oficina.OficinaID).ToList();
+
+            int cantidadActual = estacionesActuales.Count;
+            int diferencia = cantidadEstaciones - cantidadActual;
+
+            if (diferencia > 0)
+            {
+                // Agregar nuevas estaciones de trabajo
+                var nuevasEstaciones = Enumerable.Range(0, diferencia)
+                    .Select(_ => new EstacionTrabajoEF
+                    {
+                        Numero = cantidadActual + 1, // O generar otro identificador si es necesario
+                        Estado = 0,       // Puedes definir un estado inicial aquí
+                        OficinaID = oficina.OficinaID
+                    }).ToList();
+
+                _contexto.EstacionTrabajoEFs.AddRange(nuevasEstaciones);
+            }
+            else if (diferencia < 0)
+            {
+                // Eliminar exceso de estaciones de trabajo
+                var estacionesAEliminar = estacionesActuales
+                    .Take(Math.Abs(diferencia)).ToList();
+
+                _contexto.EstacionTrabajoEFs.RemoveRange(estacionesAEliminar);
+            }
+
+            // Guardar cambios en la base de datos
+            bool guardadoExitoso = await _contexto.SaveChangesAsync() > 0;
+
+            return guardadoExitoso
+                ? ("Oficina y estaciones de trabajo actualizadas correctamente", true)
+                : ("Error al actualizar la oficina y estaciones de trabajo", false);
         }
+
 
         public async Task<bool> EliminarOficina(int OficinaID)
         {

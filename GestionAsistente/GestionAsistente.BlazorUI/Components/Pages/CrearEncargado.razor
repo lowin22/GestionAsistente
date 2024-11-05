@@ -36,7 +36,7 @@
     <button type="submit" class="btn btn-primary">Registrar</button>
 </EditForm>
 
-@if (encargadoControlador.mensajeExito != null)
+@if (mensajeExito != null)
 {
     <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -58,13 +58,13 @@
     </div>
 }
 
-@if (encargadoControlador.mensajeError != null)
+@if (mensajeError != null)
 {
     <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content custom-modal">
                 <div class="modal-header">
-                    <h5 class="modal-title">Confirmación</h5>
+                    <h5 class="modal-title">Error</h5>
                     <button type="button" class="close" @onclick="CerrarModalError" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -94,7 +94,7 @@
     {
         encargadoControlador.listarUnidades();
     }
-   
+
     private async Task RegistrarEncargado()
     {
 
@@ -125,18 +125,23 @@
 
     private void LimpiarFormulario()
     {
-        
+        encargadoControlador.encargado.Persona.Nombre = "";
+        encargadoControlador.encargado.Persona.PrimerApellido = "";
+        encargadoControlador.encargado.Persona.SegundoApellido = "";
+        encargadoControlador.encargado.Unidad.UnidadID = 0;
     }
 
     private void CerrarModal()
     {
         mensajeExito = null;
+        mensajeError = null;
         StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
     }
 
     private void CerrarModalError()
     {
         mensajeError = null;
+        mensajeExito = null;
         StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
     }
 

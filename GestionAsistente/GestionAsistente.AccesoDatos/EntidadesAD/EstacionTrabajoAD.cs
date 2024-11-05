@@ -27,6 +27,20 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             this._contexto.EstacionTrabajoEFs.Add(estacionTrabajoEF);
             return this._contexto.SaveChanges() > 0;
         }
+
+        public async Task<(string, bool)> ActualizarEstacion(Oficina oficina)
+        {
+            OficinaEF oficinaEF = _contexto.OficinaEFs.Find(oficina.OficinaID);
+            if (oficinaEF == null)
+            {
+                return ("La oficina no se pudo actualizar", false);
+            }
+            oficinaEF.Nombre = oficina.Nombre;
+            return this._contexto.SaveChanges() > 0
+        ? ("Actualizado correctamente", true)
+        : ("Error al actualizar", false);
+        }
+
         public List<EstacionTrabajo> listarEstacionesTrabajo()
         {
             List<EstacionTrabajoEF> estacionTrabajoEFs = _contexto.EstacionTrabajoEFs.ToList();
