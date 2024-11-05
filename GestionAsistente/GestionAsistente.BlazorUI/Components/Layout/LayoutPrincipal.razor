@@ -7,8 +7,12 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserManager<ApplicationUser> UserManager
 
-    @using Microsoft.AspNetCore.Authorization
+    
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Mvc
 @attribute [Authorize(Roles = "Usuario, Administrador")]
+
+
 <AuthorizeView Roles="Usuario">
     <header id="header">
         <div id="top-header">
@@ -97,10 +101,11 @@
                     </li>
                 </ul>
             </div>
-            <div>
 
-                <button type="button" id="boton-salir" @onclick="Salir">Salir</button>
-            </div>
+            <form method="get" @onsubmit="Salir">
+                <button @onclick="Salir" id="boton-salir" class="btn btn-outline-primary">Salir</button>
+                </form>
+
         </div>
 
     </nav>
@@ -214,10 +219,9 @@
                     </li>
                 </ul>
             </div>
-            <div>
-
-                <button type="button" id="boton-salir" @onclick="Salir">Salir</button>
-            </div>
+            <form method="post" @onsubmit="Salir">
+                <button type="submit" id="boton-salir" class="btn btn-outline-primary">Salir</button>
+            </form>
         </div>
 
     </nav>
@@ -234,15 +238,10 @@
     <footer class="footer">
         2024 Laboratorio Nacional de Materiales y Modelos Estructurales
     </footer>
-
 @code {
-    private string? userName;
-    private bool isAdministrator = false;
-    private ApplicationUser usuarioIdentity = new ApplicationUser { };
-   
     private async Task Salir()
     {
         await SignInManager.SignOutAsync();
-        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/crear-usuario", true); // Redirige al inicio después de cerrar sesión
     }
 }

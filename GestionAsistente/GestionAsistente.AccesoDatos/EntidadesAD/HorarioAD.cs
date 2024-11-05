@@ -71,7 +71,7 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                 },
             }).ToList();
         }
-        public async Task< List<Horario>> ListarHorariosPorEstacionTrabajo(int estacionTrabajoID)
+        public async Task<List<Horario>> ListarHorariosPorEstacionTrabajo(int estacionTrabajoID)
         {
             return _contexto.HorarioEFs.Select(x => new Horario
             {
@@ -92,9 +92,10 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                         SegundoApellido = x.Asistente.Persona.SegundoApellido,
                     },
                 },
-            }).Where(h=>h.EstacionTrabajoID==estacionTrabajoID).ToList();
+            }).Where(h => h.EstacionTrabajoID == estacionTrabajoID).ToList();
         }
-        public async Task<List<Horario>> ListarHorariosPorOficina(int oficinaID) {
+        public async Task<List<Horario>> ListarHorariosPorOficina(int oficinaID)
+        {
             return await _contexto.HorarioEFs
        .Where(h => h.EstacionTrabajo.OficinaID == oficinaID) // Aplica el filtro primero
        .Include(h => h.EstacionTrabajo)                      // Incluye las relaciones
@@ -139,6 +140,12 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
         .Where(h => h.EstacionTrabajoID == estacionTrabajoID)
         .ToListAsync();
 
+            _contexto.HorarioEFs.RemoveRange(horarios);
+            return await _contexto.SaveChangesAsync() > 0;
+        }
+        public async Task<bool> limpiarHorarioAsistente(int asistenteID)
+        {
+            var horarios = await _contexto.HorarioEFs.Where(h => h.AsistenteID == asistenteID).ToListAsync();
             _contexto.HorarioEFs.RemoveRange(horarios);
             return await _contexto.SaveChangesAsync() > 0;
         }
