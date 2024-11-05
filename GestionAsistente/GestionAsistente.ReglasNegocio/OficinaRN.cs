@@ -50,7 +50,16 @@ namespace GestionAsistente.ReglasNegocio
             return await oficinaAD.EliminarOficina(oficinaID); // Sin await si no es asíncrono
         }
 
-        public async Task<(string, bool)> ActualizarOficina(Oficina oficina)
+        public async Task<bool> ExisteOficina(string nombre)
+        {
+            if (nombre == null)
+            {
+                throw new ArgumentNullException(nameof(nombre));
+            }
+            return await oficinaAD.ExisteOficina(nombre); // Sin await si no es asíncrono
+        }
+
+        public async Task<(string, bool)> ActualizarOficina(Oficina oficina, int cantidadEstaciones)
         {
             if (oficina != null)
             {
@@ -59,7 +68,7 @@ namespace GestionAsistente.ReglasNegocio
                     return ("La unidad es erronea", false);
                 }
             }
-            return await oficinaAD.ModificarOficina(oficina);
+            return await oficinaAD.ModificarOficina(oficina, cantidadEstaciones);
         }
 
 

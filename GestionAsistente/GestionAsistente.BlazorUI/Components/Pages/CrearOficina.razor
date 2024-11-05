@@ -17,7 +17,7 @@
 
     <div class="mb-3">
         <label for="primerApellido" class="form-label">Estaciones de trabajo</label>
-        <InputNumber id="primerApellido" class="form-control" @bind-Value="cantidadEstaciones" />
+        <InputNumber id="primerApellido" class="form-control" @bind-Value="cantidadEstaciones"  />
     </div>
 
     <button type="submit" class="btn btn-primary">Registrar</button>
@@ -59,7 +59,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content custom-modal">
                 <div class="modal-header">
-                    <h5 class="modal-title">Confirmación</h5>
+                    <h5 class="modal-title">Error</h5>
                     <button type="button" class="close" @onclick="CerrarModalError" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -78,7 +78,7 @@
 @code {
     string mensajeExito;
     string mensajeError;
-    int cantidadEstaciones;
+    int cantidadEstaciones = 1;
     Oficina oficina = new Oficina();
     EstacionTrabajo estacion = new EstacionTrabajo();
     bool isLoading = false; // Variable para controlar el estado de carga
@@ -99,34 +99,47 @@
 
         try
         {
-            int idOficina = await oficinaControlador.RegistrarOficina(oficina);
-
-            for (int i = 1; i <= cantidadEstaciones; i++)
+            //valida que la oficina no exista
+            if (await oficinaControlador.ExisteOficina(oficina.Nombre) == false)
             {
-                estacion = new EstacionTrabajo()
+                int idOficina = await oficinaControlador.RegistrarOficina(oficina);
+
+                for (int i = 1; i <= cantidadEstaciones; i++)
                 {
-                    OficinaID = idOficina,
-                    Numero = i,
-                    Estado = 0
-                };
-                await estacionTrabajoControlador.RegistrarEstacionTrabajo(estacion);
+                    estacion = new EstacionTrabajo()
+                        {
+                            OficinaID = idOficina,
+                            Numero = i,
+                            Estado = 0
+                        };
+                    await estacionTrabajoControlador.RegistrarEstacionTrabajo(estacion);
 
-                //Establecer propiedades para historialAcciones de registrar
-                historialAcciones.Accion = "Registrar oficina: " + oficina.Nombre;
-                historialAcciones.Fecha = DateTime.Now;
-                await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
-            }
+                    //Establecer propiedades para historialAcciones de registrar
+                    historialAcciones.Accion = "Registrar oficina: " + oficina.Nombre;
+                    historialAcciones.Fecha = DateTime.Now;
+                    await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+                }
 
-            if (idOficina > 0)
-            {
-                mensajeExito = "Oficina registrada con éxito.";
-                mensajeError = null;
+                if (idOficina > 0)
+                {
+                    mensajeExito = "Oficina registrada con éxito.";
+                    mensajeError = null;
+
+                    oficina.Nombre = "";
+                    cantidadEstaciones = 1;
+                }
+                else
+                {
+                    mensajeExito = null;
+                    mensajeError = "Hubo un problema al registrar la oficina.";
+                }
             }
             else
             {
                 mensajeExito = null;
-                mensajeError = "Hubo un problema al registrar el encargado.";
+                mensajeError = "Esta oficina ya existe.";
             }
+
         }
         catch (Exception ex)
         {
@@ -143,12 +156,14 @@
     private void CerrarModal()
     {
         mensajeExito = null;
+        mensajeError = null;
         StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
     }
 
     private void CerrarModalError()
     {
         mensajeError = null;
+        mensajeExito = null;
         StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
     }
 

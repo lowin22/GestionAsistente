@@ -26,9 +26,14 @@ namespace GestionAsistente.BlazorUI.Controlador
             return await oficinaRN.EliminarOficina(oficinaID);
         }
 
-        public async Task<(string, bool)> ActualizarOficina(Oficina oficina)
+        public async Task<bool> ExisteOficina(string nombre)
         {
-            return await oficinaRN.ActualizarOficina(oficina);
+            return await oficinaRN.ExisteOficina(nombre);
+        }
+
+        public async Task<(string, bool)> ActualizarOficina(Oficina oficina, int cantidadEstaciones)
+        {
+            return await oficinaRN.ActualizarOficina(oficina, cantidadEstaciones);
         }
 
     }

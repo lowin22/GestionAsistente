@@ -1,9 +1,15 @@
 ﻿@page "/mostrar-oficinas"
 @using GestionAsistente.BlazorUI.Components.Layout
 @using GestionAsistente.BlazorUI.Controlador
+@using GestionAsistente.BlazorUI.Data
 @using GestionAsistente.Entidades
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
 @layout LayoutPrincipal
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Usuario, Administrador")]
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
 
 <h3>Mostrar Oficinas</h3>
 @* <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CrearEncargado">
@@ -78,7 +84,7 @@
             <div class="modal-body text-center">
                 <p class="fs-5">Esta acción no se puede deshacer.</p>
                 <p class="text-danger">¿Seguro de que desea eliminar esta Oficina y sus Estaciones de trabajo?</p>
-                <p class="text-danger">Oficina a eliminar: @oficinaEliminar.OficinaID</p>
+                <p class="text-danger">Oficina a eliminar: @oficinaEliminar.Nombre</p>
             </div>
             <div class="modal-footer justify-content-center">
                 <button class="btn btn-primary" data-bs-dismiss="modal" @onclick="() => EliminarOficina(oficinaEliminar.OficinaID)">
@@ -138,6 +144,11 @@
     int cantidadEstacionesActualizar;
     // int cantidadEstaciones;
 
+    //sesion
+    private ApplicationUser usuarioIdentity = new ApplicationUser { };
+    private string? userName;
+    private int? unidad;
+
     // Propiedades de paginación
     private int currentPage = 1;
     private int pageSize = 10;
@@ -147,7 +158,7 @@
     HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
     HistorialAcciones historialAcciones = new HistorialAcciones
     {
-        NombrePersona = "UsuarioSesion"
+        NombrePersona = "NombreUsuario"
     };
 
     Oficina oficina = new Oficina
@@ -164,67 +175,93 @@
 
     protected override async Task OnInitializedAsync()
     {
-        listaOficinas = await oficinaControlador.ListarOficinas();
-        foreach (var oficina in listaOficinas)
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated ?? false)
         {
-            // Llenar la lista de estaciones de trabajo para esa oficina
-            cantidadEstaciones.Add(await estacionTrabajoControlador.estacionesPorOficina(oficina.OficinaID));
+            userName = user.Identity.Name;
+
+            usuarioIdentity = await UserManager.FindByNameAsync(userName);
+
+            unidad = usuarioIdentity.UnidadID;
         }
-        //StateHasChanged();
-        // listaUnidades = await unidadControlador.ListarUnidades();
+        
+        listaOficinas = await oficinaControlador.ListarOficinas();
+        await CargarCantidadEstaciones();
     }
 
     private async Task EliminarOficina(int oficinaID)
     {
         await oficinaControlador.EliminarOficinas(oficinaID);
-        listaOficinas = await oficinaControlador.ListarOficinas();
 
-        //Establecer propiedades para historialAcciones de registrar
+        // Establecer propiedades para historialAcciones de registrar
         historialAcciones.Accion = "Eliminar oficina: " + oficinaEliminar.Nombre;
         historialAcciones.Fecha = DateTime.Now;
 
         await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
 
+        // Recargar la lista de oficinas y la cantidad de estaciones
+        await CargarPagina();
+        await CargarCantidadEstaciones();
+
+        // Refresca la UI después de la eliminación
         StateHasChanged();
     }
+
     private async Task ActualizarOficina()
     {
-        await oficinaControlador.ActualizarOficina(oficinaActualizar);
-        listaOficinas = await oficinaControlador.ListarOficinas();
+        await oficinaControlador.ActualizarOficina(oficinaActualizar, cantidadEstacionesActualizar);
 
-        //Establecer propiedades para historialAcciones de registrar
+        // Establecer propiedades para historialAcciones de registrar
         historialAcciones.Accion = "Actualizar oficina: " + oficina.Nombre + " a " + oficinaActualizar.Nombre;
         historialAcciones.Fecha = DateTime.Now;
 
         await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
 
+        // Recargar la lista de oficinas y la cantidad de estaciones
+        await CargarPagina();
+        await CargarCantidadEstaciones();
+
+        // Refresca la UI después de la actualización
         StateHasChanged();
     }
-    async Task seleccionarOficinaEliminar(int oficinaID)
+
+    private async Task CargarCantidadEstaciones()
     {
-        oficinaEliminar = listaOficinas.Find(x => x.OficinaID == oficinaID);
-        //StateHasChanged(); // Refresca la UI después de seleccionar la oficina 
+        // Asigna una nueva lista a `cantidadEstaciones` para evitar acumulación
+        cantidadEstaciones = new List<int>();
+
+        foreach (var oficina in listaOficinas)
+        {
+            cantidadEstaciones.Add(await estacionTrabajoControlador.estacionesPorOficina(oficina.OficinaID));
+        }
     }
-    async Task seleccionarOficinaActualizar(int oficinaID)
-    {
-        oficinaActualizar = listaOficinas.Find(x => x.OficinaID == oficinaID);
-        //StateHasChanged(); // Refresca la UI después de seleccionar la oficina
-    }
-    async Task EliminarEstaciones(int oficinaID)
-    {
-        estacionTrabajoControlador.EliminarEstacionesPorOficina(oficinaID);
-        //StateHasChanged(); // Refresca la UI después de seleccionar la oficina
-    }
+
     private async Task CargarPagina()
     {
         var allOficinas = await oficinaControlador.ListarOficinas();
         totalItems = allOficinas.Count;
         totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
+        // Asigna una nueva lista a `listaOficinas` con los elementos de la página actual
         listaOficinas = allOficinas
             .Skip((currentPage - 1) * pageSize)
             .Take(pageSize)
             .ToList();
+    }
+
+    async Task seleccionarOficinaEliminar(int oficinaID)
+    {
+        oficinaEliminar = listaOficinas.Find(x => x.OficinaID == oficinaID);
+    }
+    async Task seleccionarOficinaActualizar(int oficinaID)
+    {
+        oficinaActualizar = listaOficinas.Find(x => x.OficinaID == oficinaID);
+    }
+    async Task EliminarEstaciones(int oficinaID)
+    {
+        estacionTrabajoControlador.EliminarEstacionesPorOficina(oficinaID);
     }
 
     private async Task CambiarPagina(int nuevaPagina)
@@ -235,4 +272,5 @@
             await CargarPagina();
         }
     }
+
 }
