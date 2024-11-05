@@ -24,7 +24,7 @@ namespace GestionAsistente.ReglasNegocio
             return await horarioAD.RegistrarHorario(horario); // Sin await si no es asíncrono
         }
         public async Task<List<Horario>> ListarHorariosPorEstacionTrabajo(int estacionTrabajoID)
-        { 
+        {
             return await horarioAD.ListarHorariosPorEstacionTrabajo(estacionTrabajoID);
         }
         public async Task<List<Horario>> ListarHorariosPorOficina(int oficinaID)
@@ -35,9 +35,14 @@ namespace GestionAsistente.ReglasNegocio
         {
             return await horarioAD.limpiarHararioEstacion(estacionTrabajoID);
         }
+Feature/LimpiarhorarioEstudiante
+        public async Task<bool> limpiarHorarioAsistente(int asistenteID)
+        {
+            return await horarioAD.limpiarHorarioAsistente(asistenteID);
         public async Task<bool> limpiarHararioOficina(int oficinaID)
         {
             return await horarioAD.limpiarHorarioOficina(oficinaID);
+
         }
     }
 }

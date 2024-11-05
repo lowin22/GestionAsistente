@@ -27,6 +27,7 @@
                     <th>Badge</th>
                     <th>Unidad</th>
                     <th>Horario</th>
+                    <th>Quitar horarios</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,6 +38,7 @@
                 <th>
                         <input type="search" @bind="asistenteABuscar" @oninput="BusquedaAsincrona" placeholder="Buscar por nombre" style="width: 80%; text-align:center" />
                 </th>
+                    <th></th>
                     <th></th>
                     <th></th>
                     <th></th>
@@ -84,6 +86,16 @@
                                         </span>
                                     </button>
                                 </td>
+                                <td>
+                                    <button class="btn" data-bs-toggle="modal" data-bs-target="#quitarHorario" @onclick="() => limpiarHorario(asistente.AsistenteID)">
+
+                                        <span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eraser" viewBox="0 0 16 16">
+                                                <path d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828zm2.121.707a1 1 0 0 0-1.414 0L4.16 7.547l5.293 5.293 4.633-4.633a1 1 0 0 0 0-1.414zM8.746 13.547 3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293z" />
+                                            </svg>
+                                        </span>
+                                    </button>
+                                </td>
                             </tr>
                         }
                     }
@@ -118,6 +130,16 @@
                                         </span>
                                     </button>
                                 </td>
+                            <td>
+                                <button class="btn" data-bs-toggle="modal" data-bs-target="#quitarHorario" @onclick="() => limpiarHorario(asistente.AsistenteID)">
+
+                                    <span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eraser" viewBox="0 0 16 16">
+                                            <path d="M8.086 2.207a2 2 0 0 1 2.828 0l3.879 3.879a2 2 0 0 1 0 2.828l-5.5 5.5A2 2 0 0 1 7.879 15H5.12a2 2 0 0 1-1.414-.586l-2.5-2.5a2 2 0 0 1 0-2.828zm2.121.707a1 1 0 0 0-1.414 0L4.16 7.547l5.293 5.293 4.633-4.633a1 1 0 0 0 0-1.414zM8.746 13.547 3.453 8.254 1.914 9.793a1 1 0 0 0 0 1.414l2.5 2.5a1 1 0 0 0 .707.293H7.88a1 1 0 0 0 .707-.293z" />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </td>
                             </tr>
                         }                  
 
@@ -193,6 +215,7 @@
                         </InputSelect>
                     </div>
                     <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @onclick="GuardarActualizacionAsistente">Guardar Cambios</button>
+                    <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                 </EditForm>
             </div>
         </div>
@@ -267,6 +290,7 @@
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @onclick="GuardarHorarioAsistente">Guardar horario</button>
+                <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
             </div>
         </div>
     </div>
@@ -281,9 +305,55 @@
     </button>
 </div>
 
+@if (mensajeExito != null)
+{
+    <div id="ModalAviso" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content custom-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmación</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" @onclick="CerrarModal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>@mensajeExito</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="CerrarModal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (mensajeError != null)
+{
+    <div id="ModalAviso" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content custom-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Error</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" @onclick="CerrarModalError">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>@mensajeError</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="CerrarModalError">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
 @code {
     private string? userName;
-    private int? unidad;
+    private int? unidadUsuario;
+    private string mensajeError, mensajeExito;
     private ApplicationUser usuarioIdentity = new ApplicationUser { };
     private AsistenteControlador asistenteControlador = new AsistenteControlador();
     private UnidadControlador unidadControlador = new UnidadControlador();
@@ -298,10 +368,8 @@
     private List<Oficina> listaOficinas = new List<Oficina>();
     private List<Badge> listaBadge = new List<Badge>();
     private List<EstacionTrabajo> listaEstacionTrabajos = new List<EstacionTrabajo>();
-
     private string asistenteABuscar;
     private List<Asistente> asistentesEncontrados = new List<Asistente>();
-
     private HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
     private HistorialAcciones historialAcciones = new HistorialAcciones
         {
@@ -357,22 +425,18 @@
         if (user.Identity?.IsAuthenticated ?? false)
         {
             userName = user.Identity.Name;
-
             usuarioIdentity = await UserManager.FindByNameAsync(userName);
-
-            unidad = usuarioIdentity.UnidadID;
+            unidadUsuario = usuarioIdentity.UnidadID;
         }
-        if (unidad == null)
+        if (unidadUsuario == null)
         {
             listaAsistentes = await asistenteControlador.ListarAsistentes();
         }
-        else if (unidad != null)
+        else if (unidadUsuario != null)
         {
             listaAsistentes = await asistenteControlador.ListarAsistentes();
-            listaAsistentes = listaAsistentes.Where(a => a.UnidadID == unidad).ToList();
+            listaAsistentes = listaAsistentes.Where(a => a.UnidadID == unidadUsuario).ToList();
         }
-
-
     }
 
     private async Task GuardarHorarioAsistente()
@@ -381,7 +445,6 @@
         horario.HoraInicio = DateTime.Parse(horaInicio);
         horario.HoraFin = DateTime.Parse(horaFinal);
         await horarioControlador.RegistrarHorario(horario);
-        // Limpiar el formulario
         LimpiarFormulario();
     }
     private void LimpiarFormulario()
@@ -391,16 +454,13 @@
         StateHasChanged();
     }
 
-
     private async Task PrepararActualizacion(int asistenteID)
     {
         listaUnidades = await unidadControlador.ListarUnidades();
-        if (unidad != null)
+        if (unidadUsuario != null)
         {
-            listaUnidades.Where(a => a.UnidadID == unidad).ToList();
+            listaUnidades = listaUnidades.Where(a => a.UnidadID == unidadUsuario).ToList();
         }
-
-
         asistenteActualizado = listaAsistentes.Find(a => a.AsistenteID == asistenteID);
 
         asistente.AsistenteID = asistenteActualizado.AsistenteID;
@@ -416,10 +476,9 @@
         asistente.Persona.PersonaID = asistenteActualizado.Persona.PersonaID;
         if (asistente.UnidadID != 0 && asistente.UnidadID != null)
         {
-            await CargarEncargados(asistente.UnidadID);
-            await CargarBadge(asistenteActualizado.UnidadID, asistente.BadgeID);
+            await CargarEncargados(unidadUsuario);
+            await CargarBadge(unidadUsuario, asistente.BadgeID);
         }
-
     }
     private async Task OnUnidadChanged(ChangeEventArgs e)
     {
@@ -445,7 +504,7 @@
     private async Task CargarEncargados(int? unidadId)
     {
         //unidad del usuario
-        if (unidad == null)
+        if (unidadUsuario == null)
         {   //unidad seleccionada
             if (unidadId != null)
             {
@@ -455,19 +514,16 @@
             {
                 listaEncargados = new List<Encargado>();
             }
-
         }
-        else if (unidad != null)
+        else if (unidadUsuario != null)
         {
-            listaEncargados = await encargadoControlador.ListarEncargadosPorID(unidad);
+            listaEncargados = await encargadoControlador.ListarEncargadosPorID(unidadUsuario);
         }
-
-
     }
     private async Task CargarBadge(int? unidadId, int? badgeID)
     {
 
-        if (unidad == null)
+        if (unidadUsuario == null)
         {   //unidad seleccionada
             if (unidadId != 0)
             {
@@ -484,9 +540,9 @@
                 listaBadge = new List<Badge>();
             }
         }
-        else if (unidad != null)
+        else if (unidadUsuario != null)
         {
-            listaBadge = await badgeControlador.ListarBadgePorUnidad(unidad);
+            listaBadge = await badgeControlador.ListarBadgePorUnidad(unidadUsuario);
             if (badgeID != null)
             {
                 Badge badgeAsignado = await badgeControlador.ObtenerBadgePorId(badgeID);
@@ -508,7 +564,7 @@
             historialAcciones.Fecha = DateTime.Now;
 
             await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
-
+            listaAsistentes = listaAsistentes.Where(a => a.UnidadID == unidadUsuario).ToList();
             StateHasChanged();
         }
     }
@@ -524,9 +580,11 @@
             asistente.Encargado = null;
             asistente.EncargadoID = null;
         }
-
         bool actualizado = await asistenteControlador.ActualizarAsistente(asistente);
         listaAsistentes = await asistenteControlador.ListarAsistentes();
+        //cuando filtro la lista se cae
+        listaAsistentes = listaAsistentes.Where(a => a.UnidadID == unidadUsuario).ToList();
+        StateHasChanged();
     }
 
     private bool puedeGuardar()
@@ -540,7 +598,6 @@
     {
         horario.Asistente.AsistenteID = asistenteID;
         listaOficinas = await oficinaControlador.ListarOficinas();
-
     }
 
     private async Task OnEstacionChanged(ChangeEventArgs e)
@@ -571,6 +628,7 @@
         if (!string.IsNullOrEmpty(nombreABuscar))
         {
             asistentesEncontrados = await asistenteControlador.BuscarAsistentePorNombre(nombreABuscar);
+            asistentesEncontrados= asistentesEncontrados.Where(a => a.UnidadID == unidadUsuario).ToList();
         }
         else
         {
@@ -598,5 +656,32 @@
             await CargarPagina();
         }
     }
+    private async Task limpiarHorario(int asistenteID)
+    {
+        bool eliminado=await horarioControlador.limpiarHorarioAsistente(asistenteID);
+        if (eliminado)
+        {
+            mensajeError = null;
+            mensajeError = "Horario limpiado correctamente.";
 
+        }
+        else
+        {
+            mensajeExito = null;
+            mensajeError = "Hubo un problema al limpiar horario.";
+        }
+    }
+
+
+    private void CerrarModal()
+    {
+        mensajeExito = null;
+        StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
+    }
+
+    private void CerrarModalError()
+    {
+        mensajeError = null;
+        StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
+    }
 }

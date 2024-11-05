@@ -101,7 +101,7 @@ namespace GestionAsistente.BlazorUI.Controlador
         }
         public async Task ListarHorariosPorOficinaAgrupados(int oficinaID)
         {
-           
+
             horariosAgrupados = new List<EstacionTrabajo>(); // Inicializa la lista
             renderizarHorario = await horarioRN.ListarHorariosPorOficina(oficinaID);
 
@@ -117,7 +117,11 @@ namespace GestionAsistente.BlazorUI.Controlador
         public async Task<bool> limpiarHararioEstacion(int estacionTrabajoID)
         {
             return await horarioRN.limpiarHararioEstacion(estacionTrabajoID);
-            
+
+        }
+        public async Task<bool> limpiarHorarioAsistente(int asistenteID)
+        {
+            return await horarioRN.limpiarHorarioAsistente(asistenteID);
         }
         public async Task<bool> limpiarHararioOficina(int asistenteID)
         {
