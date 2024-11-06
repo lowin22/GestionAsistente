@@ -35,14 +35,16 @@ namespace GestionAsistente.ReglasNegocio
         {
             return await horarioAD.limpiarHararioEstacion(estacionTrabajoID);
         }
-Feature/LimpiarhorarioEstudiante
         public async Task<bool> limpiarHorarioAsistente(int asistenteID)
         {
             return await horarioAD.limpiarHorarioAsistente(asistenteID);
+        }
         public async Task<bool> limpiarHararioOficina(int oficinaID)
         {
             return await horarioAD.limpiarHorarioOficina(oficinaID);
 
         }
+
     }
-}
+
+    }
