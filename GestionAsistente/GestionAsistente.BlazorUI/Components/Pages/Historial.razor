@@ -76,7 +76,7 @@
         Anterior
     </button>
     <span class="mx-2">Página @currentPage de @totalPages</span>
-    <button @onclick="() => CambiarPagina(currentPage + 1)" class="btn btn-secondary" disabled="@(currentPage == totalPages || currentPage == 1)">
+    <button @onclick="() => CambiarPagina(currentPage + 1)" class="btn btn-secondary" disabled="@(currentPage == totalPages)">
         Siguiente
     </button>
 </div>
@@ -115,12 +115,7 @@
 
     private async Task BuscarHistorial()
     {
-        listaHistorialAccionesFiltradas = listaHistorialAcciones
-            .Where(h => (string.IsNullOrEmpty(filtroPersona) || h.NombrePersona == filtroPersona) &&
-                        (string.IsNullOrEmpty(filtroAccion) || h.Accion == filtroAccion) &&
-                        (!filtroFecha.HasValue || h.Fecha.Date == filtroFecha.Value.Date))
-            .OrderByDescending(h => h.Fecha)
-            .ToList();
+        listaHistorialAccionesFiltradas = historialAccionesControlador.BuscarHistorial(filtroPersona, filtroAccion, filtroFecha);
 
         totalItems = listaHistorialAccionesFiltradas.Count;
         totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
