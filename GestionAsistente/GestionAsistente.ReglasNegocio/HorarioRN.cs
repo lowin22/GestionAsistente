@@ -35,7 +35,6 @@ namespace GestionAsistente.ReglasNegocio
         {
             return await horarioAD.limpiarHararioEstacion(estacionTrabajoID);
         }
-
         public async Task<bool> limpiarHorarioAsistente(int asistenteID)
         {
             return await horarioAD.limpiarHorarioAsistente(asistenteID);
@@ -45,5 +44,7 @@ namespace GestionAsistente.ReglasNegocio
             return await horarioAD.limpiarHorarioOficina(oficinaID);
 
         }
+
     }
-}
+
+    }

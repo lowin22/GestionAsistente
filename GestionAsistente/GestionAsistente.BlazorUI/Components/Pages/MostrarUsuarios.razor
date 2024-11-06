@@ -9,6 +9,7 @@
 @layout LayoutPrincipal
 @rendermode InteractiveServer
 @inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject RoleManager<IdentityRole> RolManager
 
 <h3 class="mb-4">Mostrar Usuarios</h3>
@@ -26,13 +27,11 @@
             </thead>
             <tbody>
 
-                @if (listaUsuarios != null)
+                @if (listaUsuariosPaginacion != null)
 
                 {
-                    @for (int i = 0; i < listaUsuarios.Count; i++)
+                    @foreach (var usuario in listaUsuariosPaginacion)
                     {
-                        var usuario = listaUsuarios[i];
-                        var rol = listaRoles[i];
                         
                         <tr>
                             <td>
@@ -49,10 +48,10 @@
                                     </svg>
                                 </button>
                             </td>
-                            <td>@usuario.UserName</td>
-                            <td>@rol</td>
+                            <td>@usuario.NombreUsuario</td>
+                            <td>@usuario.Rol</td>
                             <td>@usuario.Unidad?.Nombre</td>
-                            <td>@(usuario.EmailConfirmed ? "Sí" : "No")</td>
+                            <td>@(usuario.Activo ? "Sí" : "No")</td>
                         </tr>
                     }
                 }
@@ -153,22 +152,21 @@
     private UsuarioControlador usuarioControlador = new UsuarioControlador();
     private UnidadControlador unidadControlador = new UnidadControlador();
     private RolControlador rolControlador = new RolControlador();
-
+    private string defaultRole = "Usuario";
     List<Unidad> listaUnidades = new List<Unidad>();
 
-    private List<ApplicationUser> listaUsuarios = new List<ApplicationUser>();
+    private List<UserView> listaUsuarios = new List<UserView>();
 
     // Propiedades de paginación
     private int currentPage = 1;
     private int pageSize = 10;
     private int totalItems;
     private int totalPages;
-    private List<ApplicationUser> listaUsuariosPaginacion = new List<ApplicationUser>();
+    private List<UserView> listaUsuariosPaginacion = new List<UserView>();
 
     private HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
     private HistorialAcciones historialAcciones = new HistorialAcciones
     {
-        NombrePersona = "UsuarioSesion"
     };
 
     private ApplicationUser usuarioEliminar = new ApplicationUser
@@ -180,8 +178,6 @@
     private string rolName = "0";
 
     private List<IdentityRole> listaRolesAsignar = new List<IdentityRole>();
-
-    private List<string> listaRoles = new List<string>();
 
     private ApplicationUser usuario = new ApplicationUser
     {
@@ -212,36 +208,34 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //Inicio Listar usuarios que no sean administradores 
-        var listaTodosUsuarios = await UserManager.Users
-        .Include(u => u.Unidad)
-        .ToListAsync();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var usuarioAutenticado = authState.User;
+        ApplicationUser usuarioIdentity = new ApplicationUser();
 
-        foreach (var user in listaTodosUsuarios)
+        //Insertar nombre de usuario segun sesion
+        if (usuarioAutenticado.Identity?.IsAuthenticated ?? false)
         {
-            var roles = await UserManager.GetRolesAsync(user);
-            if (!roles.Contains("Administrador"))
-            {
-                listaUsuarios.Add(user);
-            }
+            var userName = usuarioAutenticado.Identity.Name;
+            usuarioIdentity = await UserManager.FindByNameAsync(userName);
+            historialAcciones.NombrePersona = userName;
         }
-        //FIN Listar usuarios que no sean administradores
 
+        //Cargar toda lista de roles para admin
         listaRolesAsignar = await RolManager.Roles.ToListAsync();
 
-        foreach (var usuario in listaUsuarios)
+        //roles para usuario regular no contiene administrador
+        if(usuarioIdentity.UnidadID != null)
         {
-            var roles = await UserManager.GetRolesAsync(usuario);
-            var cadenaRoles = string.Join(", ", roles);
-            listaRoles.Add(cadenaRoles);
-
-            //usuario-> nombre, cadena Roles -> Rol
+            listaRolesAsignar.RemoveAll(r => r.Name == "Administrador");
         }
 
+        //Cargar lista de usuarios
+        await CargarListaUsuario();
+        
+        //si es usuario regular
 
-        listaUnidades = await unidadControlador.ListarUnidades();
+        await CargarPagina();
 
-        // listaRoles = await rolControlador.ListarRoles();
     }
 
     // private async Task RegistrarUsuario()
@@ -282,6 +276,10 @@
             historialAcciones.Accion = "Eliminar usuario: " + usuarioEliminar.UserName;
             historialAcciones.Fecha = DateTime.Now;
 
+            //eliminar de listaUsuarios segun el id que viene del usuarioEliminar
+            listaUsuarios.RemoveAll(u => u.Id == usuarioEliminar.Id);
+            await CargarPagina();
+
             await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
         }
         else
@@ -289,25 +287,16 @@
             Console.WriteLine("No se logro eliminar el usuario.");
         }
 
-        //vaciar la lista de roles
-        listaRoles.Clear();
-
-        listaUsuarios = listaUsuarios = await UserManager.Users
-        .Include(u => u.Unidad)
-        .ToListAsync();
-
-        foreach (var usuario in listaUsuarios)
-        {
-            var roles = await UserManager.GetRolesAsync(usuario);
-            var cadenaRoles = string.Join(", ", roles);
-            listaRoles.Add(cadenaRoles);
-        }
-
         StateHasChanged();
     }
 
     private async Task ActualizarUsuario()
     {
+        //Crear Lista de roles del usuario
+        //Obtener roles actuales
+        var rolesUsuario = await UserManager.GetRolesAsync(actualizarUsuario);
+        var rolAsignado = rolesUsuario.FirstOrDefault();
+
         //colocar antes que se actualicen las propiedades del usuario
         historialAcciones.Accion = "Actualizar usuario: " + actualizarUsuario.UserName +
     " a " + usuario.UserName;
@@ -327,51 +316,38 @@
             historialAcciones.Fecha = DateTime.Now;
 
             await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+
+
+            // //si rol no esta vacio
+            if (!string.IsNullOrEmpty(rolName))
+            {
+                //Agregar nuevo rol
+                result = await UserManager.AddToRoleAsync(actualizarUsuario, rolName);
+            }
+
+
+            if (string.IsNullOrEmpty(rolName))
+            {
+                await UserManager.RemoveFromRoleAsync(actualizarUsuario, rolAsignado);
+            }
+
         }
         else
         {
             Console.WriteLine("Fallo del usuarios");
         }
 
-        //Limpiar roles
+        await CargarListaUsuario();
 
-        var rolesActuales = await UserManager.GetRolesAsync(actualizarUsuario);
-
-        if (rolesActuales.Count > 0)
-        {
-            await UserManager.RemoveFromRolesAsync(actualizarUsuario, rolesActuales);
-        }
-
-        if (!string.IsNullOrEmpty(rolName))
-        {
-            //Agregar nuevo rol
-            result = await UserManager.AddToRoleAsync(actualizarUsuario, rolName);
-        }
-
-        listaUsuarios = await UserManager.Users
-        .Include(u => u.Unidad)
-        .ToListAsync();
-
-        listaRoles.Clear();
-
-        foreach (var usuario in listaUsuarios)
-        {
-            var roles = await UserManager.GetRolesAsync(usuario);
-            var cadenaRoles = string.Join(", ", roles);
-            listaRoles.Add(cadenaRoles);
-        }
+        await CargarPagina();
 
         StateHasChanged();
 
     }
-      
-    //Usuario [10, 10, 10,10]
-    //Roles [10, 10, 10, 10]
 
-    //Nueva lista paginacion [10] 0, 1,2, 3,4,5
     private async Task CargarPagina()
     {
-        List<ApplicationUser> allUsuarios = listaUsuarios;
+        List<UserView> allUsuarios = listaUsuarios;
         totalItems = allUsuarios.Count;
         totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
@@ -389,4 +365,77 @@
             await CargarPagina();
         }
     }
+
+    private async Task CargarListaUsuario()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var usuarioAutenticado = authState.User;
+        ApplicationUser usuarioIdentity = new ApplicationUser();
+
+        if (usuarioAutenticado.Identity?.IsAuthenticated ?? false)
+        {
+            var userName = usuarioAutenticado.Identity.Name;
+            usuarioIdentity = await UserManager.FindByNameAsync(userName);
+        }
+
+        listaUsuarios.Clear();
+        //Inicio Listar usuarios que no sean administradores
+        var listaTodosUsuarios = await UserManager.Users
+        .Include(u => u.Unidad)
+        .ToListAsync();
+
+        var listaFiltrada= new List<ApplicationUser>();
+
+        //si usuario regular se filtran los administradores
+        if (usuarioIdentity.UnidadID != null)
+        {
+            foreach (var user in listaTodosUsuarios)
+            {
+                var roles = await UserManager.GetRolesAsync(user);
+                if (!roles.Contains("Administrador"))
+                {
+                    listaFiltrada.Add(user);
+                }
+            }
+
+            listaTodosUsuarios = listaFiltrada;
+
+        }
+        
+        //si es usuario admin no se filtra, se obtienen todos los usuarios
+
+        //FIN Listar usuarios que no sean administradores
+        
+        foreach (var usuario in listaTodosUsuarios)
+        {
+            var roles = await UserManager.GetRolesAsync(usuario);
+            var cadenaRoles = string.Join(", ", roles);
+
+            //Agregar los nuevos usuarios a la lista userView para cuando se dibujen en pantalla
+            listaUsuarios.Add(new UserView
+            {
+                Id = usuario.Id,
+                NombreUsuario = usuario.UserName,
+                UnidadID = usuario.UnidadID,
+                Unidad = usuario.Unidad,
+                Rol = cadenaRoles,
+                Activo = usuario.EmailConfirmed
+            });
+
+        }
+    } 
+
+    @* Creacion unica y exclusivamente para mostrar en pantalla
+    Y por la forma en que maneja identity los roles por tablas separadas
+    Crear esta clase privada facilita manejar los campos en una sola clase *@
+    private class UserView
+    {
+        public string Id { get; set; }
+        public string NombreUsuario { get; set; }
+        public int? UnidadID { get; set; }
+        public UnidadEF Unidad { get; set; }
+        public string Rol { get; set; }
+        public bool Activo { get; set; }
+    }
 }
+

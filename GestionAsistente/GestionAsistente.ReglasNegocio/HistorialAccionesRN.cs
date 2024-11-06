@@ -55,6 +55,13 @@ namespace GestionAsistente.ReglasNegocio
             historialAcciones = await this.historialAccionesAD.ListarHistorial();
             return historialAcciones;
         }
-
+        public async Task<Task> LimpiarHistorialCompleto()
+        {
+            return historialAccionesAD.LimpiarHistorialCompleto();
+        }
+        public List<HistorialAcciones> BuscarHistorial(string persona, string accion, DateTime? fecha)
+        {
+            return historialAccionesAD.BuscarHistorial(persona, accion, fecha);
+        }
     }
 }
