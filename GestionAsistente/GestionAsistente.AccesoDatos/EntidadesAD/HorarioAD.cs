@@ -154,7 +154,7 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             var horarios = await _contexto.HorarioEFs
                 .Where(h => h.EstacionTrabajo.OficinaID == oficinaID)
                 .ToListAsync();
-              _contexto.HorarioEFs.RemoveRange(horarios);
+            _contexto.HorarioEFs.RemoveRange(horarios);
             return await _contexto.SaveChangesAsync() > 0;
 
         }

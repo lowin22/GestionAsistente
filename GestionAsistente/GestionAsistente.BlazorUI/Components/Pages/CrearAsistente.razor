@@ -1,10 +1,16 @@
 ﻿@page "/crear-asistente"
 @using GestionAsistente.BlazorUI.Components.Layout
 @using GestionAsistente.BlazorUI.Controlador
+@using GestionAsistente.BlazorUI.Data
 @using GestionAsistente.Entidades
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
 
 @layout LayoutPrincipal
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Usuario, Administrador")]
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
 
 <div class="container mt-4">
     <h2 class="mb-4">Registro de Asistente</h2>
@@ -93,8 +99,8 @@
     </EditForm>
 
 
-
-    @if (mensajeExito != null)
+ 
+    @if (notificarUsuario != null)
     {
         <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -106,31 +112,10 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <p>@mensajeExito</p>
+                            <p>@notificarUsuario</p>                      
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary btnAceptar" @onclick="CerrarModal">Aceptar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-    @if (mensajeError != null)
-    {
-        <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content custom-modal">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Confirmación</h5>
-                        <button type="button" class="close" @onclick="CerrarModalError" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p>@mensajeError Error al registrar</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary btnAceptar" @onclick="CerrarModalError">Aceptar</button>
                     </div>
                 </div>
             </div>
@@ -140,9 +125,11 @@
 
 
 @code {
-
-    private string mensajeExito, mensajeError;
-
+    private string? userName;
+    private int? unidadUsuario;
+    private string notificarUsuario;
+    private bool registrado;
+    private ApplicationUser usuarioIdentity = new ApplicationUser { };
     private AsistenteControlador asistenteControlador = new AsistenteControlador();
     private PersonaControlador personaControlador = new PersonaControlador();
     private UnidadControlador unidadControlador = new UnidadControlador();
@@ -157,14 +144,20 @@
         };
 
     public HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
-    public HistorialAcciones historialAcciones = new HistorialAcciones
-        {
-            NombrePersona = "UsuarioSesion"
-        };
+    public HistorialAcciones historialAcciones = new HistorialAcciones();
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            userName = user.Identity.Name;
+            usuarioIdentity = await UserManager.FindByNameAsync(userName);
+            unidadUsuario = usuarioIdentity.UnidadID;
+        }
         listaUnidades = await unidadControlador.ListarUnidades();
+        listaUnidades=listaUnidades.Where(x=>x.UnidadID==unidadUsuario).ToList();
         if (asistente.UnidadID != 0)
         {
             await CargarEncargados(asistente.UnidadID);
@@ -198,8 +191,9 @@
     private async Task RegistrarAsistente()
     {
 
-        bool exito = await asistenteControlador.RegistrarAsistente(asistente);
-        if (exito)
+        (registrado, string mensaje) = await asistenteControlador.RegistrarAsistente(asistente);
+
+        if (registrado)
         {
             //Establecer propiedades para historialAcciones de registrar
             historialAcciones.Accion = "Registrar asistente: " + asistente.Persona.Nombre + " " +
@@ -208,16 +202,15 @@
 
             await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
 
-            mensajeExito = "Asistente registrado con éxito.";
-            mensajeError = null;
+            notificarUsuario= mensaje;
+            registrado = true;
             LimpiarFormulario();
             StateHasChanged();
         }
         else
         {
-
-            mensajeExito = null;
-            mensajeError = "Hubo un problema al registrar el asistente.";
+            registrado = false;
+            notificarUsuario=mensaje;
 
         }
         // Aquí puedes agregar lógica adicional, como mostrar un mensaje de éxito o error
@@ -234,13 +227,13 @@
 
     private void CerrarModal()
     {
-        mensajeExito = null;
+        notificarUsuario = null;
         StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
     }
 
     private void CerrarModalError()
     {
-        mensajeError = null;
+        notificarUsuario = null;
         StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
     }
 

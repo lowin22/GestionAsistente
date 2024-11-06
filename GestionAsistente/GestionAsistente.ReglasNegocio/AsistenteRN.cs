@@ -17,29 +17,74 @@ namespace GestionAsistente.ReglasNegocio
             asistenteAD = new AsistenteAD();
         }
 
-        public async Task<bool> GuardarAsistente(Asistente asistente)
+        private class ValidacionResultado
         {
-            if (asistente != null)
-            {
+            public bool EsValido { get; }
+            public string Mensaje { get; }
 
-                if (asistente.Persona.SegundoApellido == null)
+            public ValidacionResultado(bool esValido, string mensaje)
+            {
+                EsValido = esValido;
+                Mensaje = mensaje;
+            }
+        }
+
+        public async Task<(bool exito, string mensaje)> RegistrarAsistente(Asistente asistente)
+        {
+            const string MENSAJE_EXITO = "Se registró con éxito";
+
+            if (asistente == null)
+            {
+                return (false, "Llene los campos para poder registrar.");
+            }
+
+            var validacion = ValidarAsistente(asistente);
+            if (!validacion.EsValido)
+            {
+                return (false, validacion.Mensaje);
+            }
+
+            var registroExitoso = await asistenteAD.RegistrarAsistente(asistente);
+            return (registroExitoso, MENSAJE_EXITO);
+        }
+
+        private ValidacionResultado ValidarAsistente(Asistente asistente)
+        {
+            var reglasDeNegocio = new Dictionary<Func<Asistente, bool>, string>
+        {
+            // Validaciones básicas del Asistente
+            { a => !string.IsNullOrWhiteSpace(a.nombreUsuario),
+              "El nombre de usuario no puede estar en blanco" },
+
+            { a => !string.IsNullOrWhiteSpace(a.Contrasenia),
+              "La contraseña no puede estar en blanco" },
+
+            { a => a.Accesos != null,
+              "Los accesos no pueden estar en blanco" },
+
+            // Validaciones de la Persona
+            { a => a.Persona != null,
+              "Los datos personales son requeridos" },
+
+            { a => a.Persona != null && !string.IsNullOrWhiteSpace(a.Persona.Nombre),
+              "El nombre no puede estar en blanco" },
+
+            { a => a.Persona != null && !string.IsNullOrWhiteSpace(a.Persona.PrimerApellido),
+              "El primer apellido no puede estar en blanco" },
+
+            { a => a.Persona != null && !string.IsNullOrWhiteSpace(a.Persona.SegundoApellido),
+              "El segundo apellido no puede estar en blanco" }
+        };
+
+            foreach (var regla in reglasDeNegocio)
+            {
+                if (!regla.Key(asistente))
                 {
-                    throw new Exception("El segundo apellido no puede ser nulo");
-                }
-                if (asistente.Persona.PrimerApellido == null)
-                {
-                    throw new Exception("El primer apellido no puede ser nula");
-                }
-                if (asistente.Persona.Nombre == null)
-                {
-                    throw new Exception("La persona nombre no puede ser nula");
-                }
-                if (asistente.Contrasenia == null)
-                {
-                    throw new Exception("La contrasenia asistente no puede ser nula");
+                    return new ValidacionResultado(false, regla.Value);
                 }
             }
-            return await asistenteAD.RegistrarAsistente(asistente);
+
+            return new ValidacionResultado(true, string.Empty);
         }
 
         public async Task<List<Asistente>> ListarAsistentes()
