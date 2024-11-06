@@ -207,15 +207,22 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
         }
         public async Task<List<Asistente>> BuscarAsistentePorNombre(string nombre)
         {
-            var asistentesEF = _contexto.AsistenteEFs
-            .Include(a => a.Badge)
-            .Include(a => a.Unidad)
-            .Include(a => a.Persona)
-            .Include(a => a.Encargado)
-                .ThenInclude(e => e.Persona)
-            .Where(a => a.Persona.Nombre.Contains(nombre))
-            .ToList();
+            // Dividir el término de búsqueda en palabras individuales y eliminar espacios en blanco
+            var terminosBusqueda = nombre?.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(t => t.Trim().ToLower())
+                .ToList() ?? new List<string>();
 
+            var asistentesEF = _contexto.AsistenteEFs
+                .Include(a => a.Badge)
+                .Include(a => a.Unidad)
+                .Include(a => a.Persona)
+                .Include(a => a.Encargado)
+                    .ThenInclude(e => e.Persona)
+                .Where(a => terminosBusqueda.All(termino =>
+                    (a.Persona.Nombre != null && a.Persona.Nombre.ToLower().Contains(termino)) ||
+                    (a.Persona.PrimerApellido != null && a.Persona.PrimerApellido.ToLower().Contains(termino)) ||
+                    (a.Persona.SegundoApellido != null && a.Persona.SegundoApellido.ToLower().Contains(termino))))
+                .ToList();
 
             if (asistentesEF == null || !asistentesEF.Any())
             {
@@ -231,7 +238,6 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                 Contrasenia = asistenteEF.Contrasenia,
                 BadgeID = asistenteEF.BadgeID,
                 UnidadID = asistenteEF.UnidadID,
-
                 // Mapeo seguro de Persona
                 Persona = asistenteEF.Persona != null ? new Persona
                 {
@@ -240,14 +246,12 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                     PrimerApellido = asistenteEF.Persona.PrimerApellido ?? string.Empty,
                     SegundoApellido = asistenteEF.Persona.SegundoApellido ?? string.Empty
                 } : null,
-
                 // Mapeo seguro de Unidad
                 Unidad = asistenteEF.Unidad != null ? new Unidad
                 {
                     UnidadID = asistenteEF.Unidad.UnidadID,
                     Nombre = asistenteEF.Unidad.Nombre ?? string.Empty
                 } : null,
-
                 // Mapeo seguro de Encargado
                 Encargado = asistenteEF.Encargado != null && asistenteEF.Encargado.Persona != null ?
                             new Encargado
@@ -260,7 +264,7 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                                     SegundoApellido = asistenteEF.Encargado.Persona.SegundoApellido ?? string.Empty
                                 }
                             } : null,
-            }).ToList(); // Convertimos la colección a una lista
+            }).ToList();
         }
         public List<Asistente> BuscarAsistentePorEncargado(string encargado)
         {
