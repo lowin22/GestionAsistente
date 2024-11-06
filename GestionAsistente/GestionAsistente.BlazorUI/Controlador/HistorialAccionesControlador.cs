@@ -1,4 +1,5 @@
-﻿using GestionAsistente.Entidades;
+﻿using GestionAsistente.AccesoDatos.EntidadesAD;
+using GestionAsistente.Entidades;
 using GestionAsistente.ReglasNegocio;
 
 namespace GestionAsistente.BlazorUI.Controlador
@@ -30,5 +31,18 @@ namespace GestionAsistente.BlazorUI.Controlador
         {
             return await historialAccionesRN.ListarHistorial();
         }
+        public async Task<Task> LimpiarHistorialCompleto()
+        {
+            return await historialAccionesRN.LimpiarHistorialCompleto();
+        }
+        public async Task<Task> BuscarHistorial()
+        {
+            return await historialAccionesRN.LimpiarHistorialCompleto();
+        }
+        public List<HistorialAcciones> BuscarHistorial(string persona, string accion, DateTime? fecha)
+        {
+            return historialAccionesRN.BuscarHistorial(persona, accion, fecha);
+        }
+
     }
 }

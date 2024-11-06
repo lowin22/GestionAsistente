@@ -63,41 +63,81 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
 
             return historialAcciones;
         }
-        public List<HistorialAcciones> BuscarPorAccion(string Accion)
+        public List<HistorialAcciones> BuscarPorAccion(string accion)
         {
-            List<HistorialAccionesEF> historialAccionesEFs = _contexto.HistoriaAccionesEFs.Where(a => a.Accion == Accion).ToList();
-            List<HistorialAcciones> historialAcciones = new List<HistorialAcciones>();
+            var historialAccionesEFs = _contexto.HistoriaAccionesEFs
+                .Where(a => a.Accion.Contains(accion)) // Usa Contains para buscar palabras parciales
+                .OrderByDescending(a => a.Fecha) // Ordena de reciente a antiguo
+                .ToList();
 
-            foreach (HistorialAccionesEF historialAccionesEF in historialAccionesEFs)
+            var historialAcciones = historialAccionesEFs.Select(historialAccionesEF => new HistorialAcciones
             {
-                historialAcciones.Add(new HistorialAcciones
-                {
-                    Fecha = historialAccionesEF.Fecha,
-                    NombrePersona = historialAccionesEF.NombrePersona,
-                    Accion = historialAccionesEF.Accion
-                });
-            }
+                Fecha = historialAccionesEF.Fecha,
+                NombrePersona = historialAccionesEF.NombrePersona,
+                Accion = historialAccionesEF.Accion
+            }).ToList();
 
             return historialAcciones;
         }
         /*Nuevo*/
         public async Task<List<HistorialAcciones>> ListarHistorial()
         {
-            List<HistorialAccionesEF> historialAccionesEFs = _contexto.HistoriaAccionesEFs.ToList();
-            List<HistorialAcciones> historialAcciones = new List<HistorialAcciones>();
+            var historialAccionesEFs = _contexto.HistoriaAccionesEFs
+                .OrderByDescending(a => a.Fecha) // Ordena por fecha descendente
+                .ToList();
 
-            foreach (HistorialAccionesEF historialAccionesEF in historialAccionesEFs) // Cambiado a UnidadEF
+            var historialAcciones = historialAccionesEFs.Select(historialAccionesEF => new HistorialAcciones
             {
-                historialAcciones.Add(new HistorialAcciones
-                {
-                    HistoriaAccionesID = historialAccionesEF.HistoriaAccionesID,//añadir el id tambien
-                    NombrePersona = historialAccionesEF.NombrePersona, // Cambiado a unidadEF
-                    Accion = historialAccionesEF.Accion,
-                    Fecha = historialAccionesEF.Fecha,
-                });
-            }
+                HistoriaAccionesID = historialAccionesEF.HistoriaAccionesID,
+                NombrePersona = historialAccionesEF.NombrePersona,
+                Accion = historialAccionesEF.Accion,
+                Fecha = historialAccionesEF.Fecha,
+            }).ToList();
 
             return historialAcciones;
         }
+
+        public async Task LimpiarHistorialCompleto()
+        {
+            var todosLosRegistros = _contexto.HistoriaAccionesEFs.ToList();
+            _contexto.HistoriaAccionesEFs.RemoveRange(todosLosRegistros);
+
+            await _contexto.SaveChangesAsync();
+        }
+
+        public List<HistorialAcciones> BuscarHistorial(string persona, string accion, DateTime? fecha)
+        {
+            var query = _contexto.HistoriaAccionesEFs.AsQueryable();
+
+            if (!string.IsNullOrEmpty(persona))
+            {
+                query = query.Where(h => h.NombrePersona.Contains(persona));
+            }
+
+            if (!string.IsNullOrEmpty(accion))
+            {
+                query = query.Where(h => h.Accion.Contains(accion));
+            }
+
+            if (fecha.HasValue)
+            {
+                query = query.Where(h => h.Fecha.Date == fecha.Value.Date);
+            }
+
+            var historialAccionesEFs = query
+                .OrderByDescending(h => h.Fecha) // Ordena de reciente a antiguo
+                .ToList();
+
+            var historialAcciones = historialAccionesEFs.Select(historialAccionesEF => new HistorialAcciones
+            {
+                Fecha = historialAccionesEF.Fecha,
+                NombrePersona = historialAccionesEF.NombrePersona,
+                Accion = historialAccionesEF.Accion
+            }).ToList();
+
+            return historialAcciones;
+        }
+
+
     }
 }

@@ -36,8 +36,9 @@
         <label>Filtrar por Fecha:</label>
         <input type="date" @bind="filtroFecha" style="width: 150px;" class="form-control" />
     </div>
-
     <button class="btn btn-primary" @onclick="BuscarHistorial">Buscar</button>
+    <!-- Botón para limpiar el historial -->
+    <button class="btn btn-danger" @onclick="LimpiarHistorial">Limpiar Historial</button>
 </div>
 <div class="col-md-12 col-xs-12 col-sm-12" style="text-align: center; overflow-y: auto; top: 0px; left: 0px;">
     <div class="table-responsive col-md-12 col-xs-12 col-sm-12" style="text-align: center; overflow-y: auto;">
@@ -51,17 +52,20 @@
                 </tr>
             </thead>
             <tbody>
-                @if (listaHistorialAcciones != null)
+                @if (paginaActualHistorial != null && paginaActualHistorial.Any())
                 {
-                    @foreach (var historialAcciones in listaHistorialAcciones)
+                    @foreach (var historialAcciones in paginaActualHistorial)
                     {
                         <tr>
-                            @* <td>@historialAcciones.HistoriaAccionesID</td> *@
                             <td>@historialAcciones.NombrePersona</td>
                             <td>@historialAcciones.Accion</td>
                             <td>@historialAcciones.Fecha</td>
                         </tr>
                     }
+                }
+                else
+                {
+                    <tr><td colspan="3">No hay registros disponibles</td></tr>
                 }
             </tbody>
         </table>
@@ -79,8 +83,9 @@
 @code {
     private HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
     private List<HistorialAcciones> listaHistorialAcciones = new List<HistorialAcciones>();
-
     private List<HistorialAcciones> listaHistorialAccionesFiltradas = new List<HistorialAcciones>();
+    private List<HistorialAcciones> paginaActualHistorial = new List<HistorialAcciones>();
+
     private List<string> listaPersonas = new List<string>();
     private List<string> listaAcciones = new List<string>();
 
@@ -97,11 +102,44 @@
     protected override async Task OnInitializedAsync()
     {
         listaHistorialAcciones = await historialAccionesControlador.ListarHistorial();
+        listaHistorialAccionesFiltradas = listaHistorialAcciones
+            .OrderByDescending(h => h.Fecha)
+            .ToList();
+
+        totalItems = listaHistorialAcciones.Count;
+        totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
         await CargarPagina();
-        listaHistorialAcciones = await historialAccionesControlador.ListarHistorial();
-        listaPersonas = listaHistorialAcciones.Select(h => h.NombrePersona).Distinct().ToList();
-        listaHistorialAccionesFiltradas = listaHistorialAcciones;
+
+    }
+
+    private async Task BuscarHistorial()
+    {
+        listaHistorialAccionesFiltradas = historialAccionesControlador.BuscarHistorial(filtroPersona, filtroAccion, filtroFecha);
+
+        totalItems = listaHistorialAccionesFiltradas.Count;
+        totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+        currentPage = 1; // Reiniciar a la primera página
+
+        await CargarPagina();
+    }
+
+    private async Task CargarPagina()
+    {
+        // Extraer solo los registros para la página actual
+        paginaActualHistorial = listaHistorialAccionesFiltradas
+            .Skip((currentPage - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+    }
+
+    private async Task CambiarPagina(int nuevaPagina)
+    {
+        if (nuevaPagina > 0 && nuevaPagina <= totalPages)
+        {
+            currentPage = nuevaPagina;
+            await CargarPagina();
+        }
     }
 
     private void filtroPersonaChanged(ChangeEventArgs e)
@@ -138,51 +176,12 @@
             .ToList();
     }
 
-    private async Task BuscarHistorial()
+    private async Task LimpiarHistorial()
     {
-        // Obtener la lista filtrada según los valores seleccionados en los filtros
-        listaHistorialAcciones = await historialAccionesControlador.ListarHistorial();
+        await historialAccionesControlador.LimpiarHistorialCompleto();
 
-        if (!string.IsNullOrEmpty(filtroPersona))
-        {
-            listaHistorialAcciones = listaHistorialAcciones
-                .Where(h => h.NombrePersona == filtroPersona)
-                .ToList();
-        }
-
-        if (!string.IsNullOrEmpty(filtroAccion))
-        {
-            listaHistorialAcciones = listaHistorialAcciones
-                .Where(h => h.Accion == filtroAccion)
-                .ToList();
-        }
-
-        if (filtroFecha.HasValue)
-        {
-            listaHistorialAcciones = listaHistorialAcciones
-                .Where(h => h.Fecha.Date == filtroFecha.Value.Date)
-                .ToList();
-        }
-    }
-
-    private async Task CargarPagina()
-    {
-        var allHistorial = await historialAccionesControlador.ListarHistorial();
-        totalItems = allHistorial.Count;
-        totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-
-        listaHistorialAcciones = allHistorial
-            .Skip((currentPage - 1) * pageSize)
-            .Take(pageSize)
-            .ToList();
-    }
-
-    private async Task CambiarPagina(int nuevaPagina)
-    {
-        if (nuevaPagina > 0 && nuevaPagina <= totalPages)
-        {
-            currentPage = nuevaPagina;
-            await CargarPagina();
-        }
+        listaHistorialAcciones = new List<HistorialAcciones>();
+        listaHistorialAccionesFiltradas = listaHistorialAcciones;
+        await CargarPagina();
     }
 }
