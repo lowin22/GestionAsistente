@@ -143,18 +143,18 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             _contexto.HorarioEFs.RemoveRange(horarios);
             return await _contexto.SaveChangesAsync() > 0;
         }
-Feature/LimpiarhorarioEstudiante
         public async Task<bool> limpiarHorarioAsistente(int asistenteID)
         {
             var horarios = await _contexto.HorarioEFs.Where(h => h.AsistenteID == asistenteID).ToListAsync();
             _contexto.HorarioEFs.RemoveRange(horarios);
             return await _contexto.SaveChangesAsync() > 0;
+        }
         public async Task<bool> limpiarHorarioOficina(int oficinaID)
         {
             var horarios = await _contexto.HorarioEFs
                 .Where(h => h.EstacionTrabajo.OficinaID == oficinaID)
                 .ToListAsync();
-              _contexto.HorarioEFs.RemoveRange(horarios);
+            _contexto.HorarioEFs.RemoveRange(horarios);
             return await _contexto.SaveChangesAsync() > 0;
 
         }

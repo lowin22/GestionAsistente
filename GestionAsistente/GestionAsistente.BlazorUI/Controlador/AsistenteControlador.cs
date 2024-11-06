@@ -14,9 +14,9 @@ namespace GestionAsistente.BlazorUI.Controlador
         {
             asistenteRN = new AsistenteRN();
         }
-        public async Task<bool> RegistrarAsistente(Asistente asistente)
+        public async Task<(bool, string)> RegistrarAsistente(Asistente asistente)
         {
-            return await asistenteRN.GuardarAsistente(asistente);
+            return await asistenteRN.RegistrarAsistente(asistente);
         }
 
         public async Task<List<Asistente>> ListarAsistentes()
