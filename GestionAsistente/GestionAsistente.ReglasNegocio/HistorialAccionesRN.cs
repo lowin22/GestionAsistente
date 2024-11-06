@@ -56,5 +56,10 @@ namespace GestionAsistente.ReglasNegocio
             return historialAcciones;
         }
 
+        public async Task<Task> LimpiarHistorialCompleto()
+        {
+            return historialAccionesAD.LimpiarHistorialCompleto();
+        }
+
     }
 }

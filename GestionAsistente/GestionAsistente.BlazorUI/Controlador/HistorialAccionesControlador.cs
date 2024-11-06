@@ -30,5 +30,10 @@ namespace GestionAsistente.BlazorUI.Controlador
         {
             return await historialAccionesRN.ListarHistorial();
         }
+        public async Task<Task> LimpiarHistorialCompleto()
+        {
+            return await historialAccionesRN.LimpiarHistorialCompleto();
+        }
+
     }
 }

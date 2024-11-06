@@ -99,5 +99,14 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
 
             return historialAcciones;
         }
+
+        public async Task LimpiarHistorialCompleto()
+        {
+            var todosLosRegistros = _contexto.HistoriaAccionesEFs.ToList();
+            _contexto.HistoriaAccionesEFs.RemoveRange(todosLosRegistros);
+
+            await _contexto.SaveChangesAsync();
+        }
+
     }
 }
