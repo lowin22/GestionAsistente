@@ -5,12 +5,7 @@
 <h3>Crear Badge</h3>
 
 <EditForm Model="badge" OnValidSubmit="RegistrarBadge" FormName="crearBadgeForm">
-
-    <div class="mb-3">
-        <label for="accesos" class="form-label">Accesos</label>
-        <InputText id="accesos" class="form-control" @bind-Value="badge.Justificacion" />
-    </div>
-
+    
     <div class="mb-3">
         <label for="horaInicio">Hora de Inicio</label>
         <InputSelect id="horaInicio" class="form-select" @bind-Value="horaInicio" @oninput="OnHorarioChanged">
@@ -108,7 +103,7 @@
     public HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
     public HistorialAcciones historialAcciones = new HistorialAcciones
     {
-        NombrePersona = "UsuarioSesion"
+            NombrePersona = "SesionUsuario"
     };
 
     protected override async Task OnInitializedAsync()
@@ -117,8 +112,9 @@
     }
     private Badge badge = new Badge()
     {
-        Unidad = new Unidad(),
-        Ocupado = false
+            Unidad = new Unidad(),
+            Ocupado = false,
+            Justificacion = ""
     };
 
     // Lista de horas (de 7 a 20)
@@ -220,7 +216,7 @@
 
     private bool EsFormularioInvalido()
     {
-        return string.IsNullOrEmpty(badge.Justificacion) || string.IsNullOrEmpty(horaInicio) || string.IsNullOrEmpty(horaFinal) || cantidadACrear <= 0;
+        return string.IsNullOrEmpty(horaInicio) || string.IsNullOrEmpty(horaFinal) || cantidadACrear <= 0;
     }
 
     private void CerrarModal()

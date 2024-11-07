@@ -6,6 +6,7 @@
 @using GestionAsistente.Entidades
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
+@using System.Security.Claims
 @layout LayoutPrincipal
 @rendermode InteractiveServer
 @inject UserManager<ApplicationUser> UserManager
@@ -77,7 +78,7 @@
 
                     <div class="mb-3">
                         <label for="rolID" class="form-label">Rol</label>
-                        <InputSelect id="rolID" class="form-control" @bind-Value="rolName">
+                        <InputSelect id="rolID" class="form-control" @bind-Value="rolSeleccionado" @oninput="OnRolChanged">
                              <option value="">Sin rol</option>
                             @foreach (var rol in listaRolesAsignar)
                             {
@@ -149,10 +150,16 @@
 
 @code {
 
+    private AuthenticationState authState;
+    private ClaimsPrincipal usuarioAutenticado;
+    private string nombreUsuarioAutenticado;
+    private ApplicationUser usuarioIdentity;
+
     private UsuarioControlador usuarioControlador = new UsuarioControlador();
     private UnidadControlador unidadControlador = new UnidadControlador();
     private RolControlador rolControlador = new RolControlador();
     private string defaultRole = "Usuario";
+    private string adminRol = "Administrador";
     List<Unidad> listaUnidades = new List<Unidad>();
 
     private List<UserView> listaUsuarios = new List<UserView>();
@@ -175,7 +182,7 @@
 
     };
 
-    private string rolName = "0";
+    private string rolSeleccionado = "0";
 
     private List<IdentityRole> listaRolesAsignar = new List<IdentityRole>();
 
@@ -201,23 +208,43 @@
 
         var roles = await UserManager.GetRolesAsync(actualizarUsuario);
 
-        rolName = roles.FirstOrDefault();
+        rolSeleccionado = roles.FirstOrDefault();
 
+        //si el rolName es admin se debe de quitar las unidades
+        if(rolSeleccionado == adminRol)
+        {
+            listaUnidades.Clear();
+        }
+        //si es usuario regular se aplica todas las unidades del usuario
+        else if(rolSeleccionado != adminRol && usuarioIdentity.UnidadID != null)
+        {
+            listaUnidades = await unidadControlador.ListarUnidades();
+            //poner la lista unidades que le corresponde al usuario
+            listaUnidades = listaUnidades.Where(u => u.UnidadID == actualizarUsuario.UnidadID).ToList();
+        }
+        //rol de admin usuario seleccionado y usuario autenticado admin
+        else if (rolSeleccionado != adminRol && usuarioIdentity.UnidadID == null)
+        {
+            listaUnidades = await unidadControlador.ListarUnidades();
+        }
     }
 
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var usuarioAutenticado = authState.User;
-        ApplicationUser usuarioIdentity = new ApplicationUser();
+        authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        usuarioAutenticado = authState.User;
 
-        //Insertar nombre de usuario segun sesion
+        // Comprobar si el usuario está autenticado y asignar valores
         if (usuarioAutenticado.Identity?.IsAuthenticated ?? false)
         {
-            var userName = usuarioAutenticado.Identity.Name;
-            usuarioIdentity = await UserManager.FindByNameAsync(userName);
-            historialAcciones.NombrePersona = userName;
+            nombreUsuarioAutenticado = usuarioAutenticado.Identity.Name;
+
+            // Obtener el usuario desde el UserManager
+            usuarioIdentity = await UserManager.FindByNameAsync(nombreUsuarioAutenticado);
+
+            // Asignar el nombre de usuario al historial de acciones
+            historialAcciones.NombrePersona = nombreUsuarioAutenticado;
         }
 
         //Cargar toda lista de roles para admin
@@ -231,7 +258,7 @@
 
         //Cargar lista de usuarios
         await CargarListaUsuario();
-        
+
         //si es usuario regular
 
         await CargarPagina();
@@ -306,6 +333,7 @@
         actualizarUsuario.UnidadID = usuario.UnidadID;
         actualizarUsuario.EmailConfirmed = usuario.EmailConfirmed;
 
+        await UserManager.UpdateSecurityStampAsync(actualizarUsuario);
         var result = await UserManager.UpdateAsync(actualizarUsuario);
 
         if (result.Succeeded)
@@ -318,15 +346,20 @@
             await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
 
 
-            // //si rol no esta vacio
-            if (!string.IsNullOrEmpty(rolName))
+            // //si rol no esta vacio y ademas habia un rol asignado
+            if (!string.IsNullOrEmpty(rolSeleccionado))
             {
+                //remover el anterior rol que se le habia asignado
+                if (!string.IsNullOrEmpty(rolAsignado))
+                {
+                    await UserManager.RemoveFromRoleAsync(actualizarUsuario, rolAsignado);
+                }
                 //Agregar nuevo rol
-                result = await UserManager.AddToRoleAsync(actualizarUsuario, rolName);
+                result = await UserManager.AddToRoleAsync(actualizarUsuario, rolSeleccionado);
             }
 
-
-            if (string.IsNullOrEmpty(rolName))
+            //si se quiere eliminar el rol, entonces debe tener un rol seleccionado y luego un rolAsignado en la BD
+            if(string.IsNullOrEmpty(rolSeleccionado) && !string.IsNullOrEmpty(rolAsignado))
             {
                 await UserManager.RemoveFromRoleAsync(actualizarUsuario, rolAsignado);
             }
@@ -343,6 +376,35 @@
 
         StateHasChanged();
 
+    }
+
+    private async Task OnRolChanged(ChangeEventArgs e)
+    {
+        //e.value viene el string del rol
+        if (e.Value.ToString() == adminRol)
+        {
+            actualizarUsuario.UnidadID = null;
+            usuario.UnidadID = null;
+            //se limpia la unidad
+            listaUnidades.Clear();
+        }
+        //se selecciona un usuario que no tiene
+        else if(actualizarUsuario.UnidadID == null && usuarioIdentity.UnidadID == null)
+        {
+            listaUnidades = await unidadControlador.ListarUnidades();
+        }
+        else if(actualizarUsuario.UnidadID == null && usuarioIdentity.UnidadID != null){
+                listaUnidades = await unidadControlador.ListarUnidades();
+                //poner la lista unidades que le corresponde al usuario
+                listaUnidades = listaUnidades.Where(u => u.UnidadID == actualizarUsuario.UnidadID).ToList();
+        }
+        //sino entonces si tiene unidad asignada
+        // else
+        // {
+        //     listaUnidades = await unidadControlador.ListarUnidades();
+        //     //poner la lista unidades que le corresponde al usuario
+        //     listaUnidades = listaUnidades.Where(u => u.UnidadID == actualizarUsuario.UnidadID).ToList();
+        // }
     }
 
     private async Task CargarPagina()
@@ -368,16 +430,6 @@
 
     private async Task CargarListaUsuario()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var usuarioAutenticado = authState.User;
-        ApplicationUser usuarioIdentity = new ApplicationUser();
-
-        if (usuarioAutenticado.Identity?.IsAuthenticated ?? false)
-        {
-            var userName = usuarioAutenticado.Identity.Name;
-            usuarioIdentity = await UserManager.FindByNameAsync(userName);
-        }
-
         listaUsuarios.Clear();
         //Inicio Listar usuarios que no sean administradores
         var listaTodosUsuarios = await UserManager.Users
@@ -386,7 +438,7 @@
 
         var listaFiltrada= new List<ApplicationUser>();
 
-        //si usuario regular se filtran los administradores
+        //si es usuario regular se filtran los administradores
         if (usuarioIdentity.UnidadID != null)
         {
             foreach (var user in listaTodosUsuarios)
@@ -398,8 +450,8 @@
                 }
             }
 
-            listaTodosUsuarios = listaFiltrada;
-
+            //Mostrar solo los usuario de esa unidad
+            listaTodosUsuarios = listaFiltrada.Where(u => u.UnidadID == usuarioIdentity.UnidadID).ToList();
         }
         
         //si es usuario admin no se filtra, se obtienen todos los usuarios
