@@ -16,32 +16,43 @@ namespace GestionAsistente.ReglasNegocio
         {
             encargadoAD = new EncargadoAD();
         }
-        public async Task<bool> RegistrarEncardado(Encargado encargado)
+        public async Task<(string, bool)> RegistrarEncardado(Encargado encargado)
         {
             if (encargado != null)
             {
-                encargado.Persona = new Persona
+               
+                if(encargado.Unidad.UnidadID == 0)
                 {
-                    Nombre = encargado.Persona.Nombre,
-                    PrimerApellido = encargado.Persona.PrimerApellido,
-                    SegundoApellido = encargado.Persona.SegundoApellido
-                };
-                if (encargado.UnidadID == 0)
-                {
-                    throw new Exception("La unidad no puede ser nula");
+                    return ("La unidad es erronea", false);
                 }
                 if (encargado.Persona.SegundoApellido == null)
                 {
-                    throw new Exception("La persona segundo no puede ser nula");
+                    return ("El segundo apellido no puede ser nulo", false);
                 }
                 if (encargado.Persona.PrimerApellido == null)
                 {
-                    throw new Exception("La persona primer no puede ser nula");
+                    return ("El primer apellido no puede ser nulo", false);
                 }
                 if (encargado.Persona.Nombre == null)
                 {
-                    throw new Exception("La persona nombre no puede ser nula");
+                    return ("El nombre no puede ser nulo", false);
                 }
+                if (encargado.Persona.PrimerApellido == "") { 
+                    return ("El primer apellido no puede estar vacío", false);
+                }
+                if (encargado.Persona.SegundoApellido == "")
+                {
+                    return ("El segundo apellido no puede estar vacío", false);
+                }
+                if (encargado.Persona.Nombre == "")
+                {
+                    return ("El nombre no estar vacío", false);
+                }
+                if (encargado.Unidad == null)
+                {
+                    return ("La unidad no puede ser nula", false);
+                }
+
             }
             return await encargadoAD.RegistrarEncargado(encargado);
         }

@@ -17,7 +17,7 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
         {
             this._contexto = new GestionAsistenteContexto();
         }
-        public async Task<bool> RegistrarEncargado(Encargado encargado)
+        public async Task<(string, bool)> RegistrarEncargado(Encargado encargado)
         {
             // Crear el objeto PersonaEF
             PersonaEF personaEF = new PersonaEF
@@ -38,7 +38,9 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             this._contexto.EncargadoEFs.Add(encargadoEF);
 
             // Guardar los cambios
-            return this._contexto.SaveChanges() > 0;
+            return this._contexto.SaveChanges() > 0
+? ("Insertado correctamente", true)
+: ("Error al insertar", false);
         }
         public async Task<List<Encargado>> ListarEncargados()
         {

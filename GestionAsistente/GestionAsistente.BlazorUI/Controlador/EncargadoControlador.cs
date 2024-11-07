@@ -76,25 +76,21 @@ namespace GestionAsistente.BlazorUI.Controlador
             }
 
         }
-        public async Task<bool> registrarEncargado(Encargado encargado) { 
+        public async Task<(string, bool)> registrarEncargado(Encargado encargado) { 
             return await encargadoRN.RegistrarEncardado(encargado);
         }
-        public async Task<bool> RegistrarEncargado(Encargado encargado)
+        public async Task<(string, bool)> RegistrarEncargado(Encargado encargado)
         {
-            bool exito= false;
+            (string mensaje, bool esExitoso) exito = ("", false);
             try
             {
-                 exito =  await encargadoRN.RegistrarEncardado(encargado);
+                exito = await encargadoRN.RegistrarEncardado(encargado);
 
-                if (exito)
+                if (exito.esExitoso)
                 {
                     mensajeExito = "Encargado registrado con éxito.";
                     mensajeError = null;
-                    encargado = new Encargado
-                    {
-                        Persona = new Persona(),
-                        Unidad = new Unidad()
-                    };
+                   
                 }
                 else
                 {
@@ -107,7 +103,8 @@ namespace GestionAsistente.BlazorUI.Controlador
                 mensajeError = $"Error: {ex.Message}";
                 mensajeExito = null;
             }
-           return exito;
+            return exito;
+
         }
 
         public async Task<List<Encargado>> ListarEncargados()
