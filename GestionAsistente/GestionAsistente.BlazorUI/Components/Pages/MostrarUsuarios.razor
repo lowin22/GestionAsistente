@@ -259,9 +259,9 @@
         //Cargar lista de usuarios
         await CargarListaUsuario();
 
-        //si es usuario regular
-
         await CargarPagina();
+
+        //await CargarUsuariosPaginados();
 
     }
 
@@ -417,6 +417,27 @@
             .Skip((currentPage - 1) * pageSize)
             .Take(pageSize)
             .ToList();
+    }
+
+    private async Task CargarUsuariosPaginados()
+    {
+        totalItems = await usuarioControlador.ContarUsuarios();
+        totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+        currentPage = Math.Max(currentPage, 1);
+
+        int skip = (currentPage - 1) * pageSize;
+        var usuariosPaginados = await usuarioControlador.ObtenerUsuariosPaginados(skip, pageSize);
+
+        listaUsuariosPaginacion = usuariosPaginados.Select(u => new UserView
+            {
+                Id = u.UsuarioID.ToString(),
+                NombreUsuario = u.Persona?.Nombre,  // Maneja posibles nulos
+                UnidadID = u.UnidadID,
+                Unidad = u.Unidad != null ? new UnidadEF { UnidadID = u.Unidad.UnidadID, Nombre = u.Unidad.Nombre } : null,
+                Rol = u.Rol != null ? u.Rol.Nombre : "Sin Rol",  
+                Activo = true  
+            }).ToList();
     }
 
     private async Task CambiarPagina(int nuevaPagina)

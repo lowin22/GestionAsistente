@@ -1,10 +1,16 @@
 ﻿@page "/crear-unidad"
 @using GestionAsistente.BlazorUI.Components.Layout
 @using GestionAsistente.BlazorUI.Controlador
+@using GestionAsistente.BlazorUI.Data
 @using GestionAsistente.Entidades
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
 @layout LayoutPrincipal
 @rendermode InteractiveServer
 
+@attribute [Authorize(Roles = "Usuario, Administrador")]
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
 @* <h1>Crear unidades</h1> *@
 
 <h3>@(esEdicion ? "Actualizar Unidad" : "Crear Unidad")</h3>
@@ -112,19 +118,23 @@
         Anterior
     </button>
     <span class="mx-2">Página @currentPage de @totalPages</span>
-    <button @onclick="() => CambiarPagina(currentPage + 1)" class="btn btn-secondary" disabled="@(currentPage == totalPages)">
+    <button @onclick="() => CambiarPagina(currentPage + 1)" class="btn btn-secondary" disabled="@(currentPage == totalPages && totalPages == 1)">
         Siguiente
     </button>
 </div>
 @code {
     UnidadControlador unidadControlador = new UnidadControlador();
     Unidad unidad = new Unidad();
-    
+
     HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
-    HistorialAcciones historialAcciones = new HistorialAcciones
-    {
-        NombrePersona = "UsuarioSesion"
-    };
+    // HistorialAcciones historialAcciones = new HistorialAcciones
+    // {
+    //     NombrePersona = "UsuarioSesion"
+    // };
+    HistorialAcciones historialAcciones = new HistorialAcciones();
+    private ApplicationUser usuarioIdentity = new ApplicationUser { };
+    private string? userName;
+    //private int? unidad;
     // Propiedades de paginación
     private int currentPage = 1;
     private int pageSize = 10;
@@ -142,7 +152,20 @@
 
     protected override async Task OnInitializedAsync()
     {
-        listaUnidades = await unidadControlador.ListarUnidades(); 
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            userName = user.Identity.Name;
+            Console.WriteLine(userName);
+            usuarioIdentity = await UserManager.FindByNameAsync(userName);
+            Console.WriteLine(usuarioIdentity);
+            //unidad = usuarioIdentity.UnidadID;
+        }
+
+        listaUnidades = await unidadControlador.ListarUnidades();
+        await CargarPagina();
     }
 
     /**/
@@ -172,6 +195,7 @@
                 unidad = new Unidad();
 
                 //Establecer propiedades para historialAcciones de registrar
+                historialAcciones.NombrePersona = userName;
                 historialAcciones.Accion = "Registrar unidad: " + unidad.Nombre;
                 historialAcciones.Fecha = DateTime.Now;
 
@@ -202,6 +226,7 @@
         if (exito)
         {
             //Establecer propiedades para historialAcciones de registrar
+            historialAcciones.NombrePersona = userName;
             historialAcciones.Accion = "Actualizar unidad: " + unidad.Nombre;
             historialAcciones.Fecha = DateTime.Now;
 
@@ -248,6 +273,7 @@
         if (exito)
         {
             //Establecer propiedades para historialAcciones de registrar
+            historialAcciones.NombrePersona = userName;
             historialAcciones.Accion = "Eliminar unidad: " + unidadParaEliminar.Nombre;
             historialAcciones.Fecha = DateTime.Now;
 
