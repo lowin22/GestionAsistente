@@ -39,9 +39,9 @@
                                         <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z" />
                                     </svg>
                                 </button>
-                                <button class="btn" data-bs-toggle="modal" data-bs-target="#ConfirmarEliminar">
+                                <button class="btn" data-bs-toggle="modal" data-bs-target="#ConfirmarEliminar" @onclick="() => encargadoControlador.seleccionarEncargadoEliminar(encargado.EncargadoID)">
                                     <!-- Icono SVG para eliminar -->
-                                    <svg width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16" @onclick="() => encargadoControlador.seleccionarEncargadoEliminar(encargado.EncargadoID)">
+                                    <svg width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16" >
                                         <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
                                     </svg>
                                 </button>
@@ -134,8 +134,8 @@
                     <div class="mb-3">
                         <label for="unidadID" class="form-label">Unidad</label>
                         <InputSelect id="unidadID" class="form-control" @bind-Value="encargadoControlador.crearEncargado.Unidad.UnidadID">
+                            <option value="">Seleccione una unidad</option>
                             @foreach (var unidad in encargadoControlador.listaUnidades)
-
                             {
                                 <option value="@unidad.UnidadID">@unidad.Nombre</option>
                             }
@@ -185,16 +185,56 @@
         Siguiente
     </button>
 </div>
+@if (mensajeExito != null)
+{
+    <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content custom-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmación</h5>
+                    <button type="button" class="close" @onclick="CerrarModal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>@mensajeExito</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btnAceptar" @onclick="CerrarModal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@if (mensajeError != null)
+{
+    <div id="ModalError" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content custom-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Error</h5>
+                    <button type="button" class="close" @onclick="CerrarModalError" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>@mensajeError</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btnAceptar" @onclick="CerrarModalError">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 @code {
     EncargadoControlador encargadoControlador = new EncargadoControlador();
     private string? userName;
     private int? unidad;
+    private string mensajeExito, mensajeError;
     private ApplicationUser usuarioIdentity = new ApplicationUser { };
     HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
-    HistorialAcciones historialAcciones = new HistorialAcciones
-    {
-        NombrePersona = "UsuarioSesion"
-    };
+    HistorialAcciones historialAcciones = new HistorialAcciones();
 
     // Propiedades de paginación
     private int currentPage = 1;
@@ -214,8 +254,6 @@
             usuarioIdentity = await UserManager.FindByNameAsync(userName);
             Console.WriteLine(usuarioIdentity);
             unidad = usuarioIdentity.UnidadID;
-
-            // unidad = user.Identity.
         }
         encargadoControlador.unidad = unidad;
         await encargadoControlador.listarEncargados();
@@ -226,7 +264,7 @@
         await encargadoControlador.EliminarEncargado(encargadoID);
         await encargadoControlador.listarEncargados();
 
-        //Establecer propiedades para historialAcciones de registrar
+        historialAcciones.NombrePersona = userName;
         historialAcciones.Accion = "Eliminar encargado: " + encargadoControlador.eliminarEncargado.Persona.Nombre +
         encargadoControlador.eliminarEncargado.Persona.Nombre + " " +
         encargadoControlador.eliminarEncargado.Persona.PrimerApellido + " " +
@@ -243,6 +281,7 @@
         await encargadoControlador.listarEncargados();
 
         //Establecer propiedades para historialAcciones de registrar
+        historialAcciones.NombrePersona = userName;
         historialAcciones.Accion = "Actualizar encargado: " + encargadoControlador.actaulizarEncargado.Persona.Nombre + " " +
         encargadoControlador.actaulizarEncargado.Persona.PrimerApellido + " " +
         encargadoControlador.actaulizarEncargado.Persona.SegundoApellido +
@@ -256,21 +295,34 @@
     }
     private async Task RegistrarEncargado()
     {
-        await encargadoControlador.registrarEncargado(encargadoControlador.crearEncargado);
-        encargadoControlador.crearEncargado = new Encargado
+        (string mensaje, bool esExitoso)= await encargadoControlador.registrarEncargado(encargadoControlador.crearEncargado);
+        if(esExitoso)
         {
-            Persona = new Persona(),
-                Unidad = new Unidad()
-        };
+            mensajeExito = "Encargado registrado con éxito.";
+            mensajeError = null;
+        
+            
+        }
+        else
+        {
+            mensajeExito = null;
+            mensajeError = mensaje;
+        } 
 
-        //Establecer propiedades para historialAcciones de registrar
-        historialAcciones.Accion = "Registrar encargado: " + encargadoControlador.encargado.Persona.Nombre + " " +
-        encargadoControlador.encargado.Persona.PrimerApellido + " " + encargadoControlador.encargado.Persona.SegundoApellido;
+
+        historialAcciones.NombrePersona = userName;
+        historialAcciones.Accion = "Registrar encargado: " + encargadoControlador.crearEncargado.Persona.Nombre + " " +
+        encargadoControlador.crearEncargado.Persona.PrimerApellido + " " + encargadoControlador.crearEncargado.Persona.SegundoApellido;
         historialAcciones.Fecha = DateTime.Now;
 
         await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
 
         await encargadoControlador.listarEncargados();
+        encargadoControlador.crearEncargado = new Encargado
+            {
+                Persona = new Persona(),
+                Unidad = new Unidad()
+            };
         StateHasChanged();
     }
 
@@ -293,5 +345,18 @@
             currentPage = nuevaPagina;
             await CargarPagina();
         }
+    }
+    private void CerrarModal()
+    {
+        mensajeExito = null;
+        mensajeError = null;
+        StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
+    }
+
+    private void CerrarModalError()
+    {
+        mensajeError = null;
+        mensajeExito = null;
+        StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
     }
 }

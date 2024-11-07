@@ -1,7 +1,13 @@
 ﻿@page "/crear-encargado"
 @using GestionAsistente.BlazorUI.Controlador
+@using GestionAsistente.BlazorUI.Data
 @using GestionAsistente.Entidades
 @rendermode InteractiveServer
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@attribute [Authorize(Roles = "Usuario, Administrador")]
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<ApplicationUser> UserManager
 <h3>Crear Encargado</h3>
 
 <EditForm Model="encargadoControlador.encargado" OnValidSubmit="RegistrarEncargado" FormName="crearEncargadoForm">
@@ -26,6 +32,7 @@
     <div class="mb-3">
         <label for="unidadID" class="form-label">Unidad</label>
         <InputSelect id="unidadID" class="form-control" @bind-Value="encargadoControlador.encargado.Unidad.UnidadID">
+            <option value="">Seleccione una unidad</option>
             @foreach (var unidad in encargadoControlador.listaUnidades)
             {
                 <option value="@unidad.UnidadID">@unidad.Nombre</option>
@@ -60,7 +67,7 @@
 
 @if (mensajeError != null)
 {
-    <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
+    <div id="ModalError" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content custom-modal">
                 <div class="modal-header">
@@ -80,44 +87,60 @@
     </div>
 }
 
+
 @code {
     public EncargadoControlador encargadoControlador = new EncargadoControlador();
     private string mensajeExito, mensajeError;
-
+    private string? userName;
+    private int? unidad;
+    private ApplicationUser usuarioIdentity = new ApplicationUser { };
     public HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
-    public HistorialAcciones historialAcciones = new HistorialAcciones
-    {
-        NombrePersona = "UsuarioSesion"
-    };
+    public HistorialAcciones historialAcciones = new HistorialAcciones();
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            userName = user.Identity.Name;
+            Console.WriteLine(userName);
+            usuarioIdentity = await UserManager.FindByNameAsync(userName);
+            Console.WriteLine(usuarioIdentity);
+            unidad = usuarioIdentity.UnidadID;
+
+            // unidad = user.Identity.
+        }
+        encargadoControlador.unidad = unidad;
         encargadoControlador.listarUnidades();
     }
 
     private async Task RegistrarEncargado()
     {
 
-        bool exito = await encargadoControlador.RegistrarEncargado(encargadoControlador.encargado);
-        if (exito)
+        (string mensaje, bool esExitoso) = await encargadoControlador.registrarEncargado(encargadoControlador.encargado);
+        if (esExitoso)
         {
             mensajeExito = "Asistente registrado con éxito.";
             mensajeError = null;
-            LimpiarFormulario();
+          
             StateHasChanged();
 
             //Establecer propiedades para historialAcciones de registrar
+            historialAcciones.NombrePersona = userName;
             historialAcciones.Accion = "Registrar encargado: " + encargadoControlador.encargado.Persona.Nombre + " " +
             encargadoControlador.encargado.Persona.PrimerApellido + " " + encargadoControlador.encargado.Persona.SegundoApellido;
             historialAcciones.Fecha = DateTime.Now;
 
             await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+            LimpiarFormulario();
         }
         else
         {
 
             mensajeExito = null;
-            mensajeError = "Hubo un problema al registrar el asistente.";
+            mensajeError = mensaje;
 
         }
 
@@ -144,5 +167,6 @@
         mensajeExito = null;
         StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
     }
+  
 
 }
