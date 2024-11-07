@@ -140,6 +140,46 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
        ? ("Eliminado correctamente", true)
        : ("Error al Eliminar", false);
         }
+        //Nuevo
+        public async Task<int> ContarUsuarios()
+        {
+            return await _contexto.UsuariosEF.CountAsync();
+        }
 
+        public async Task<List<Usuario>> ObtenerUsuariosPaginados(int skip, int pageSize)
+        {
+            var usuarioEFs = await _contexto.UsuariosEF
+                .OrderBy(u => u.UsuarioID)
+                .Skip(skip)
+                .Take(pageSize)
+                .Include(u => u.Rol)
+                .Include(u => u.Unidad)
+                .Include(u => u.Persona)
+                .ToListAsync();
+            return usuarioEFs.Select(usuarioEF => new Usuario
+            {
+                UsuarioID = usuarioEF.UsuarioID,
+                RolID = usuarioEF.RolID,
+                UnidadID = usuarioEF.UnidadID,
+                Rol = usuarioEF.Rol != null ? new Rol
+                {
+                    RolID = usuarioEF.Rol.RolID,
+                    Nombre = usuarioEF.Rol.Nombre
+                } : null,
+                Unidad = usuarioEF.Unidad != null ? new Unidad
+                {
+                    UnidadID = usuarioEF.Unidad.UnidadID,
+                    Nombre = usuarioEF.Unidad.Nombre
+                } : null,
+                Persona = new Persona
+                {
+                    PersonaID = usuarioEF.Persona.PersonaID,
+                    Nombre = usuarioEF.Persona.Nombre,
+                    PrimerApellido = usuarioEF.Persona.PrimerApellido,
+                    SegundoApellido = usuarioEF.Persona.SegundoApellido
+                },
+                Contrasenia = usuarioEF.Contrasenia
+            }).ToList();
+        }
     }
 }

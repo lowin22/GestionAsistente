@@ -58,11 +58,22 @@ namespace GestionAsistente.ReglasNegocio
             }
             return await usuarioAD.ActualizarUsuario(usuario);
         }
-
         public async Task<(string, bool)> EliminarUsuario(int encargadoID)
         {
             return await usuarioAD.EliminarUsuario(encargadoID);
         }
+        //Nuevo
+        public async Task<int> ContarUsuarios()
+        {
+            return await usuarioAD.ContarUsuarios();
+        }
 
+        public async Task<List<Usuario>> ObtenerUsuariosPaginados(int currentPage, int pageSize)
+        {
+            currentPage = Math.Max(currentPage, 1);
+
+            int skip = (currentPage - 1) * pageSize;
+            return await usuarioAD.ObtenerUsuariosPaginados(skip, pageSize);
+        }
     }
 }

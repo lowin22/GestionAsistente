@@ -31,5 +31,14 @@ namespace GestionAsistente.BlazorUI.Controlador
         {
             return await usuarioRN.EliminarUsuario(usuarioID);
         }
+        //Nuevo
+        public async Task<int> ContarUsuarios()
+        {
+            return await usuarioRN.ContarUsuarios();
+        }
+        public async Task<List<Usuario>> ObtenerUsuariosPaginados(int currentPage, int pageSize)
+        {
+            return await usuarioRN.ObtenerUsuariosPaginados(currentPage, pageSize);
+        }
     }
 }

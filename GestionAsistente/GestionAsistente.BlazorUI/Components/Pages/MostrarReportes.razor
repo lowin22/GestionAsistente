@@ -39,7 +39,7 @@
         Anterior
     </button>
     <span class="mx-2">Página @currentPage de @totalPages</span>
-    <button @onclick="() => CambiarPagina(currentPage + 1)" class="btn btn-secondary" disabled="@(currentPage == totalPages)">
+    <button @onclick="() => CambiarPagina(currentPage + 1)" class="btn btn-secondary" disabled="@(currentPage == totalPages && totalPages == 1 && totalPages == 0)">
         Siguiente
     </button>
 </div>
@@ -62,6 +62,8 @@
     {
         listaReportes = await reporteControlador.ListarReporte();
         StateHasChanged();
+
+        await CargarPagina();
     }
 
     private async Task CargarPagina()

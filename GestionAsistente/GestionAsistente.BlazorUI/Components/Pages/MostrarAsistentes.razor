@@ -295,16 +295,6 @@
         </div>
     </div>
 </div>
-<div class="mt-3 text-center">
-    <button @onclick="() => CambiarPagina(currentPage - 1)" class="btn btn-secondary" disabled="@(currentPage == 1)">
-        Anterior
-    </button>
-    <span class="mx-2">Página @currentPage de @totalPages</span>
-    <button @onclick="() => CambiarPagina(currentPage + 1)" class="btn btn-secondary" disabled="@(currentPage == totalPages)">
-        Siguiente
-    </button>
-</div>
-
 @if (mensajeExito != null)
 {
     <div id="ModalAviso" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
@@ -348,7 +338,15 @@
         </div>
     </div>
 }
-
+<div class="mt-3 text-center">
+    <button @onclick="() => CambiarPagina(currentPage - 1)" class="btn btn-secondary" disabled="@(currentPage == 1)">
+        Anterior
+    </button>
+    <span class="mx-2">Página @currentPage de @totalPages</span>
+    <button @onclick="() => CambiarPagina(currentPage + 1)" class="btn btn-secondary" disabled="@(currentPage == totalPages)">
+        Siguiente
+    </button>
+</div>
 
 @code {
     private string? userName;
@@ -363,6 +361,7 @@
     private HorarioControlador horarioControlador = new HorarioControlador();
     private BadgeControlador badgeControlador = new BadgeControlador();
     private List<Asistente> listaAsistentes = new List<Asistente>();
+    private List<Asistente> listaAsistentesFiltrados = new List<Asistente>();
     private List<Unidad> listaUnidades = new List<Unidad>();
     private List<Encargado> listaEncargados = new List<Encargado>();
     private List<Oficina> listaOficinas = new List<Oficina>();
@@ -437,6 +436,8 @@
             listaAsistentes = await asistenteControlador.ListarAsistentes();
             listaAsistentes = listaAsistentes.Where(a => a.UnidadID == unidadUsuario).ToList();
         }
+
+        await CargarPagina();
     }
 
     private async Task GuardarHorarioAsistente()

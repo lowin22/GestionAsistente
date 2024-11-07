@@ -181,7 +181,7 @@
         Anterior
     </button>
     <span class="mx-2">Página @currentPage de @totalPages</span>
-    <button @onclick="() => CambiarPagina(currentPage + 1)" class="btn btn-secondary" disabled="@(currentPage == totalPages)">
+    <button @onclick="() => CambiarPagina(currentPage + 1)" class="btn btn-secondary" disabled="@(currentPage == totalPages && totalPages == 1)">
         Siguiente
     </button>
 </div>
@@ -258,6 +258,7 @@
         encargadoControlador.unidad = unidad;
         await encargadoControlador.listarEncargados();
         await encargadoControlador.listarUnidades();
+        await CargarPagina();
     }
     async Task EliminarEncargado(int encargadoID)
     {
