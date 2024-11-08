@@ -80,16 +80,29 @@ namespace GestionAsistente.ReglasNegocio
                 }
                 if (encargado.Persona.SegundoApellido == null)
                 {
-                    return ("El segundo apellido es necesario", false);
+                    return ("El segundo apellido no puede ser nulo", false);
                 }
                 if (encargado.Persona.PrimerApellido == null)
                 {
-                    return ("El primer apellido es necesario", false);
+                    return ("El primer apellido no puede ser nulo", false);
                 }
                 if (encargado.Persona.Nombre == null)
                 {
-                    return ("El nombre es necesario", false);
+                    return ("El nombre no puede ser nulo", false);
                 }
+                if (encargado.Persona.PrimerApellido == "")
+                {
+                    return ("El primer apellido no puede estar vacío", false);
+                }
+                if (encargado.Persona.SegundoApellido == "")
+                {
+                    return ("El segundo apellido no puede estar vacío", false);
+                }
+                if (encargado.Persona.Nombre == "")
+                {
+                    return ("El nombre no estar vacío", false);
+                }
+              
             }
             return await encargadoAD.ActualizarEncargado(encargado);
         }
