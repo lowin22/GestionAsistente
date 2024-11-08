@@ -1,127 +1,113 @@
 ﻿@page "/crear-usuarios"
 @using GestionAsistente.BlazorUI.Components.Layout
 @using GestionAsistente.BlazorUI.Controlador
+@using GestionAsistente.BlazorUI.Data
 @using GestionAsistente.Entidades
+@using Microsoft.AspNetCore.Identity
+@using System.ComponentModel.DataAnnotations
+
+@inject UserManager<ApplicationUser> UserManager
+@inject IUserStore<ApplicationUser> UserStore
 @layout LayoutPrincipal
 @rendermode InteractiveServer
 
-<h3>Crear Usuarios</h3>
+<PageTitle>Registro</PageTitle>
 
-<EditForm Model="crearUsuario" OnValidSubmit="RegistrarUsuario" FormName="crearUsuarioForm">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-    
-    <div class="row">
-        <div class="col-md-6">
-            <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre</label>
-                <InputText id="nombre" class="form-control" @bind-Value="crearUsuario.Persona.Nombre" />
+<h3 style="text-align: center;">Registro usuario</h3>
+
+<div class="row justify-content-center">
+    <div class="col-md-4">
+    @*     <StatusMessage Message="@Mensaje" /> *@
+        <EditForm Model="Input" method="post" OnValidSubmit="RegistrarUsuario" FormName="registro">
+            <DataAnnotationsValidator />
+            <hr />
+            @* <ValidationSummary class="text-danger" role="alert" /> *@
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.NombreUsuario" class="form-control" autocomplete="username" aria-required="true" placeholder="nombre@ejemplo.com" />
+                <label for="nombreusuario">Nombre de usuario</label>
+                <ValidationMessage For="() => Input.NombreUsuario" class="text-danger" />
             </div>
-        </div>
-        <div class="col-md-6">
-            <div class="mb-3">
-                <label for="primerApellido" class="form-label">Primer Apellido</label>
-                <InputText id="primerApellido" class="form-control" @bind-Value="crearUsuario.Persona.PrimerApellido" />
+            <div class="form-floating mb-3">
+                <InputText type="password" @bind-Value="Input.Contrasenna" class="form-control" autocomplete="new-password" aria-required="true" placeholder="contraseña" />
+                <label for="contraseña">Contraseña</label>
+                <ValidationMessage For="() => Input.Contrasenna" class="text-danger" />
             </div>
-        </div>
+            <div class="form-floating mb-3">
+                <InputText type="password" @bind-Value="Input.ConfirmarContrasenna" class="form-control" autocomplete="new-password" aria-required="true" placeholder="confirmar contraseña" />
+                <label for="confirmar-contraseña">Confirmar Contraseña</label>
+                <ValidationMessage For="() => Input.ConfirmarContrasenna" class="text-danger" />
+            </div>
+
+            <button type="submit" class="w-100 btn btn-lg btn-primary">Registrar</button>
+        </EditForm>
     </div>
-
-    <div class="row">
-        <div class="col-md-6">
-            <div class="mb-3">
-                <label for="segundoApellido" class="form-label">Segundo Apellido</label>
-                <InputText id="segundoApellido" class="form-control" @bind-Value="crearUsuario.Persona.SegundoApellido" />
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="mb-3">
-                <label for="contrasenia" class="form-label">Contraseña</label>
-                <InputText type="password" id="contrasenia" class="form-control" @bind-Value="crearUsuario.Contrasenia" />
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-6">
-            <div class="mb-3">
-                <label for="unidadID" class="form-label">Unidad</label>
-                <InputSelect id="unidadID" class="form-control" @bind-Value="crearUsuario.UnidadID">
-                    @foreach (var unidad in listaUnidades)
-                    {
-                        <option value="@unidad.UnidadID">@unidad.Nombre</option>
-                    }
-                </InputSelect>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="mb-3">
-                <label for="rolID" class="form-label">Rol</label>
-                <InputSelect id="rolID" class="form-control" @bind-Value="crearUsuario.RolID">
-                    @foreach (var rol in listaRoles)
-                    {
-                        <option value="@rol.RolID">@rol.Nombre</option>
-                    }
-                </InputSelect>
-            </div>
-        </div>
-    </div>
-
-    <button type="submit" class="btn btn-primary " data-bs-dismiss="modal">Registrar Usuario</button>
-</EditForm>
+</div>
 
 @code {
+    private IEnumerable<IdentityError>? erroresIdentidad;
 
-    private UsuarioControlador usuarioControlador = new UsuarioControlador();
-    private UnidadControlador unidadControlador = new UnidadControlador();
-    private RolControlador rolControlador = new RolControlador();
+    [SupplyParameterFromForm]
+    private ModeloEntrada Input { get; set; } = new ModeloEntrada();
 
-    private List<Usuario> listaUsuarios = new List<Usuario>();
-    private List<Unidad> listaUnidades = new List<Unidad>();
-    private List<Rol> listaRoles = new List<Rol>();
+    private string? Mensaje => erroresIdentidad is null ? null : $"Error: {string.Join(", ", erroresIdentidad.Select(error => error.Description))}";
 
-    private HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
-    private HistorialAcciones historialAcciones = new HistorialAcciones
+    public async Task RegistrarUsuario(EditContext editContext)
     {
-        NombrePersona = "UsuarioSesion"
-    };
+        var usuario = new ApplicationUser();
 
-    private Usuario usuario = new Usuario
-        {
-            Persona = new Persona()
-        };
-    private Usuario crearUsuario = new Usuario()
-        {
-            Persona = new Persona()
-        };
+        await UserStore.SetUserNameAsync(usuario, Input.NombreUsuario, CancellationToken.None);
 
-    protected override async Task OnInitializedAsync()
-    {
-        listaUsuarios = await usuarioControlador.ListarUsuarios();
-        listaUnidades = await unidadControlador.ListarUnidades();
-        listaRoles = await rolControlador.ListarRoles();
+        var emailStore = ObtenerEmailStore();
+
+        await emailStore.SetEmailConfirmedAsync(usuario, true, CancellationToken.None);
+
+        var resultado = await UserManager.CreateAsync(usuario, Input.Contrasenna);
+
+        if (!resultado.Succeeded)
+        {
+            erroresIdentidad = resultado.Errors;
+            Console.WriteLine("Nombre de usuario ya existe");
+            return;
+        }
+
+        if (resultado.Succeeded)
+        {
+            LimpiarFormulario();
+            Console.WriteLine("Se insertó correctamente");
+        }
     }
 
-    private async Task RegistrarUsuario()
+    private IUserEmailStore<ApplicationUser> ObtenerEmailStore()
     {
-
-        await usuarioControlador.RegistrarUsuario(crearUsuario);
-
-        listaUsuarios = await usuarioControlador.ListarUsuarios();
-
-        crearUsuario = new Usuario
+        if (!UserManager.SupportsUserEmail)
         {
-            Persona = new Persona()
-        };
-
-        //Establecer propiedades para historialAcciones de registrar
-        historialAcciones.Accion = "Registrar usuario: " + crearUsuario.Persona.Nombre + " "
-        + crearUsuario.Persona.PrimerApellido + " " + crearUsuario.Persona.SegundoApellido;
-        historialAcciones.Fecha = DateTime.Now;
-
-        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
-
-        StateHasChanged();
-
+            throw new NotSupportedException("La interfaz de usuario predeterminada requiere una tienda de usuarios con soporte de correo electrónico.");
+        }
+        return (IUserEmailStore<ApplicationUser>)UserStore;
     }
 
+    private void LimpiarFormulario()
+    {
+        Input.NombreUsuario = "";
+        Input.Contrasenna = "";
+        Input.ConfirmarContrasenna = "";
+    }
+
+    private sealed class ModeloEntrada
+    {
+        [Required]
+        [Display(Name = "Nombre de usuario")]
+        public string NombreUsuario { get; set; } = "";
+
+        [Required]
+        [StringLength(30, ErrorMessage = "La contraseña debe tener al menos 6 caracteres y 30 como máximo.", MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        [Display(Name = "Contraseña")]
+        public string Contrasenna { get; set; } = "";
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirmar contraseña")]
+        [Compare("Contrasenna", ErrorMessage = "La confirmación de la contraseña no coincide.")]
+        public string ConfirmarContrasenna { get; set; } = "";
+    }
 }

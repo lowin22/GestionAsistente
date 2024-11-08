@@ -93,11 +93,18 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                 return false;
             }
 
+            //si el badge que viene esta activo, pero el que estaba previamente tiene algo de justificacion entonces se debe quitar ya que se logro activar
+            if (badge.Activo == true && !string.IsNullOrEmpty(badgeEF.Justificacion))
+            {
+                badge.Justificacion = "";
+            }
+
             badgeEF.BadgeID = badge.BadgeID;
             badgeEF.Activo = badge.Activo;
             badgeEF.Justificacion = badge.Justificacion;
             badgeEF.Horario = badge.Horario;
             badgeEF.UnidadID = badge.UnidadID;
+
             return _contexto.SaveChanges() > 0;
         }
         public async Task<bool> EliminarBadge(int BadgeID)
