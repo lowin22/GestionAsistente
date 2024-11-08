@@ -126,12 +126,13 @@
                 <p class="text-danger">¿Estás seguro de que deseas eliminar este usuario?</p>
             </div>
             <div class="modal-footer justify-content-center">
-                <button class="btn btn-primary" data-bs-dismiss="modal">
-                    Cancelar
-                </button>
-                <button class="btn btn-danger" data-bs-dismiss="modal" @onclick="() => EliminarUsuario(usuarioEliminar)">
 
+                <button class="btn btn-primary" data-bs-dismiss="modal" @onclick="() => EliminarUsuario(usuarioEliminar)">
                     Confirmar
+                </button>
+
+                <button class="btn btn-danger" data-bs-dismiss="modal">
+                    Cancelar
                 </button>
 
             </div>
@@ -308,13 +309,13 @@
             await CargarPagina();
 
             await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+            
+            StateHasChanged();
         }
         else
         {
             Console.WriteLine("No se logro eliminar el usuario.");
         }
-
-        StateHasChanged();
     }
 
     private async Task ActualizarUsuario()
@@ -364,17 +365,16 @@
                 await UserManager.RemoveFromRoleAsync(actualizarUsuario, rolAsignado);
             }
 
+            await CargarListaUsuario();
+
+            await CargarPagina();
+
+            StateHasChanged();
         }
         else
         {
             Console.WriteLine("Fallo del usuarios");
         }
-
-        await CargarListaUsuario();
-
-        await CargarPagina();
-
-        StateHasChanged();
 
     }
 

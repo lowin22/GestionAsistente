@@ -21,8 +21,9 @@
                     <th>Acciones</th>
                     <th>Número Badge</th>
                     <th>Horario</th>
-                    <th>Unidad</th>
                     <th>Ocupado</th>
+                    <th>Unidad</th>
+                    <th>Activo</th>
                     <th>Justificación</th>
                 </tr>
                 @* <tr>
@@ -67,8 +68,9 @@
                             </td>
                             <td>@badge.BadgeID</td>
                             <td>@badge.Horario</td>
-                            <td>@badge.Unidad?.Nombre</td>
                             <td>@(badge.Ocupado ? "Sí" : "No")</td>
+                            <td>@badge.Unidad?.Nombre</td>
+                            <td>@(badge.Activo ? "Sí" : "No")</td>
                             <td>@badge.Justificacion</td>
                         </tr>
                     }
@@ -94,8 +96,9 @@
                             </td>
                             <td>@badge.BadgeID</td>
                             <td>@badge.Horario</td>
-                            <td>@badge.Unidad?.Nombre</td>
                             <td>@(badge.Ocupado ? "Sí" : "No")</td>
+                            <td>@badge.Unidad?.Nombre</td>
+                            <td>@(badge.Activo ? "Sí" : "No")</td>
                             <td>@badge.Justificacion</td>
                         </tr>
                     }
@@ -117,21 +120,26 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header text-center">
-                <h5 class="modal-title" id="ConfirmarEliminar">¿Eliminar Encargado?</h5>
+                <h5 class="modal-title" id="ConfirmarEliminar">¿Deshabilitar badge?</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center">
-                <p class="fs-5">Esta acción no se puede deshacer.</p>
-                <p class="text-danger">¿Estás seguro de que deseas eliminar este encargado?</p>
+                <p class="fs-5">Esta acción deshabilitara el badge seleccionado.</p>
+                <p class="text-danger">¿Estás seguro de que deseas deshabilitar este badge?</p>
             </div>
+
+            <label for="justificacion">Justificación:</label>
+                        <InputText id="justificacion" class="form-control"
+                       @bind-Value="badge.Justificacion"
+                       />
+
             <div class="modal-footer justify-content-center">
-                <button class="btn btn-primary" data-bs-dismiss="modal">
-                    Cancelar
-                </button>
-                <button class="btn btn-danger" data-bs-dismiss="modal" @onclick="() => EliminarBadge(eliminarBadge.BadgeID)">
+                <button class="btn btn-primary" data-bs-dismiss="modal" disabled="@EsFormularioEliminarInvalido()" @onclick="() => EliminarBadge(eliminarBadge.BadgeID)">
                     Confirmar
                 </button>
-
+                <button class="btn btn-danger" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
             </div>
         </div>
     </div>
@@ -149,7 +157,7 @@
 
                     <div class="mb-3">
                         <label for="horaInicio">Hora de Inicio</label>
-                        <InputSelect id="horaInicio" class="form-select" @bind-Value="horaInicio">
+                        <InputSelect id="horaInicio" class="form-select" @bind-Value="horaInicio" @oninput="OnHorarioChanged">
                             <option value="">Seleccione la hora de inicio</option>
                             @foreach (var hora in horasDelDiaInicio)
                             {
@@ -180,9 +188,12 @@
                             }
                         </InputSelect>
                     </div>
-                       
 
-                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Actualizar badge</button>
+                    <div class="mb-3">
+                        <InputCheckbox @bind-Value="badge.Activo" /> Activo
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" disabled="@EsFormularioActualizarInvalido()">Actualizar badge</button>
                 </EditForm>
                 @if (mensajeExito != null)
                 {
@@ -332,6 +343,12 @@
 
         listaUnidades = await unidadControlador.ListarUnidades();
 
+        //si es usuario regular entonces mostrar en el select solo esa unidad
+        if(usuarioIdentity.UnidadID != null)
+        {
+            listaUnidades = listaUnidades.Where(u => u.UnidadID == usuarioIdentity.UnidadID).ToList();
+        }
+
         await CargarPagina();
 
     }
@@ -339,21 +356,37 @@
     private async Task seleccionarBadgeEliminar(int eliminarBadges)
     {
         eliminarBadge = listaBadge.FirstOrDefault(x => x.BadgeID == eliminarBadges);
+
+        //por si previamente badge.Justificacion tiene un valor
+        badge.Justificacion = "";
     }
 
     async Task EliminarBadge(int badgeID)
     {
-        await badgeControlador.EliminarBadge(badgeID);
+        bool exito = false;
+        //await badgeControlador.EliminarBadge(badgeID);
 
-        //Establecer propiedades para historialAcciones de registrar
-        historialAcciones.Accion = "Eliminar badge: " + eliminarBadge.BadgeID;
-        historialAcciones.Fecha = DateTime.Now;
+        //se actualiza el activo y la justificaion
+        eliminarBadge.Justificacion = badge.Justificacion;
+        eliminarBadge.Activo = false;
 
-        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+        exito = await badgeControlador.ActualizarBadge(eliminarBadge);
 
-        listaBadge = await badgeControlador.ListarBadge();
+        if (exito)
+        {
+            //Establecer propiedades para historialAcciones de registrar
+            historialAcciones.Accion = "Desactivar badge: " + eliminarBadge.BadgeID;
+            historialAcciones.Fecha = DateTime.Now;
 
-        StateHasChanged();
+            await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+
+            CargarListaBadge();
+
+            CargarPagina();
+
+            StateHasChanged();
+        }
+
     }
 
     private async Task BusquedaAsincrona(ChangeEventArgs e)
@@ -384,10 +417,27 @@
         badge.Horario = actualizarBadge.Horario;
         badge.BadgeID = actualizarBadge.BadgeID;
         badge.Ocupado = actualizarBadge.Ocupado;
+        badge.Unidad = actualizarBadge.Unidad;
+        badge.Activo = actualizarBadge.Activo;
 
         //actualizar la variable horainicio y horafinal para la parte visual cuando se actualiza el badge
         horaInicio = horas[0].Trim();
         horaFinal = horas[1].Trim();
+
+        //actualizar el horario select
+        var horaInicioSeleccionada = horaInicio;
+
+        if (!string.IsNullOrEmpty(horaInicioSeleccionada))
+        {
+            horasDelDiaFinal = horasDelDiaCompletas
+                .Where(h => string.Compare(h, horaInicioSeleccionada) > 0)
+                .ToList();
+        }
+
+        horaFinal = horasDelDiaFinal.FirstOrDefault();
+        //fin actualizar horario select
+        StateHasChanged();
+
     }
 
     private async Task ModificarBadge()
@@ -398,11 +448,8 @@
 
             bool exito = false;
             badge.Horario = $"{horaInicio} {simboloRangoHoras} {horaFinal}";
-
+            
             exito = await badgeControlador.ActualizarBadge(badge);
-
-            listaBadge = await badgeControlador.ListarBadge();
-
 
             if (exito)
             {
@@ -410,10 +457,17 @@
                 mensajeError = null;
 
                 //Establecer propiedades para historialAcciones de registrar
-                historialAcciones.Accion = "Actualizar badge: " + actualizarBadge.Unidad.Nombre + " a " + badge.Unidad.Nombre;
+                historialAcciones.Accion = $"Actualizar badge: {actualizarBadge.Unidad?.Nombre ?? "Sin unidad"} a {badge.Unidad?.Nombre ?? "Sin unidad"}";
+
                 historialAcciones.Fecha = DateTime.Now;
 
                 await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+
+                CargarListaBadge();
+
+                CargarPagina();
+
+                StateHasChanged();
             }
             else
             {
@@ -428,7 +482,6 @@
             mensajeExito = null;
         }
 
-        StateHasChanged();
     }
 
     private async Task CargarListaBadge()
@@ -462,9 +515,14 @@
 
     }
 
-    private bool EsFormularioInvalido()
+    private bool EsFormularioActualizarInvalido()
     {
-        return string.IsNullOrEmpty(badge.Justificacion) || string.IsNullOrEmpty(horaInicio) || string.IsNullOrEmpty(horaFinal);
+        return string.IsNullOrEmpty(horaInicio) || string.IsNullOrEmpty(horaFinal);
+    }
+
+    private bool EsFormularioEliminarInvalido()
+    {
+        return string.IsNullOrEmpty(badge?.Justificacion?.Trim());
     }
 
     private async Task CargarPagina()

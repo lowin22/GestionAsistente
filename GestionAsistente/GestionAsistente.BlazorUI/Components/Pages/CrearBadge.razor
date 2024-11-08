@@ -1,7 +1,15 @@
 ﻿@page "/crear-badge"
+@using GestionAsistente.BlazorUI.Components.Layout
 @using GestionAsistente.BlazorUI.Controlador
+@using GestionAsistente.BlazorUI.Data
 @using GestionAsistente.Entidades
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Identity
 @rendermode InteractiveServer
+@layout LayoutPrincipal
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
 <h3>Crear Badge</h3>
 
 <EditForm Model="badge" OnValidSubmit="RegistrarBadge" FormName="crearBadgeForm">
@@ -91,6 +99,11 @@
 }
 
 @code {
+    private AuthenticationState authState;
+    private ClaimsPrincipal usuarioAutenticado;
+    private string nombreUsuarioAutenticado;
+    private ApplicationUser usuarioIdentity;
+
     BadgeControlador badgeControlador = new BadgeControlador();
     UnidadControlador unidadControlador = new UnidadControlador();
     string mensajeExito;
@@ -103,18 +116,36 @@
     public HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
     public HistorialAcciones historialAcciones = new HistorialAcciones
     {
-            NombrePersona = "SesionUsuario"
+        
     };
 
     protected override async Task OnInitializedAsync()
     {
+
+        authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        usuarioAutenticado = authState.User;
+
+        // Comprobar si el usuario está autenticado y asignar valores
+        if (usuarioAutenticado.Identity?.IsAuthenticated ?? false)
+        {
+            nombreUsuarioAutenticado = usuarioAutenticado.Identity.Name;
+
+            // Obtener el usuario desde el UserManager
+            usuarioIdentity = await UserManager.FindByNameAsync(nombreUsuarioAutenticado);
+
+            // Asignar el nombre de usuario al historial de acciones
+            historialAcciones.NombrePersona = nombreUsuarioAutenticado;
+        }
+        
         listaUnidades = await unidadControlador.ListarUnidades();
+
     }
     private Badge badge = new Badge()
     {
             Unidad = new Unidad(),
             Ocupado = false,
-            Justificacion = ""
+            Justificacion = "",
+            Activo = true
     };
 
     // Lista de horas (de 7 a 20)
@@ -194,6 +225,7 @@
             mensajeError = $"Error: {ex.Message}";
             mensajeExito = null;
         }
+
         StateHasChanged();
     }
 
