@@ -278,19 +278,34 @@
     }
     private async Task ActualizarEncargado()
     {
-        await encargadoControlador.ActualizarEncargado(encargadoControlador.encargado);
-        await encargadoControlador.listarEncargados();
 
-        //Establecer propiedades para historialAcciones de registrar
-        historialAcciones.NombrePersona = userName;
-        historialAcciones.Accion = "Actualizar encargado: " + encargadoControlador.actaulizarEncargado.Persona.Nombre + " " +
-        encargadoControlador.actaulizarEncargado.Persona.PrimerApellido + " " +
-        encargadoControlador.actaulizarEncargado.Persona.SegundoApellido +
-        " a " + encargadoControlador.encargado.Persona.Nombre + " " +
-        encargadoControlador.encargado.Persona.PrimerApellido + " " +
-        encargadoControlador.encargado.Persona.SegundoApellido;
-        historialAcciones.Fecha = DateTime.Now;
-        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+
+        (string mensaje, bool esExitoso) = await encargadoControlador.ActualizarEncargado(encargadoControlador.encargado);
+        if (esExitoso)
+        {
+            mensajeExito = "Encargado actualizado con éxito.";
+            mensajeError = null;
+
+            await encargadoControlador.listarEncargados();
+
+            //Establecer propiedades para historialAcciones de registrar
+            historialAcciones.NombrePersona = userName;
+            historialAcciones.Accion = "Actualizar encargado: " + encargadoControlador.actaulizarEncargado.Persona.Nombre + " " +
+            encargadoControlador.actaulizarEncargado.Persona.PrimerApellido + " " +
+            encargadoControlador.actaulizarEncargado.Persona.SegundoApellido +
+            " a " + encargadoControlador.encargado.Persona.Nombre + " " +
+            encargadoControlador.encargado.Persona.PrimerApellido + " " +
+            encargadoControlador.encargado.Persona.SegundoApellido;
+            historialAcciones.Fecha = DateTime.Now;
+            await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+        }
+        else
+        {
+            mensajeExito = null;
+            mensajeError = mensaje;
+        }
+        
+       
 
         StateHasChanged();
     }
@@ -301,6 +316,20 @@
         {
             mensajeExito = "Encargado registrado con éxito.";
             mensajeError = null;
+
+            historialAcciones.NombrePersona = userName;
+            historialAcciones.Accion = "Registrar encargado: " + encargadoControlador.crearEncargado.Persona.Nombre + " " +
+            encargadoControlador.crearEncargado.Persona.PrimerApellido + " " + encargadoControlador.crearEncargado.Persona.SegundoApellido;
+            historialAcciones.Fecha = DateTime.Now;
+
+            await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+
+            await encargadoControlador.listarEncargados();
+            encargadoControlador.crearEncargado = new Encargado
+                {
+                    Persona = new Persona(),
+                    Unidad = new Unidad()
+                };
         
             
         }
@@ -311,19 +340,7 @@
         } 
 
 
-        historialAcciones.NombrePersona = userName;
-        historialAcciones.Accion = "Registrar encargado: " + encargadoControlador.crearEncargado.Persona.Nombre + " " +
-        encargadoControlador.crearEncargado.Persona.PrimerApellido + " " + encargadoControlador.crearEncargado.Persona.SegundoApellido;
-        historialAcciones.Fecha = DateTime.Now;
-
-        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
-
-        await encargadoControlador.listarEncargados();
-        encargadoControlador.crearEncargado = new Encargado
-            {
-                Persona = new Persona(),
-                Unidad = new Unidad()
-            };
+       
         StateHasChanged();
     }
 
