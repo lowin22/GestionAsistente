@@ -41,7 +41,7 @@
     color: white;
 }
 
-#btn{
+#btn {
     background-color: #005da4;
 }
 
@@ -91,3 +91,6 @@ thead {
         color: #000; /* Color al pasar el mouse */
     }
 
+.custom-margin {
+    margin-bottom: 5em;
+}
