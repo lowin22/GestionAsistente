@@ -2,8 +2,11 @@
 @using GestionAsistente.BlazorUI.Components.Layout
 @using GestionAsistente.BlazorUI.Controlador
 @using GestionAsistente.Entidades
+@using Microsoft.AspNetCore.Authorization
 @layout LayoutPrincipal
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Administrador")]
+
 
 <h3 class="mb-4">Historial</h3>
 <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">

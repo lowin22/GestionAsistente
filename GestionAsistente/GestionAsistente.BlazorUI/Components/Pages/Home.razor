@@ -5,12 +5,3 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>You are authenticated</h1>
-
-
-<AuthorizeView Roles="Usuario">
-    Hola Hello @context.User.Identity?.Name!, eres Encargado
-</AuthorizeView>
-<AuthorizeView Roles="Administrador">
-    Hola @context.User.Identity?.Name!, eres administrador
-</AuthorizeView>

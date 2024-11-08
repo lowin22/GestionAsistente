@@ -76,7 +76,7 @@
             </div>
             <div class="col-md-6">
                 <div class="form-floating mb-3">
-                    <InputText id="contrasenia" class="form-control" @bind-Value="asistente.Contrasenia" type="password" placeholder="Contraseña" />
+                    <InputText id="contrasenia" class="form-control" @bind-Value="asistente.Contrasenia" placeholder="Contraseña" />
                     <label for="contrasenia">Contraseña</label>
                 </div>
             </div>
@@ -89,7 +89,7 @@
                             <option value="@badge.BadgeID">@badge.BadgeID</option>
                         }
                     </InputSelect>
-
+                    <label for="badge">Badge</label>
                 </div>
             </div>
         </div>
@@ -157,7 +157,12 @@
             unidadUsuario = usuarioIdentity.UnidadID;
         }
         listaUnidades = await unidadControlador.ListarUnidades();
-        listaUnidades=listaUnidades.Where(x=>x.UnidadID==unidadUsuario).ToList();
+        if (unidadUsuario != null)
+        
+        {
+            listaUnidades = listaUnidades.Where(x => x.UnidadID == unidadUsuario).ToList();
+        }
+       
         if (asistente.UnidadID != 0)
         {
             await CargarEncargados(asistente.UnidadID);
@@ -199,7 +204,7 @@
             historialAcciones.Accion = "Registrar asistente: " + asistente.Persona.Nombre + " " +
             asistente.Persona.PrimerApellido + " " + asistente.Persona.SegundoApellido;
             historialAcciones.Fecha = DateTime.Now;
-
+            historialAcciones.NombrePersona = userName;
             await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
 
             notificarUsuario= mensaje;
