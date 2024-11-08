@@ -262,17 +262,30 @@
     }
     async Task EliminarEncargado(int encargadoID)
     {
-        await encargadoControlador.EliminarEncargado(encargadoID);
-        await encargadoControlador.listarEncargados();
+        (string mensaje, bool esExitoso) = await encargadoControlador.EliminarEncargado(encargadoID);
+        if (esExitoso)
+        {
+            mensajeExito = "Encargado eliminado con éxito.";
+            mensajeError = null;
 
-        historialAcciones.NombrePersona = userName;
-        historialAcciones.Accion = "Eliminar encargado: " + encargadoControlador.eliminarEncargado.Persona.Nombre +
-        encargadoControlador.eliminarEncargado.Persona.Nombre + " " +
-        encargadoControlador.eliminarEncargado.Persona.PrimerApellido + " " +
-        encargadoControlador.eliminarEncargado.Persona.SegundoApellido;
-        historialAcciones.Fecha = DateTime.Now;
+            await encargadoControlador.listarEncargados();
 
-        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+            historialAcciones.NombrePersona = userName;
+            historialAcciones.Accion = "Eliminar encargado: " + encargadoControlador.eliminarEncargado.Persona.Nombre +
+            encargadoControlador.eliminarEncargado.Persona.Nombre + " " +
+            encargadoControlador.eliminarEncargado.Persona.PrimerApellido + " " +
+            encargadoControlador.eliminarEncargado.Persona.SegundoApellido;
+            historialAcciones.Fecha = DateTime.Now;
+
+            await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+        }
+        else
+        {
+            mensajeExito = null;
+            mensajeError = mensaje;
+        }
+
+        
 
         StateHasChanged();
     }
