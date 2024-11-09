@@ -231,40 +231,6 @@
         StateHasChanged();
     }
 
-    // private async Task CargarCantidadEstaciones()
-    // {
-    //     var allOficinas = await oficinaControlador.ListarOficinas();
-    //     totalItems = allOficinas.Count;
-    //     totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-
-    //     // Asigna una nueva lista a `listaOficinas` con los elementos de la página actual
-    //     listaOficinas = allOficinas
-    //         .Skip((currentPage - 1) * pageSize)
-    //         .Take(pageSize)
-    //         .ToList();
-
-    //     // Asigna una nueva lista a `cantidadEstaciones` para evitar acumulación
-    //     cantidadEstaciones = new List<int>();
-
-    //     foreach (var oficina in listaOficinas)
-    //     {
-    //         cantidadEstaciones.Add(await estacionTrabajoControlador.estacionesPorOficina(oficina.OficinaID));
-    //     }
-    // }
-
-    // private async Task CargarPagina()
-    // {
-    //     var allOficinas = await oficinaControlador.ListarOficinas();
-    //     totalItems = allOficinas.Count;
-    //     totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-
-    //     // Asigna una nueva lista a `listaOficinas` con los elementos de la página actual
-    //     listaOficinas = allOficinas
-    //         .Skip((currentPage - 1) * pageSize)
-    //         .Take(pageSize)
-    //         .ToList();
-    // }
-
     private async Task CargarPagina()
     {
         var allOficinas = await oficinaControlador.ListarOficinas();
