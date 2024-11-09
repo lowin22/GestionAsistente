@@ -19,7 +19,7 @@
                             data-bs-target="#collapse@(estacion.EstacionTrabajoID)"
                             aria-expanded="true"
                             aria-controls="collapse@(estacion.EstacionTrabajoID)">
-                        Accordion Item #@(estacion.EstacionTrabajoID)
+                        Estacion Trabajo: Numero: @(estacion.EstacionTrabajoID)
                     </button>
                 </h2>
                
@@ -61,21 +61,19 @@
                                                     <th scope="row" class="table-light text-center">@hour</th>
                                                     @foreach (var dia in horarioControlador.diasDeLaSemana)
                                                     {
-                                                <td style="min-width: 100px; height: 50px;" class="@GetCellClass(hour, dia,  horarioControlador.horarioTemporal)">
+                                                <td style="min-width: 100px; height: 50px;" class="@GetCellClass(hour, dia, horarioControlador.horarioTemporal)">
                                                     @if (HasReservation(hour, dia, horarioControlador.horarioTemporal))
-                                                            {
+                                                    {
                                                         var horarioD = GetHorario(hour, dia, horarioControlador.horarioTemporal);
-                                                                if (horarioD != null)
-                                                                {
-                                                                    <div class="reservation-info">
-                                                                        <small>
-                                                                            @(horarioD.Asistente?.Persona?.Nombre ?? "Sin asignar")
-                                                                           
-                                                                        </small>
-                                                                    </div>
-                                                                }
-                                                            }
-                                                        </td>
+                                                        if (horarioD != null)
+                                                        {
+                                                            <div class="reservation-info">
+                                                                <p><strong>@(horarioD.Asistente?.Persona?.Nombre ?? "Sin asignar")</strong></p>
+                                                                <small>@(horarioD.HoraInicio.ToString("hh:mm")) - @(horarioD.HoraFin.ToString("hh:mm"))</small>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </td>
 
                                                     }
                                                 </tr>
@@ -140,6 +138,49 @@
         </div>
     </div>
 </div>
+@if (mensajeExito != null)
+{
+    <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content custom-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmación</h5>
+                    <button type="button" class="close" @onclick="CerrarModal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>@mensajeExito</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btnAceptar" @onclick="CerrarModal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@if (mensajeError != null)
+{
+    <div id="ModalError" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content custom-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Error</h5>
+                    <button type="button" class="close" @onclick="CerrarModalError" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>@mensajeError</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btnAceptar" @onclick="CerrarModalError">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 <style>
     .reserved {
         background-color: #e3f2fd;
@@ -163,11 +204,39 @@
     .accordion-item {
         margin-bottom: 0.5rem;
     }
+
+    .table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .table th {
+            background-color: #f2f2f2;
+
+        }
+
+    .reserved {
+        background-color: #e3f2fd;
+        color: #007bff;
+    }
+
+    .reservation-info {
+        font-size: 0.8em;
+        padding: 2px;
+        text-align: center;
+    }
 </style>
 
 @code {
     [Parameter]
     public int id { get; set; }
+    private string mensajeExito, mensajeError;
 
     public HorarioControlador horarioControlador = new HorarioControlador();
 
@@ -213,20 +282,47 @@
         var resultado = await this.horarioControlador.limpiarHararioEstacion(estacionTrabajoID);
         if (resultado)
         {
+            mensajeExito = "Horario eliminado con éxito.";
+            mensajeError = null;
             // Solo si la limpieza fue exitosa, actualiza la lista
             await horarioControlador.ListarHorariosPorOficinaAgrupados(id);
-            StateHasChanged();
+           
+        } else
+        {
+            mensajeError = "Error al eliminar horario.";
+            mensajeExito = null;
         }
+        StateHasChanged();
     }
     private async Task limpiarHorarioOficina()
     {
         var resultado = await horarioControlador.limpiarHararioOficina(id);
         if (resultado)
         {
+            mensajeExito = "Horarios eliminados con éxito.";
+            mensajeError = null;
             await horarioControlador.ListarHorariosPorOficinaAgrupados(id);
-            StateHasChanged();
+            
         }
-       
+        else
+        {
+            mensajeError = "Error al eliminar horario.";
+            mensajeExito = null;
+        }
+        StateHasChanged();
+    }
+    private void CerrarModal()
+    {
+        mensajeExito = null;
+        mensajeError = null;
+        StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
+    }
+
+    private void CerrarModalError()
+    {
+        mensajeError = null;
+        mensajeExito = null;
+        StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
     }
 
 }
