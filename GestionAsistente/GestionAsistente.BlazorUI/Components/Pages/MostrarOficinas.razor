@@ -186,13 +186,13 @@
 
             unidad = usuarioIdentity.UnidadID;
         }
-        
+
         listaOficinas = await oficinaControlador.ListarOficinas();
-        await CargarCantidadEstaciones();
+       // await CargarCantidadEstaciones();
 
         // totalItems = listaOficinas.Count;
         // totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-        //await CargarPagina();
+        await CargarPagina();
     }
 
     private async Task EliminarOficina(int oficinaID)
@@ -207,7 +207,7 @@
 
         // Recargar la lista de oficinas y la cantidad de estaciones
         await CargarPagina();
-        await CargarCantidadEstaciones();
+        //await CargarCantidadEstaciones();
 
         // Refresca la UI después de la eliminación
         StateHasChanged();
@@ -225,31 +225,10 @@
 
         // Recargar la lista de oficinas y la cantidad de estaciones
         await CargarPagina();
-        await CargarCantidadEstaciones();
+        //await CargarCantidadEstaciones();
 
         // Refresca la UI después de la actualización
         StateHasChanged();
-    }
-
-    private async Task CargarCantidadEstaciones()
-    {
-        var allOficinas = await oficinaControlador.ListarOficinas();
-        totalItems = allOficinas.Count;
-        totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-
-        // Asigna una nueva lista a `listaOficinas` con los elementos de la página actual
-        listaOficinas = allOficinas
-            .Skip((currentPage - 1) * pageSize)
-            .Take(pageSize)
-            .ToList();
-
-        // Asigna una nueva lista a `cantidadEstaciones` para evitar acumulación
-        cantidadEstaciones = new List<int>();
-
-        foreach (var oficina in listaOficinas)
-        {
-            cantidadEstaciones.Add(await estacionTrabajoControlador.estacionesPorOficina(oficina.OficinaID));
-        }
     }
 
     private async Task CargarPagina()
@@ -258,11 +237,19 @@
         totalItems = allOficinas.Count;
         totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
-        // Asigna una nueva lista a `listaOficinas` con los elementos de la página actual
+        // Cargar la lista de oficinas en la página actual
         listaOficinas = allOficinas
             .Skip((currentPage - 1) * pageSize)
             .Take(pageSize)
             .ToList();
+
+        // Asignar las cantidades de estaciones solo para las oficinas en la página actual
+        cantidadEstaciones = new List<int>();
+
+        foreach (var oficina in listaOficinas)
+        {
+            cantidadEstaciones.Add(await estacionTrabajoControlador.estacionesPorOficina(oficina.OficinaID));
+        }
     }
 
     async Task seleccionarOficinaEliminar(int oficinaID)
