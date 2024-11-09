@@ -77,16 +77,44 @@ namespace GestionAsistente.ReglasNegocio
             {
                 throw new ArgumentNullException(nameof(badgeID));
             }
-            return await badgeAD.EliminarBadge(badgeID); // Sin await si no es asíncrono
+            return await badgeAD.EliminarBadge(badgeID);
         }
 
-        public async Task<bool> ActualizarBadge(Badge badge)
+        public async Task<(bool, string)> ActualizarBadge(Badge badge)
         {
+            string simboloSeparadorHorario = "a";
+
+            bool exito = false;
+
             if (badge == null)
             {
                 throw new ArgumentNullException(nameof(badge));
             }
-            return await badgeAD.ModificarBadge(badge);
+
+            //si los datos son invalidos,
+            //por ejemplo que siga el formato horaInicio a HoraFinal
+            if (badge.Horario.Split(simboloSeparadorHorario).Length < 2)
+            {
+                return (false, "Datos invalidos");
+            }
+
+            //validar nulos
+            if (string.IsNullOrEmpty(badge.Horario))
+            {
+                return (false, "Datos nulos ingresados");
+            }
+
+            exito = await badgeAD.ModificarBadge(badge);
+
+            if (exito)
+            {
+                return (exito, "Actualizado correctamente");
+            }
+            else
+            {
+                return (exito, "Error al actualizar el badge");
+            }
+            
         }
         public async Task<List<Badge>> ListarBadgePorUnidad(int? unidadID)
         {
