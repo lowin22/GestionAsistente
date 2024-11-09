@@ -31,7 +31,6 @@
             <tbody>
 
                 @if (listaUsuariosPaginacion != null)
-
                 {
                     @foreach (var usuario in listaUsuariosPaginacion)
                     {
@@ -57,6 +56,12 @@
                             <td>@(usuario.Activo ? "Sí" : "No")</td>
                         </tr>
                     }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="3">No hay usuarios para mostrar</td>
+                    </tr>
                 }
 
             </tbody>
@@ -139,32 +144,9 @@
 
             </div>
         </div>
-    </div>
-
-    @if (notificarUsuario != null)
-    {
-        <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content custom-modal">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Confirmación</h5>
-                        <button type="button" class="close" @onclick="CerrarModal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p>@notificarUsuario</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary btnAceptar" @onclick="CerrarModal">Aceptar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-    
+    </div>    
 </div>
-<div class="mt-3 text-center">
+<div class="mt-3 text-center custom-margin">
     <button @onclick="() => CambiarPagina(currentPage - 1)" class="btn btn-secondary" disabled="@(currentPage == 1)">
         Anterior
     </button>
@@ -173,6 +155,28 @@
         Siguiente
     </button>
 </div>
+
+@if (notificarUsuario != null)
+{
+    <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content custom-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmación</h5>
+                    <button type="button" class="close" @onclick="CerrarModal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>@notificarUsuario</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btnAceptar" @onclick="CerrarModal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
 
@@ -314,7 +318,7 @@
             await CargarPagina();
 
             await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
-            
+
             notificarUsuario = "El usuario se elimino correctamente";
         }
         else
@@ -381,7 +385,7 @@
         }
         else
         {
-            Console.WriteLine("Fallo del usuarios");
+            notificarUsuario = "El usuario no se ha logrado actualizar";   
         }
 
     }
@@ -406,13 +410,6 @@
                 //poner la lista unidades que le corresponde al usuario
                 listaUnidades = listaUnidades.Where(u => u.UnidadID == actualizarUsuario.UnidadID).ToList();
         }
-        //sino entonces si tiene unidad asignada
-        // else
-        // {
-        //     listaUnidades = await unidadControlador.ListarUnidades();
-        //     //poner la lista unidades que le corresponde al usuario
-        //     listaUnidades = listaUnidades.Where(u => u.UnidadID == actualizarUsuario.UnidadID).ToList();
-        // }
     }
 
     private async Task CargarPagina()
