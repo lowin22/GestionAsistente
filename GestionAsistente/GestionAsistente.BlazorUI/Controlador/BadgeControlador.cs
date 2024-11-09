@@ -26,6 +26,12 @@ namespace GestionAsistente.BlazorUI.Controlador
         {
             return await badgeRN.BuscarBadgesPorNumero(numBadge);
         }
+
+        public async Task<List<Badge>> BuscarBadgesPorNombreUnidad(string nombreUnidad)
+        {
+            return await badgeRN.BuscarBadgesPorNombreUnidad(nombreUnidad);
+        }
+
         public async Task<bool> EliminarBadge(int badgeID)
         {
             return await badgeRN.EliminarBadge(badgeID);

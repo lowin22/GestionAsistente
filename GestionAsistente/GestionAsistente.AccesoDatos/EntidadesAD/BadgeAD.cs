@@ -83,6 +83,28 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                 .ToListAsync();
         }
 
+        public async Task<List<Badge>> BuscarBadgesPorNombreUnidad(string nombreUnidad)
+        {
+            return await _contexto.BadgesEF
+                .Where(b => b.Unidad != null && b.Unidad.Nombre.Contains(nombreUnidad)) // Búsqueda por nombre de la unidad
+                .Select(b => new Badge
+                {
+                    BadgeID = b.BadgeID,
+                    Horario = b.Horario,
+                    UnidadID = b.UnidadID,
+                    Justificacion = b.Justificacion,
+                    Activo = b.Activo,
+                    Ocupado = b.Ocupado,
+                    Unidad = b.Unidad != null ? new Unidad
+                    {
+                        UnidadID = b.Unidad.UnidadID,
+                        Nombre = b.Unidad.Nombre
+                    } : null
+                })
+                .ToListAsync();
+        }
+
+
 
         public async Task<bool> ModificarBadge(Badge badge)
         {

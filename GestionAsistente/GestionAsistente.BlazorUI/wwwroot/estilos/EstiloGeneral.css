@@ -39,9 +39,69 @@
     width: 100%;
     text-align: center;
     color: white;
+    margin-top:4em;
 }
 
-#btn {
+.container {
+    max-width: 500px;
+    margin-bottom: 2em;
+    margin-top: -3em;
+}
+
+.card {
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    margin-top: 2px;
+    background-color: #ffffff;
+    margin-bottom: 1.5em;
+}
+
+h2 {
+    font-size: 1.5rem;
+    text-align: center;
+    /*color: #333333;*/
+}
+
+.form-control-sm,
+.form-select-sm {
+    padding: 6px;
+    font-size: 0.85rem;
+}
+
+.form-floating label {
+    font-size: 0.75rem;
+    color: #666666;
+}
+
+.form-floating input:focus + label,
+.form-floating select:focus + label,
+.form-floating textarea:focus + label {
+    transform: scale(0.85) translateY(-140%);
+    color: #007bff;
+}
+
+button.btn-sm {
+    font-size: 0.85rem;
+    padding: 6px;
+}
+
+@media (max-width: 576px) {
+    .container {
+        max-width: 100%;
+        padding: 0 15px;
+    }
+    .form-floating {
+        margin-bottom: 3rem;
+    }
+}
+
+button[type="submit"] {
+    background-color: #0056b3;
+    max-width: 150px;
+}
+
+.btn-primary {
     background-color: #005da4;
 }
 
@@ -51,6 +111,7 @@
 }
 
 #boton-salir {
+    color:white;
 }
 
 thead {

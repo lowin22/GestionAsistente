@@ -12,9 +12,6 @@
 @inject UserManager<ApplicationUser> UserManager
 
 <h3>Mostrar Oficinas</h3>
-@* <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#CrearEncargado">
-    Crear Oficina
-</button> *@
 <div class="col-md-12 col-xs-12 col-sm-12" style="text-align: center; overflow-y: auto; top: 0px; left: 0px;">
     <div class="table-responsive col-md-12 col-xs-12 col-sm-12" style="text-align: center; overflow-y: auto;">
         <table class="table table-bordered">
@@ -78,13 +75,11 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header text-center">
-                <h5 class="modal-title" id="ConfirmarEliminar">¿Eliminar Oficina?</h5>
+                <h5 class="modal-title" id="ConfirmarEliminar">Eliminar Oficina</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center">
-                <p class="fs-5">Esta acción no se puede deshacer.</p>
                 <p class="text-danger">¿Seguro de que desea eliminar esta Oficina y sus Estaciones de trabajo?</p>
-                <p class="text-danger">Oficina a eliminar: @oficinaEliminar.Nombre</p>
             </div>
             <div class="modal-footer justify-content-center">
                 <button class="btn btn-primary" data-bs-dismiss="modal" @onclick="() => EliminarOficina(oficinaEliminar.OficinaID)">
@@ -109,7 +104,7 @@
             <div class="modal-body">
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Nombre</label>
-                        <InputText id="nombre" class="form-control" @bind-Value="oficinaActualizar.Nombre" />
+                        <InputText id="nombre" class="form-control" @bind-Value="oficinaActualizar.Nombre" required />
                     </div>
 
                     <div class="mb-3">

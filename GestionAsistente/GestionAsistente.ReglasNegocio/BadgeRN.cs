@@ -66,6 +66,11 @@ namespace GestionAsistente.ReglasNegocio
             return await badgeAD.BuscarBadgesPorNumero(numBadge);
         }
 
+        public async Task<List<Badge>> BuscarBadgesPorNombreUnidad(string nombreUnidad)
+        {
+            return await badgeAD.BuscarBadgesPorNombreUnidad(nombreUnidad);
+        }
+
         public async Task<bool> EliminarBadge(int badgeID)
         {
             if (badgeID == null)

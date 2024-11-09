@@ -12,7 +12,7 @@
 
     <div class="mb-3">
         <label for="nombre" class="form-label">Nombre</label>
-        <InputText id="nombre" class="form-control" @bind-Value="oficina.Nombre" />
+        <InputText id="nombre" class="form-control" @bind-Value="oficina.Nombre" required />
     </div>
 
     <div class="mb-3">
@@ -23,12 +23,6 @@
     <button type="submit" class="btn btn-primary">Registrar</button>
 </EditForm>
 
-@* <!-- Loader.razor -->
-<div class="loader" style="display: @(IsLoading ? "block" : "none");">
-    <div class="spinner-border" role="status">
-        <span class="sr-only">Cargando...</span>
-    </div>
-</div> *@
 
 @if (mensajeExito != null)
 {
