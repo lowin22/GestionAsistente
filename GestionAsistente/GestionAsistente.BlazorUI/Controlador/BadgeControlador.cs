@@ -12,7 +12,7 @@ namespace GestionAsistente.BlazorUI.Controlador
         {
             badgeRN = new BadgeRN();
         }
-        public async Task<bool> RegistrarBadge(Badge badge)
+        public async Task<(bool, string)> RegistrarBadge(Badge badge)
         {
             return await badgeRN.RegistrarBadge(badge);
         }

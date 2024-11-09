@@ -4,9 +4,11 @@
 @using GestionAsistente.BlazorUI.Data
 @using GestionAsistente.Entidades
 @using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @rendermode InteractiveServer
 @layout LayoutPrincipal
+@attribute [Authorize(Roles = "Usuario, Administrador")]
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject RoleManager<IdentityRole> RolManager
