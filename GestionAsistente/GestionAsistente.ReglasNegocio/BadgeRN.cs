@@ -18,13 +18,40 @@ namespace GestionAsistente.ReglasNegocio
             badgeAD = new BadgeAD();
         }
 
-        public async Task<bool> RegistrarBadge(Badge badge)
+        public async Task<(bool, string)> RegistrarBadge(Badge badge)
         {
+            string simboloSeparadorHorario = "a";
+
+            bool exito = false;
+
             if (badge == null)
             {
                 throw new ArgumentNullException(nameof(badge));
             }
-            return await badgeAD.RegistrarBadge(badge); // Sin await si no es asíncrono
+
+            //si los datos son invalidos,
+            //por ejemplo que siga el formato horaInicio a HoraFinal
+            if(badge.Horario.Split(simboloSeparadorHorario).Length < 2)
+            {
+                return (false, "Datos invalidos");
+            }
+
+            //validar nulos
+            if(string.IsNullOrEmpty(badge.Horario))
+            {
+                return (false, "Datos nulos ingresados");
+            }
+
+            exito = await badgeAD.RegistrarBadge(badge); // Sin await si no es asíncrono
+
+            if (exito)
+            {
+                return (exito, "Registrado correctamente");
+            }
+            else
+            {
+                return (exito, "Error al registrar el badge");
+            }
         }
 
         public async Task<List<Badge>> ListarBadge()

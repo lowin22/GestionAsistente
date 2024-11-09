@@ -3,6 +3,7 @@
 @using GestionAsistente.BlazorUI.Controlador
 @using GestionAsistente.BlazorUI.Data
 @using GestionAsistente.Entidades
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using System.ComponentModel.DataAnnotations
 
@@ -10,6 +11,8 @@
 @inject IUserStore<ApplicationUser> UserStore
 @layout LayoutPrincipal
 @rendermode InteractiveServer
+
+@attribute [Authorize(Roles = "Usuario, Administrador")]
 
 <PageTitle>Registro</PageTitle>
 
@@ -41,6 +44,29 @@
             <button type="submit" class="w-100 btn btn-lg btn-primary">Registrar</button>
         </EditForm>
     </div>
+
+    @if (notificarUsuario != null)
+    {
+        <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content custom-modal">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmación</h5>
+                        <button type="button" class="close" @onclick="CerrarModal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>@notificarUsuario</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary btnAceptar" @onclick="CerrarModal">Aceptar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
 </div>
 
 @code {
@@ -48,6 +74,8 @@
 
     [SupplyParameterFromForm]
     private ModeloEntrada Input { get; set; } = new ModeloEntrada();
+
+    private string notificarUsuario;
 
     private string? Mensaje => erroresIdentidad is null ? null : $"Error: {string.Join(", ", erroresIdentidad.Select(error => error.Description))}";
 
@@ -66,15 +94,27 @@
         if (!resultado.Succeeded)
         {
             erroresIdentidad = resultado.Errors;
-            Console.WriteLine("Nombre de usuario ya existe");
+            notificarUsuario = "Nombre de usuario ya existe";
             return;
         }
 
         if (resultado.Succeeded)
         {
             LimpiarFormulario();
-            Console.WriteLine("Se insertó correctamente");
+            notificarUsuario = "Se insertó correctamente";
         }
+    }
+
+    private void CerrarModal()
+    {
+        notificarUsuario = null;
+        StateHasChanged(); //Actualiza el estado para ocultar el modal en la interfaz
+    }
+
+    private void CerrarModalError()
+    {
+        notificarUsuario = null;
+        StateHasChanged(); //Actualiza el estado para ocultar el modal en la interfaz
     }
 
     private IUserEmailStore<ApplicationUser> ObtenerEmailStore()
