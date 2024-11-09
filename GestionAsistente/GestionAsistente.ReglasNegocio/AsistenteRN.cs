@@ -32,49 +32,88 @@ namespace GestionAsistente.ReglasNegocio
         public async Task<(bool exito, string mensaje)> RegistrarAsistente(Asistente asistente)
         {
             const string MENSAJE_EXITO = "Se registró con éxito";
-
             if (asistente == null)
             {
                 return (false, "Llene los campos para poder registrar.");
             }
-
             var validacion = ValidarAsistente(asistente);
             if (!validacion.EsValido)
             {
                 return (false, validacion.Mensaje);
             }
-
             var registroExitoso = await asistenteAD.RegistrarAsistente(asistente);
             return (registroExitoso, MENSAJE_EXITO);
         }
 
         private ValidacionResultado ValidarAsistente(Asistente asistente)
         {
+            // Expresión regular que solo permite letras y espacios (para nombres)
+            const string PATRON_SOLO_LETRAS = @"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$";
+            // Expresión regular que detecta caracteres especiales no permitidos
+            const string PATRON_CARACTERES_ESPECIALES = @"[<>\(\)\[\]]";
+            // Expresión regular que permite letras y números (para usuario, contraseña y accesos)
+            const string PATRON_LETRAS_NUMEROS = @"^[a-zA-Z0-9]+$";
+
             var reglasDeNegocio = new Dictionary<Func<Asistente, bool>, string>
-        {
-            // Validaciones básicas del Asistente
-            { a => !string.IsNullOrWhiteSpace(a.nombreUsuario),
-              "El nombre de usuario no puede estar en blanco" },
-
-            { a => !string.IsNullOrWhiteSpace(a.Contrasenia),
-              "La contraseña no puede estar en blanco" },
-
-            { a => a.Accesos != null,
-              "Los accesos no pueden estar en blanco" },
-
-            // Validaciones de la Persona
-            { a => a.Persona != null,
-              "Los datos personales son requeridos" },
-
-            { a => a.Persona != null && !string.IsNullOrWhiteSpace(a.Persona.Nombre),
-              "El nombre no puede estar en blanco" },
-
-            { a => a.Persona != null && !string.IsNullOrWhiteSpace(a.Persona.PrimerApellido),
-              "El primer apellido no puede estar en blanco" },
-
-            { a => a.Persona != null && !string.IsNullOrWhiteSpace(a.Persona.SegundoApellido),
-              "El segundo apellido no puede estar en blanco" }
-        };
+    {
+        // Validaciones del nombre de usuario
+        { a => !string.IsNullOrWhiteSpace(a.nombreUsuario),
+          "El nombre de usuario no puede estar en blanco" },
+        { a => System.Text.RegularExpressions.Regex.IsMatch(a.nombreUsuario, PATRON_LETRAS_NUMEROS),
+          "El nombre de usuario solo puede contener letras y números" },
+        { a => !System.Text.RegularExpressions.Regex.IsMatch(a.nombreUsuario, PATRON_CARACTERES_ESPECIALES),
+          "El nombre de usuario no debe contener los caracteres <, >, (), []" },
+        
+        // Validaciones de la contraseña
+        { a => !string.IsNullOrWhiteSpace(a.Contrasenia),
+          "La contraseña no puede estar en blanco" },
+        { a => System.Text.RegularExpressions.Regex.IsMatch(a.Contrasenia, PATRON_LETRAS_NUMEROS),
+          "La contraseña solo puede contener letras y números" },
+        { a => !System.Text.RegularExpressions.Regex.IsMatch(a.Contrasenia, PATRON_CARACTERES_ESPECIALES),
+          "La contraseña no debe contener los caracteres <, >, (), []" },
+        
+        // Validaciones de accesos
+        { a => a.Accesos != null,
+          "Los accesos no pueden estar en blanco" },
+        { a => a.Accesos != null && System.Text.RegularExpressions.Regex.IsMatch(a.Accesos, PATRON_LETRAS_NUMEROS),
+          "Los accesos solo pueden contener letras y números" },
+        { a => a.Accesos != null && !System.Text.RegularExpressions.Regex.IsMatch(a.Accesos, PATRON_CARACTERES_ESPECIALES),
+          "Los accesos no deben contener los caracteres <, >, (), []" },
+        
+        // Validaciones de la Persona
+        { a => a.Persona != null,
+          "Los datos personales son requeridos" },
+        
+        // Validaciones de nombre
+        { a => a.Persona != null && !string.IsNullOrWhiteSpace(a.Persona.Nombre),
+          "El nombre no puede estar en blanco" },
+        { a => a.Persona != null &&
+               System.Text.RegularExpressions.Regex.IsMatch(a.Persona.Nombre, PATRON_SOLO_LETRAS),
+          "El nombre solo debe contener letras" },
+        { a => a.Persona != null &&
+               !System.Text.RegularExpressions.Regex.IsMatch(a.Persona.Nombre, PATRON_CARACTERES_ESPECIALES),
+          "El nombre no debe contener los caracteres <, >, (), []" },
+        
+        // Validaciones de primer apellido
+        { a => a.Persona != null && !string.IsNullOrWhiteSpace(a.Persona.PrimerApellido),
+          "El primer apellido no puede estar en blanco" },
+        { a => a.Persona != null &&
+               System.Text.RegularExpressions.Regex.IsMatch(a.Persona.PrimerApellido, PATRON_SOLO_LETRAS),
+          "El primer apellido solo debe contener letras" },
+        { a => a.Persona != null &&
+               !System.Text.RegularExpressions.Regex.IsMatch(a.Persona.PrimerApellido, PATRON_CARACTERES_ESPECIALES),
+          "El primer apellido no debe contener los caracteres <, >, (), []" },
+        
+        // Validaciones de segundo apellido
+        { a => a.Persona != null && !string.IsNullOrWhiteSpace(a.Persona.SegundoApellido),
+          "El segundo apellido no puede estar en blanco" },
+        { a => a.Persona != null &&
+               System.Text.RegularExpressions.Regex.IsMatch(a.Persona.SegundoApellido, PATRON_SOLO_LETRAS),
+          "El segundo apellido solo debe contener letras" },
+        { a => a.Persona != null &&
+               !System.Text.RegularExpressions.Regex.IsMatch(a.Persona.SegundoApellido, PATRON_CARACTERES_ESPECIALES),
+          "El segundo apellido no debe contener los caracteres <, >, (), []" }
+    };
 
             foreach (var regla in reglasDeNegocio)
             {
@@ -83,10 +122,8 @@ namespace GestionAsistente.ReglasNegocio
                     return new ValidacionResultado(false, regla.Value);
                 }
             }
-
             return new ValidacionResultado(true, string.Empty);
         }
-
         public async Task<List<Asistente>> ListarAsistentes()
         {
             List<Asistente> asistentes = new List<Asistente>();
@@ -106,9 +143,20 @@ namespace GestionAsistente.ReglasNegocio
             return await asistenteAD.EliminarAsistente(asistenteID);
         }
 
-        public async Task<bool> ActualizarAsistente(Asistente asistente)
+        public async Task<(bool exito, string mensaje)> ActualizarAsistente(Asistente asistente)
         {
-            return await asistenteAD.ModificarAsistente(asistente);
+            const string MENSAJE_EXITO = "Se actualizó con éxito";
+            if (asistente == null)
+            {
+                return (false, "Llene los campos para poder actualizar.");
+            }
+            var validacion = ValidarAsistente(asistente);
+            if (!validacion.EsValido)
+            {
+                return (false, validacion.Mensaje);
+            }
+            var actualizacionExitosa = await asistenteAD.ModificarAsistente(asistente);
+            return (actualizacionExitosa, MENSAJE_EXITO);
         }
 
     }

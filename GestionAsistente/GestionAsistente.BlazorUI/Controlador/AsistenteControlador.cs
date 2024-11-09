@@ -34,7 +34,7 @@ namespace GestionAsistente.BlazorUI.Controlador
             return await asistenteRN.EliminarAsistente(asistenteID);
         }
 
-        public async Task<bool> ActualizarAsistente(Asistente asistente)
+        public async Task<(bool exito, string mensaje)> ActualizarAsistente(Asistente asistente)
         {
             return await asistenteRN.ActualizarAsistente(asistente);
         }
