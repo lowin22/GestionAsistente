@@ -52,6 +52,19 @@ namespace GestionAsistente.ReglasNegocio
                 {
                     return ("La unidad no puede ser nula", false);
                 }
+                if (!System.Text.RegularExpressions.Regex.IsMatch(encargado.Persona.Nombre, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
+                {
+                    return ("El segundo apellido contiene caracteres no permitidos", false);
+                }
+                if (!System.Text.RegularExpressions.Regex.IsMatch(encargado.Persona.PrimerApellido, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
+                {
+                    return ("El segundo apellido contiene caracteres no permitidos", false);
+                }
+
+                if (!System.Text.RegularExpressions.Regex.IsMatch(encargado.Persona.SegundoApellido, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
+                {
+                    return ("El segundo apellido contiene caracteres no permitidos", false);
+                }
 
             }
             return await encargadoAD.RegistrarEncargado(encargado);
@@ -102,7 +115,21 @@ namespace GestionAsistente.ReglasNegocio
                 {
                     return ("El nombre no estar vacío", false);
                 }
-              
+                if (!System.Text.RegularExpressions.Regex.IsMatch(encargado.Persona.Nombre, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
+                {
+                    return ("El segundo apellido contiene caracteres no permitidos", false);
+                }
+                if (!System.Text.RegularExpressions.Regex.IsMatch(encargado.Persona.PrimerApellido, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
+                {
+                    return ("El segundo apellido contiene caracteres no permitidos", false);
+                }
+               
+                if (!System.Text.RegularExpressions.Regex.IsMatch(encargado.Persona.SegundoApellido, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
+                {
+                    return ("El segundo apellido contiene caracteres no permitidos", false);
+                }
+                
+
             }
             return await encargadoAD.ActualizarEncargado(encargado);
         }
