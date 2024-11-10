@@ -339,9 +339,9 @@
 
 </div>
 
-@* @if (notificarUsuario != null)
+@if (mensajeHorario != null)
 {
-    <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
+    <div id="HorarioLimpio" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content custom-modal">
                 <div class="modal-header">
@@ -351,21 +351,26 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p>@notificarUsuario</p>
+                    <p>@mensajeHorario</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary btnAceptar" data-bs-dismiss="modal" @onclick="CerrarModal">Aceptar</button>
+                    <button type="button" class="btn btn-primary btnAceptar" data-bs-dismiss="modal" @onclick="CerrarModalHorario">Aceptar</button>
                 </div>
             </div>
         </div>
     </div>
-} *@
+} 
 @if (mostrarError)
-    {
-        <div class="invalid-feedback">
-            El nombre de usuario es requerido
-        </div>
-    }
+{
+    <div class="invalid-feedback">
+        El nombre de usuario es requerido
+    </div>
+} else if (notificarUsuario !=null)
+{
+    <div class="invalid-feedback">
+        @notificarUsuario
+    </div>
+}
 
 
 
@@ -380,8 +385,9 @@
     private bool actualizado;
     private string? userName;
     private int? unidadUsuario;
-    private string mensajeError, mensajeExito;
     private string notificarUsuario;
+    private bool horarioLimpio;
+    private string mensajeHorario;
     private ApplicationUser usuarioIdentity = new ApplicationUser { };
     private AsistenteControlador asistenteControlador = new AsistenteControlador();
     private UnidadControlador unidadControlador = new UnidadControlador();
@@ -711,17 +717,10 @@
     }
     private async Task limpiarHorario(int asistenteID)
     {
-        bool eliminado=await horarioControlador.limpiarHorarioAsistente(asistenteID);
-        if (eliminado)
+        horarioLimpio = await horarioControlador.limpiarHorarioAsistente(asistenteID);
+        if (horarioLimpio)
         {
-            mensajeError = null;
-            mensajeError = "Horario limpiado correctamente.";
-
-        }
-        else
-        {
-            mensajeExito = null;
-            mensajeError = "Hubo un problema al limpiar horario.";
+            mensajeHorario = "Horario limpiado correctamente.";
         }
     }
 
@@ -734,7 +733,15 @@
 
     private void CerrarModalError()
     {
+
         notificarUsuario = null;
+        StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
+    }
+
+    private void CerrarModalHorario()
+    {
+
+        mensajeHorario = null;
         StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
     }
 }
