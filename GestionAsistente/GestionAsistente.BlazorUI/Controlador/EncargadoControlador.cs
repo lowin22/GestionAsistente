@@ -67,6 +67,20 @@ namespace GestionAsistente.BlazorUI.Controlador
             else if(unidad != null)
                 this.listaEncargados = await encargadoRN.ListarEncargadosPorID(unidad);
         }
+        public async Task<List<Encargado>> listarEncargadosPaginados(int currentPage, int pageSize)
+        {
+            List<Encargado> allEncargados;
+
+            if (unidad == null)
+            {
+                return allEncargados = await encargadoRN.ListarEncargados(); 
+            }
+            else
+            {
+                return allEncargados = await encargadoRN.ListarEncargadosPorID(unidad); 
+            }
+        }
+
         public async Task listarUnidades()
         {
          this.listaUnidades= await unidadControlador.ListarUnidades();

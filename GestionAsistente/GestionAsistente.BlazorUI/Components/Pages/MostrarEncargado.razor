@@ -253,8 +253,9 @@
             Console.WriteLine(userName);
             usuarioIdentity = await UserManager.FindByNameAsync(userName);
             Console.WriteLine(usuarioIdentity);
-            unidad = usuarioIdentity.UnidadID;
+            unidad = usuarioIdentity.UnidadID;  
         }
+
         encargadoControlador.unidad = unidad;
         await encargadoControlador.listarEncargados();
         await encargadoControlador.listarUnidades();
@@ -285,8 +286,8 @@
             mensajeError = mensaje;
         }
 
-        
 
+        await CargarPagina();
         StateHasChanged();
     }
     private async Task ActualizarEncargado()
@@ -317,9 +318,9 @@
             mensajeExito = null;
             mensajeError = mensaje;
         }
-        
-       
 
+
+        await CargarPagina();
         StateHasChanged();
     }
     private async Task RegistrarEncargado()
@@ -343,8 +344,8 @@
                     Persona = new Persona(),
                     Unidad = new Unidad()
                 };
-        
-            
+
+
         }
         else
         {
@@ -353,20 +354,60 @@
         } 
 
 
-       
+        await CargarPagina();
         StateHasChanged();
     }
 
     private async Task CargarPagina()
     {
-        var allEncargados = await encargadoControlador.ListarEncargados();
+        var allEncargados = await encargadoControlador.listarEncargadosPaginados(currentPage, pageSize);
         totalItems = allEncargados.Count;
         totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
         encargadoControlador.listaEncargados = allEncargados
-            .Skip((currentPage - 1) * pageSize)
-            .Take(pageSize)
-            .ToList();
+        .Skip((currentPage - 1) * pageSize)
+        .Take(pageSize)
+        .ToList();
+
+        //var mostrarEncargados = encargadoControlador.listarEncargados();
+
+
+        // try
+        // {
+        //     // Asumiendo que tienes un método para obtener el rol del usuario actual
+        //     string rolUsuario = ObtenerRolUsuarioActual();
+
+        //     if (rolUsuario == "Administrador")
+        //     {
+        //         var allEncargados = await encargadoControlador.ListarEncargados();
+        //         totalItems = allEncargados.Count;
+        //         totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+        //         encargadoControlador.listaEncargados = allEncargados
+        //         .Skip((currentPage - 1) * pageSize)
+        //         .Take(pageSize)
+        //         .ToList();
+        //     }
+        //     else if (rolUsuario == "Usuario")
+        //     {
+        //         var allEncargados = await encargadoControlador.ListarEncargadosPorID(unidad);
+        //         totalItems = allEncargados.Count;
+        //         totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+        //         encargadoControlador.listaEncargados = allEncargados
+        //         .Skip((currentPage - 1) * pageSize)
+        //         .Take(pageSize)
+        //         .ToList();
+        //     }
+        //     else
+        //     {
+        //         mensajeError = "Rol no válido.";
+        //     }
+        // }
+        // catch (Exception ex)
+        // {
+        //     mensajeError = $"Error al cargar los encargados: {ex.Message}";
+        // }
     }
 
     private async Task CambiarPagina(int nuevaPagina)
