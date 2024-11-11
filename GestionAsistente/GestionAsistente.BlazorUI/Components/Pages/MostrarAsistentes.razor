@@ -157,7 +157,7 @@
 </div>
 
 
-<div class="mt-3 text-center custom-margin">
+<div class="mt-3 text-center " style="margin-bottom:5em">
     <button @onclick="() => CambiarPagina(currentPage - 1)" class="btn btn-secondary" disabled="@(currentPage == 1)">
         Anterior
     </button>
@@ -229,21 +229,25 @@
                     <div class="mb-3">
                         <label for="contrasenia" class="form-label">Contraseña</label>
                         <InputText id="contrasenia" class="form-control" @bind-Value="asistente.Contrasenia" />
-                     @if (string.IsNullOrWhiteSpace(asistente.Contrasenia))
-    {
-        <p class="text-danger">Este campo es obligatorio.</p>
-    }
-    @if (!string.IsNullOrEmpty(asistente.Contrasenia) && !System.Text.RegularExpressions.Regex.IsMatch(asistente.Contrasenia, @"^[^{}\[\]()<>]+$"))
-    {
-        <p class="text-danger">La contraseña no puede contener los siguientes caracteres: "{}[]()"</p>
-    }
+                        @if (string.IsNullOrWhiteSpace(asistente.Contrasenia))
+                        {
+                            <p class="text-danger">Este campo es obligatorio.</p>
+                        }
+                        @if (!string.IsNullOrEmpty(asistente.Contrasenia) && !System.Text.RegularExpressions.Regex.IsMatch(asistente.Contrasenia, @"^[^{}\[\]()<>]+$"))
+                        {
+                            <p class="text-danger">La contraseña no puede contener los siguientes caracteres: "{}[]()"</p>
+                        }
                     </div>
                     <div class="mb-3">
                         <label for="accesos" class="form-label">Accesos</label>
                         <InputTextArea id="accesos" class="form-control" @bind-Value="asistente.Accesos" />
                         @if (string.IsNullOrWhiteSpace(asistente.Accesos))
                         {
-                            <p class="text-danger">Este campo es obligatorio, solo debe tener letras y números.</p>
+                            <p class="text-danger">Este campo es obligatorio.</p>
+                        }
+                        @if (!string.IsNullOrEmpty(asistente.Accesos) && !System.Text.RegularExpressions.Regex.IsMatch(asistente.Accesos, @"^[^{}\[\]()<>]+$"))
+                        {
+                            <p class="text-danger">Los accesos no pueden contener los siguientes caracteres: "{}[]()"</p>
                         }
                     </div>
                     <div class="mb-3">
@@ -277,7 +281,7 @@
                             }
                         </InputSelect>
                     </div>
-                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @onclick="GuardarActualizacionAsistente">Guardar Cambios</button>
+                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @onclick="ActualizarUsuario">Guardar Cambios</button>
                     <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                 </EditForm>
             </div>
@@ -415,6 +419,29 @@
     </div>
 }
 
+@if (notificarActualizacion != null)
+{
+    <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content custom-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmación</h5>
+                    <button type="button" class="close" @onclick="CerrarModalActualizar" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>@notificarActualizacion</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btnAceptar" @onclick="CerrarModalActualizar">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
 @code {
     private bool mostrarError = false;
 
@@ -430,6 +457,7 @@
     private bool horarioLimpio;
     private string mensajeHorario;
     private string notificarEliminacion;
+    private string notificarActualizacion;
     private ApplicationUser usuarioIdentity = new ApplicationUser { };
     private AsistenteControlador asistenteControlador = new AsistenteControlador();
     private UnidadControlador unidadControlador = new UnidadControlador();
@@ -515,7 +543,7 @@
             listaAsistentes = listaAsistentes.Where(a => a.UnidadID == unidadUsuario).ToList();
         }
 
-        // await CargarPagina();
+        await CargarPagina();
     }
 
     private async Task GuardarHorarioAsistente()
@@ -649,11 +677,11 @@
             notificarEliminacion = mensaje; 
         } else  
         {
-             notificarEliminacion = mensaje; 
+            notificarEliminacion = mensaje; 
         }
     }
 
-    private async Task GuardarActualizacionAsistente()
+    private async Task ActualizarUsuario()
     {
         if (asistente.UnidadID == 0)
         {
@@ -665,7 +693,7 @@
             asistente.EncargadoID = null;
         }
         (actualizado, string mensaje) = await asistenteControlador.ActualizarAsistente(asistente);
-       
+
         listaAsistentes = await asistenteControlador.ListarAsistentes();
         //cuando filtro la lista se cae
         listaAsistentes = listaAsistentes.Where(a => a.UnidadID == unidadUsuario).ToList();
@@ -680,15 +708,13 @@
             historialAcciones.NombrePersona = userName;
             await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
 
-            notificarUsuario = mensaje;
-            actualizado = true;
+            notificarActualizacion = mensaje;
             LimpiarFormulario();
             StateHasChanged();
         }
         else
         {
-            actualizado = false;
-            notificarUsuario = mensaje;
+            notificarActualizacion = mensaje;
 
         }
     }
@@ -745,6 +771,11 @@
     private async Task CargarPagina()
     {
         var allAsistentes = await asistenteControlador.ListarAsistentes();
+        if (unidadUsuario!=null)       
+        {
+            allAsistentes = allAsistentes.Where(a => a.UnidadID == unidadUsuario).ToList();
+        }     
+       
         totalItems = allAsistentes.Count;
         totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
@@ -795,6 +826,12 @@
     {
 
         notificarEliminacion = null;
+        StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
+    }
+    private void CerrarModalActualizar()
+    {
+
+        notificarActualizacion = null;
         StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
     }
 }
