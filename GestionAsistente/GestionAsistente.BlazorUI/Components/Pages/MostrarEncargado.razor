@@ -285,15 +285,12 @@
             mensajeExito = null;
             mensajeError = mensaje;
         }
-
-
+     
         await CargarPagina();
         StateHasChanged();
     }
     private async Task ActualizarEncargado()
     {
-
-
         (string mensaje, bool esExitoso) = await encargadoControlador.ActualizarEncargado(encargadoControlador.encargado);
         if (esExitoso)
         {
@@ -319,7 +316,6 @@
             mensajeError = mensaje;
         }
 
-
         await CargarPagina();
         StateHasChanged();
     }
@@ -340,19 +336,16 @@
 
             await encargadoControlador.listarEncargados();
             encargadoControlador.crearEncargado = new Encargado
-                {
-                    Persona = new Persona(),
-                    Unidad = new Unidad()
-                };
-
-
+            {
+                Persona = new Persona(),
+                Unidad = new Unidad()
+            };
         }
         else
         {
             mensajeExito = null;
             mensajeError = mensaje;
         } 
-
 
         await CargarPagina();
         StateHasChanged();

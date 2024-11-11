@@ -130,6 +130,12 @@ namespace GestionAsistente.ReglasNegocio
             return asistentes;
         }
 
+        public async Task<List<Asistente>> ListarAsistentesPorUnidadID(int? unidad)
+        {
+            List<Asistente> asistentes = new List<Asistente>();
+            asistentes = await this.asistenteAD.ListarAsistentesPorUnidadID(unidad);
+            return asistentes;
+        }
         public async Task<List<Asistente>> BuscarAsistentePorNombre(string nombre)
         {
             List<Asistente> asistentes = new List<Asistente>();
