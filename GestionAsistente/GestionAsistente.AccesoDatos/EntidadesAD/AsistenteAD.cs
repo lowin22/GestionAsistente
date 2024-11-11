@@ -126,6 +126,52 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             }
         }
 
+        public async Task<List<Asistente>> ListarAsistentesPorUnidadID(int? unidad)
+        {
+            Console.WriteLine($"Filtrando asistentes con UnidadID: {unidad}");
+
+            var asistentesFiltrados = await _contexto.AsistenteEFs
+                .Where(a => a.UnidadID == unidad)
+                .ToListAsync();
+
+            // Mapea los objetos solo después del filtro en la base de datos
+            List<Asistente> asistentes = asistentesFiltrados.Select(a => new Asistente
+            {
+                AsistenteID = a.AsistenteID,
+                EncargadoID = a.Encargado?.EncargadoID,
+                nombreUsuario = a.nombreUsuario,
+                Accesos = a.Accesos,
+                Contrasenia = a.Contrasenia,
+                BadgeID = a.BadgeID,
+                UnidadID = a.UnidadID,
+                Persona = a.Persona != null ? new Persona
+                {
+                    PersonaID = a.Persona.PersonaID,
+                    Nombre = a.Persona.Nombre ?? string.Empty,
+                    PrimerApellido = a.Persona.PrimerApellido ?? string.Empty,
+                    SegundoApellido = a.Persona.SegundoApellido ?? string.Empty
+                } : null,
+                Unidad = a.Unidad != null ? new Unidad
+                {
+                    UnidadID = a.Unidad.UnidadID,
+                    Nombre = a.Unidad.Nombre ?? string.Empty
+                } : null,
+                Encargado = a.Encargado != null && a.Encargado.Persona != null ?
+                            new Encargado
+                            {
+                                EncargadoID = a.Encargado.EncargadoID,
+                                Persona = new Persona
+                                {
+                                    Nombre = a.Encargado.Persona.Nombre ?? string.Empty,
+                                    PrimerApellido = a.Encargado.Persona.PrimerApellido ?? string.Empty,
+                                    SegundoApellido = a.Encargado.Persona.SegundoApellido ?? string.Empty
+                                }
+                            } : null
+            }).ToList();
+
+            return asistentes;
+        }
+
         public async Task<bool> ModificarAsistente(Asistente asistente)
         {
             // Buscar el asistente por ID
@@ -192,9 +238,6 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
 
             return await _contexto.SaveChangesAsync() > 0; // Asegúrate de usar SaveChangesAsync para mantener la asynchronía
         }
-
-
-
         public async Task<bool> EliminarAsistente(int? AsistenteID)
         {
             AsistenteEF asistenteEF = _contexto.AsistenteEFs.Find(AsistenteID);

@@ -21,10 +21,7 @@ namespace GestionAsistente.ReglasNegocio
             if (encargado != null)
             {
                
-                if(encargado.Unidad.UnidadID == 0)
-                {
-                    return ("La unidad es erronea", false);
-                }
+               
                 if (encargado.Persona.SegundoApellido == null)
                 {
                     return ("El segundo apellido no puede ser nulo", false);
@@ -46,19 +43,24 @@ namespace GestionAsistente.ReglasNegocio
                 }
                 if (encargado.Persona.Nombre == "")
                 {
-                    return ("El nombre no estar vacío", false);
+                    return ("El nombre no puede estar vacío", false);
                 }
-                if (encargado.Unidad == null)
+                if (encargado.Unidad.UnidadID == 0)
+                {
+                    return ("La unidad no puede estar vacía", false);
+                }
+                if (encargado.Unidad.UnidadID == null)
                 {
                     return ("La unidad no puede ser nula", false);
                 }
+                
                 if (!System.Text.RegularExpressions.Regex.IsMatch(encargado.Persona.Nombre, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
                 {
-                    return ("El segundo apellido contiene caracteres no permitidos", false);
+                    return ("El nombre contiene caracteres no permitidos", false);
                 }
                 if (!System.Text.RegularExpressions.Regex.IsMatch(encargado.Persona.PrimerApellido, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
                 {
-                    return ("El segundo apellido contiene caracteres no permitidos", false);
+                    return ("El primer apellido contiene caracteres no permitidos", false);
                 }
 
                 if (!System.Text.RegularExpressions.Regex.IsMatch(encargado.Persona.SegundoApellido, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
@@ -117,18 +119,18 @@ namespace GestionAsistente.ReglasNegocio
                 }
                 if (!System.Text.RegularExpressions.Regex.IsMatch(encargado.Persona.Nombre, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
                 {
-                    return ("El segundo apellido contiene caracteres no permitidos", false);
+                    return ("El nombre contiene caracteres no permitidos", false);
                 }
                 if (!System.Text.RegularExpressions.Regex.IsMatch(encargado.Persona.PrimerApellido, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
                 {
-                    return ("El segundo apellido contiene caracteres no permitidos", false);
+                    return ("El primer apellido contiene caracteres no permitidos", false);
                 }
-               
+
                 if (!System.Text.RegularExpressions.Regex.IsMatch(encargado.Persona.SegundoApellido, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
                 {
                     return ("El segundo apellido contiene caracteres no permitidos", false);
                 }
-                
+
 
             }
             return await encargadoAD.ActualizarEncargado(encargado);

@@ -532,6 +532,8 @@
             userName = user.Identity.Name;
             usuarioIdentity = await UserManager.FindByNameAsync(userName);
             unidadUsuario = usuarioIdentity.UnidadID;
+
+            Console.WriteLine($"Unidad del usuario: {unidadUsuario}");
         }
         if (unidadUsuario == null)
         {
@@ -771,11 +773,18 @@
     private async Task CargarPagina()
     {
         var allAsistentes = await asistenteControlador.ListarAsistentes();
+
         if (unidadUsuario!=null)       
         {
             allAsistentes = allAsistentes.Where(a => a.UnidadID == unidadUsuario).ToList();
         }     
        
+
+        if (unidadUsuario != null)
+        {
+            allAsistentes = allAsistentes.Where(a => a.UnidadID == unidadUsuario).ToList();
+        }
+
         totalItems = allAsistentes.Count;
         totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
