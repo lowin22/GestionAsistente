@@ -64,23 +64,7 @@ namespace GestionAsistente.ReglasNegocio
         { a => !System.Text.RegularExpressions.Regex.IsMatch(a.nombreUsuario, PATRON_CARACTERES_ESPECIALES),
           "El nombre de usuario no debe contener los caracteres <, >, (), []" },
         
-        // Validaciones de la contraseña
-        { a => !string.IsNullOrWhiteSpace(a.Contrasenia),
-          "La contraseña no puede estar en blanco" },
-        { a => System.Text.RegularExpressions.Regex.IsMatch(a.Contrasenia, PATRON_LETRAS_NUMEROS),
-          "La contraseña solo puede contener letras y números" },
-        { a => !System.Text.RegularExpressions.Regex.IsMatch(a.Contrasenia, PATRON_CARACTERES_ESPECIALES),
-          "La contraseña no debe contener los caracteres <, >, (), []" },
-        
-        // Validaciones de accesos
-        { a => a.Accesos != null,
-          "Los accesos no pueden estar en blanco" },
-        { a => a.Accesos != null && System.Text.RegularExpressions.Regex.IsMatch(a.Accesos, PATRON_LETRAS_NUMEROS),
-          "Los accesos solo pueden contener letras y números" },
-        { a => a.Accesos != null && !System.Text.RegularExpressions.Regex.IsMatch(a.Accesos, PATRON_CARACTERES_ESPECIALES),
-          "Los accesos no deben contener los caracteres <, >, (), []" },
-        
-        // Validaciones de la Persona
+                // Validaciones de la Persona
         { a => a.Persona != null,
           "Los datos personales son requeridos" },
         
@@ -112,7 +96,22 @@ namespace GestionAsistente.ReglasNegocio
           "El segundo apellido solo debe contener letras" },
         { a => a.Persona != null &&
                !System.Text.RegularExpressions.Regex.IsMatch(a.Persona.SegundoApellido, PATRON_CARACTERES_ESPECIALES),
-          "El segundo apellido no debe contener los caracteres <, >, (), []" }
+          "El segundo apellido no debe contener los caracteres <, >, (), []" },
+        // Validaciones de accesos
+        { a => a.Accesos != null,
+          "Los accesos no pueden estar en blanco" },
+        { a => a.Accesos != null && System.Text.RegularExpressions.Regex.IsMatch(a.Accesos, PATRON_LETRAS_NUMEROS),
+          "Los accesos solo pueden contener letras y números" },
+        { a => a.Accesos != null && !System.Text.RegularExpressions.Regex.IsMatch(a.Accesos, PATRON_CARACTERES_ESPECIALES),
+          "Los accesos no deben contener los caracteres <, >, (), []" },
+
+          // Validaciones de la contraseña
+        { a => !string.IsNullOrWhiteSpace(a.Contrasenia),
+          "La contraseña no puede estar en blanco" },
+        { a => System.Text.RegularExpressions.Regex.IsMatch(a.Contrasenia, PATRON_LETRAS_NUMEROS),
+          "La contraseña solo puede contener letras y números" },
+        { a => !System.Text.RegularExpressions.Regex.IsMatch(a.Contrasenia, PATRON_CARACTERES_ESPECIALES),
+          "La contraseña no debe contener los caracteres <, >, (), []" },
     };
 
             foreach (var regla in reglasDeNegocio)
@@ -138,9 +137,19 @@ namespace GestionAsistente.ReglasNegocio
             return asistentes;
         }
 
-        public async Task<bool> EliminarAsistente(int? asistenteID)
+        public async Task<(bool, string)> EliminarAsistente(int? asistenteID)
         {
-            return await asistenteAD.EliminarAsistente(asistenteID);
+            string mensaje;
+            bool confirmarEliminacion = await asistenteAD.EliminarAsistente(asistenteID);
+            if (confirmarEliminacion)
+            {
+                mensaje = "Se eliminó con éxito";
+            }
+            else
+            {
+                mensaje = "No se pudo eliminar";
+            }
+            return (confirmarEliminacion, mensaje);
         }
 
         public async Task<(bool exito, string mensaje)> ActualizarAsistente(Asistente asistente)
