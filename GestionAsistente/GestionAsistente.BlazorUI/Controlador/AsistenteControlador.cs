@@ -24,6 +24,11 @@ namespace GestionAsistente.BlazorUI.Controlador
             return await asistenteRN.ListarAsistentes();
         }
 
+        public async Task<List<Asistente>> ListarAsistentesPorUnidadID(int? unidad)
+        {
+            return await asistenteRN.ListarAsistentesPorUnidadID(unidad);
+        }
+
         public async Task<List<Asistente>> BuscarAsistentePorNombre(string nombre)
         {
             return await asistenteRN.BuscarAsistentePorNombre(nombre);
