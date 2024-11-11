@@ -19,7 +19,7 @@ namespace GestionAsistente.ReglasNegocio
 
         private class ValidacionResultado
         {
-            public bool EsValido { get; }
+            public bool EsValido { get; set; }
             public string Mensaje { get; }
 
             public ValidacionResultado(bool esValido, string mensaje)
@@ -42,6 +42,11 @@ namespace GestionAsistente.ReglasNegocio
                 return (false, validacion.Mensaje);
             }
             var registroExitoso = await asistenteAD.RegistrarAsistente(asistente);
+            if (!registroExitoso)
+            {
+                string mensajeFallo = "No se pudo registrar";
+                return (registroExitoso, mensajeFallo);
+            }
             return (registroExitoso, MENSAJE_EXITO);
         }
 
@@ -171,6 +176,12 @@ namespace GestionAsistente.ReglasNegocio
                 return (false, validacion.Mensaje);
             }
             var actualizacionExitosa = await asistenteAD.ModificarAsistente(asistente);
+
+            if (!actualizacionExitosa)
+            {
+                string mensajeFallo = "No se pudo registrar";
+                return (actualizacionExitosa, mensajeFallo);
+            }
             return (actualizacionExitosa, MENSAJE_EXITO);
         }
 
