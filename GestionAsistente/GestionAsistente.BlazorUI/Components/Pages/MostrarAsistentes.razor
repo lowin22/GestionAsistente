@@ -183,7 +183,11 @@
                         <InputText id="usuario" class="form-control" @bind-Value="asistente.nombreUsuario" require/>
                         @if (string.IsNullOrWhiteSpace(asistente.nombreUsuario))
                         {
-                            <p class="text-danger">Este campo es obligatorio.</p>
+                            <p class="text-danger">Este campo es obligatorio y solo debe tener letras.</p>
+                        }
+                        @if (!string.IsNullOrEmpty(asistente.nombreUsuario) && !System.Text.RegularExpressions.Regex.IsMatch(asistente.nombreUsuario, @"^[a-zA-Z]+$"))
+                        {
+                            <p class="text-danger">El usuario solo puede contener letras (sin espacios, números o caracteres especiales).</p>
                         }
                     </div>
                     <div class="mb-3">
@@ -191,7 +195,11 @@
                         <InputText id="nombre" class="form-control" @bind-Value="asistente.Persona.Nombre" />
                         @if (string.IsNullOrWhiteSpace(asistente.Persona.Nombre))
                         {
-                            <p class="text-danger">Este campo es obligatorio.</p>
+                            <p class="text-danger">Este campo es obligatorio y solo debe tener letras.</p>
+                        }
+                        @if (!string.IsNullOrEmpty(asistente.Persona.Nombre) && !System.Text.RegularExpressions.Regex.IsMatch(asistente.Persona.Nombre, @"^[a-zA-Z]+$"))
+                        {
+                            <p class="text-danger">El usuario solo puede contener letras (sin espacios, números o caracteres especiales).</p>
                         }
                     </div>
                     <div class="mb-3">
@@ -199,7 +207,11 @@
                         <InputText id="primerApellido" class="form-control" @bind-Value="asistente.Persona.PrimerApellido" />
                         @if (string.IsNullOrWhiteSpace(asistente.Persona.PrimerApellido))
                         {
-                            <p class="text-danger">Este campo es obligatorio.</p>
+                            <p class="text-danger">Este campo es obligatorio y solo debe tener letras.</p>
+                        }
+                        @if (!string.IsNullOrEmpty(asistente.Persona.PrimerApellido) && !System.Text.RegularExpressions.Regex.IsMatch(asistente.Persona.PrimerApellido, @"^[a-zA-Z]+$"))
+                        {
+                            <p class="text-danger">El usuario solo puede contener letras (sin espacios, números o caracteres especiales).</p>
                         }
                     </div>
                     <div class="mb-3">
@@ -207,15 +219,31 @@
                         <InputText id="segundoApellido" class="form-control" @bind-Value="asistente.Persona.SegundoApellido" />
                         @if (string.IsNullOrWhiteSpace(asistente.Persona.SegundoApellido))
                         {
-                            <p class="text-danger">Este campo es obligatorio.</p>
+                            <p class="text-danger">Este campo es obligatorio y solo debe tener letras.</p>
+                        }
+                        @if (!string.IsNullOrEmpty(asistente.Persona.SegundoApellido) && !System.Text.RegularExpressions.Regex.IsMatch(asistente.Persona.SegundoApellido, @"^[a-zA-Z]+$"))
+                        {
+                            <p class="text-danger">El usuario solo puede contener letras (sin espacios, números o caracteres especiales).</p>
                         }
                     </div>
                     <div class="mb-3">
                         <label for="contrasenia" class="form-label">Contraseña</label>
                         <InputText id="contrasenia" class="form-control" @bind-Value="asistente.Contrasenia" />
-                        @if (string.IsNullOrWhiteSpace(asistente.Contrasenia))
+                     @if (string.IsNullOrWhiteSpace(asistente.Contrasenia))
+    {
+        <p class="text-danger">Este campo es obligatorio.</p>
+    }
+    @if (!string.IsNullOrEmpty(asistente.Contrasenia) && !System.Text.RegularExpressions.Regex.IsMatch(asistente.Contrasenia, @"^[^{}\[\]()<>]+$"))
+    {
+        <p class="text-danger">La contraseña no puede contener los siguientes caracteres: "{}[]()"</p>
+    }
+                    </div>
+                    <div class="mb-3">
+                        <label for="accesos" class="form-label">Accesos</label>
+                        <InputTextArea id="accesos" class="form-control" @bind-Value="asistente.Accesos" />
+                        @if (string.IsNullOrWhiteSpace(asistente.Accesos))
                         {
-                            <p class="text-danger">Este campo es obligatorio.</p>
+                            <p class="text-danger">Este campo es obligatorio, solo debe tener letras y números.</p>
                         }
                     </div>
                     <div class="mb-3">
@@ -228,14 +256,7 @@
                             }
                         </InputSelect>
                     </div>
-                    <div class="mb-3">
-                        <label for="accesos" class="form-label">Accesos</label>
-                        <InputTextArea id="accesos" class="form-control" @bind-Value="asistente.Accesos" />
-                        @if (string.IsNullOrWhiteSpace(asistente.Accesos))
-                        {
-                            <p class="text-danger">Este campo es obligatorio.</p>
-                        }
-                    </div>
+                    
                     <div class="mb-3">
                         <label for="encargadoID" class="form-label">Encargado</label>
                         <InputSelect id="encargadoID" class="form-control" @bind-Value="asistente.EncargadoID">
@@ -363,7 +384,7 @@
 @if (mostrarError)
 {
     <div class="invalid-feedback">
-        El nombre de usuario es requerido
+        @notificarUsuario
     </div>
 } else if (notificarUsuario !=null)
 {
@@ -372,7 +393,27 @@
     </div>
 }
 
-
+@if (notificarEliminacion != null)
+{
+    <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content custom-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmación</h5>
+                    <button type="button" class="close" @onclick="CerrarModalEliminacion" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>@notificarEliminacion</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btnAceptar" @onclick="CerrarModalEliminacion">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
     private bool mostrarError = false;
@@ -388,6 +429,7 @@
     private string notificarUsuario;
     private bool horarioLimpio;
     private string mensajeHorario;
+    private string notificarEliminacion;
     private ApplicationUser usuarioIdentity = new ApplicationUser { };
     private AsistenteControlador asistenteControlador = new AsistenteControlador();
     private UnidadControlador unidadControlador = new UnidadControlador();
@@ -590,7 +632,8 @@
 
     private async Task EliminarAsistente(int asistenteID)
     {
-        bool eliminado = await asistenteControlador.EliminarAsistente(asistenteID);
+        (bool eliminado, string mensaje) = await asistenteControlador.EliminarAsistente(asistenteID);
+
         if (eliminado)
         {
             listaAsistentes = await asistenteControlador.ListarAsistentes();
@@ -603,6 +646,10 @@
             await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
             listaAsistentes = listaAsistentes.Where(a => a.UnidadID == unidadUsuario).ToList();
             StateHasChanged();
+            notificarEliminacion = mensaje; 
+        } else  
+        {
+             notificarEliminacion = mensaje; 
         }
     }
 
@@ -742,6 +789,12 @@
     {
 
         mensajeHorario = null;
+        StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
+    }
+    private void CerrarModalEliminacion()
+    {
+
+        notificarEliminacion = null;
         StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
     }
 }
