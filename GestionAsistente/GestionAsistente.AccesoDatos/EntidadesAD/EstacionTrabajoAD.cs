@@ -27,7 +27,6 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             this._contexto.EstacionTrabajoEFs.Add(estacionTrabajoEF);
             return this._contexto.SaveChanges() > 0;
         }
-
         public async Task<(string, bool)> ActualizarEstacion(Oficina oficina)
         {
             OficinaEF oficinaEF = _contexto.OficinaEFs.Find(oficina.OficinaID);
@@ -40,7 +39,6 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
         ? ("Actualizado correctamente", true)
         : ("Error al actualizar", false);
         }
-
         public List<EstacionTrabajo> listarEstacionesTrabajo()
         {
             List<EstacionTrabajoEF> estacionTrabajoEFs = _contexto.EstacionTrabajoEFs.ToList();
@@ -58,7 +56,6 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
 
             return estacionesTrabajo;
         }
-
         public async Task<int> estacionesPorOficina(int oficinaID)
         {
             List<EstacionTrabajoEF> estacionTrabajoEFs = _contexto.EstacionTrabajoEFs.ToList();
@@ -83,7 +80,6 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
 
             return cantidadEstaciones;
         }
-
         public EstacionTrabajo BuscarEstacion(int numero)
         {
             var estacionTrabajo = _contexto.EstacionTrabajoEFs
@@ -111,8 +107,6 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             _contexto.EstacionTrabajoEFs.Remove(estacionTrabajoEF);
             return _contexto.SaveChanges() > 0;
         }
-
-
         public async Task<bool> EliminarEstacionPorOficina(int OficinaID)
         {
             EstacionTrabajoEF estacionTrabajoEF = _contexto.EstacionTrabajoEFs.Find(OficinaID);

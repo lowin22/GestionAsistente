@@ -30,7 +30,6 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             this._contexto.BadgesEF.Add(badgeEF);
             return this._contexto.SaveChanges() > 0;
         }
-
         public async Task<List<Badge>> ListarBadge()
         {
             List<Badge> badges = new List<Badge>();
@@ -61,7 +60,6 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
 
             return badges;
         }
-
         public async Task<List<Badge>> BuscarBadgesPorNumero(int numBadge)
         {
             return await _contexto.BadgesEF
@@ -82,7 +80,6 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                 })
                 .ToListAsync();
         }
-
         public async Task<List<Badge>> BuscarBadgesPorNombreUnidad(string nombreUnidad)
         {
             return await _contexto.BadgesEF
@@ -103,9 +100,6 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                 })
                 .ToListAsync();
         }
-
-
-
         public async Task<bool> ModificarBadge(Badge badge)
         {
             BadgeEF badgeEF = _contexto.BadgesEF.FirstOrDefault(b => b.BadgeID == badge.BadgeID);

@@ -32,33 +32,6 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             return oficinaEF.OficinaID;
             //obtener el ID del ultimo
         }
-
-        //public async Task<bool> RegistrarOficina(EstacionTrabajo estacion)
-        //{
-        //    // Crear el objeto EstacionEF
-        //    EstacionTrabajoEF estacionEF = new EstacionTrabajoEF
-        //    {
-        //        Numero = estacion.Numero,
-        //        Oficina= estacion.Oficina,
-        //        SegundoApellido = encargado.Persona.SegundoApellido
-        //    };
-
-        //    // Crear el objeto OficinaEF y asociarlo con la EstacionEF
-        //    EncargadoEF encargadoEF = new EncargadoEF
-        //    {
-        //        Persona = estacionEF, // Aquí asignamos el objeto persona
-        //        UnidadID = encargado.UnidadID
-        //    };
-
-        //    // Agregar el objeto EncargadoEF al contexto
-        //    this._contexto.EncargadoEFs.Add(encargadoEF);
-
-        //    // Guardar los cambios
-        //    return this._contexto.SaveChanges() > 0;
-        //}
-
-
-
         public async Task<bool> ExisteOficina(string nombre)
         {
             var oficina = _contexto.OficinaEFs
@@ -74,7 +47,6 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             }
             return true;
         }
-
         public async Task<(string, bool)> ModificarOficina(Oficina oficina, int cantidadEstaciones)
         {
             // Buscar la oficina en la base de datos
@@ -123,8 +95,6 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                 ? ("Oficina y estaciones de trabajo actualizadas correctamente", true)
                 : ("Error al actualizar la oficina y estaciones de trabajo", false);
         }
-
-
         public async Task<bool> EliminarOficina(int OficinaID)
         {
             OficinaEF oficinaEF = _contexto.OficinaEFs.Find(OficinaID);
@@ -135,32 +105,5 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             _contexto.OficinaEFs.Remove(oficinaEF);
             return _contexto.SaveChanges() > 0;
         }
-
-        //public async Task<(string, bool)> EliminarOficina(int OficinaID)
-        //{
-        //    // Obtén la oficina junto con sus estaciones de trabajo
-        //    var estacionesEF = _contexto.EstacionTrabajoEFs;
-        //    var oficinaEF = await _contexto.OficinaEFs
-        //                                   .Include(o => estacionesEF)
-        //                                   .FirstOrDefaultAsync(o => o.OficinaID == OficinaID);
-
-        //    if (oficinaEF == null)
-        //    {
-        //        return ("Oficina no encontrada", false);
-        //    }
-
-        //    // Eliminar todas las estaciones de trabajo relacionadas
-        //    _contexto.EstacionTrabajoEFs.RemoveRange(estacionesEF);
-
-        //    // Eliminar la oficina
-        //    _contexto.OficinaEFs.Remove(oficinaEF);
-
-        //    // Guardar los cambios
-        //    return await _contexto.SaveChangesAsync() > 0
-        //        ? ("Eliminado correctamente", true)
-        //        : ("Error al eliminar", false);
-        //}
-
-
     }
 }
