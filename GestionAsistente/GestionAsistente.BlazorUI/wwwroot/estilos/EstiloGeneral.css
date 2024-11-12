@@ -153,5 +153,6 @@ thead {
     }
 
 .custom-margin {
-    margin-bottom: 5em;
+    padding-bottom: 5em;
+    background-color: red;
 }
