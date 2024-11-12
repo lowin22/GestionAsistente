@@ -105,6 +105,7 @@
     protected override async Task OnInitializedAsync()
     {
         listaHistorialAcciones = await historialAccionesControlador.ListarHistorial();
+        listaPersonas = await historialAccionesControlador.ListarPersonas();
         listaHistorialAccionesFiltradas = listaHistorialAcciones
             .OrderByDescending(h => h.Fecha)
             .ToList();
@@ -119,17 +120,11 @@
     private async Task BuscarHistorial()
     {
         listaHistorialAccionesFiltradas = historialAccionesControlador.BuscarHistorial(filtroPersona, filtroAccion, filtroFecha);
-
-        totalItems = listaHistorialAccionesFiltradas.Count;
-        totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-        currentPage = 1; // Reiniciar a la primera página
-
         await CargarPagina();
     }
 
     private async Task CargarPagina()
     {
-        // Extraer solo los registros para la página actual
         paginaActualHistorial = listaHistorialAccionesFiltradas
             .Skip((currentPage - 1) * pageSize)
             .Take(pageSize)

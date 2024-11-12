@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace GestionAsistente.ReglasNegocio
@@ -14,33 +15,36 @@ namespace GestionAsistente.ReglasNegocio
         public UnidadRN() { 
             this.unidadAD = new UnidadAD();
         }
-        public async Task<bool> RegistrarUnidad(Unidad unidad)
+        public async Task<(bool exito, string mensaje)> RegistrarUnidad(Unidad unidad)
         {
+            const string MENSAJE_EXITO = "Se registró con éxito";
             if (unidad == null)
             {
                 throw new ArgumentNullException(nameof(unidad));
             }
             if (string.IsNullOrWhiteSpace(unidad.Nombre))
             {
-                throw new Exception("El nombre de la unidad es obligatorio.");
+                return (false, "El nombre de la unidad es obligatorio.");
+            }
+            // Nombres duplicados
+            var unidadesExistentes = await unidadAD.listarUnidades();
+            //bool existeNombreRepetido = unidadesExistentes.Any(u => u.Nombre.ToLower() == unidad.Nombre.ToLower());
+            bool existeNombreRepetido = unidadesExistentes.Any(u => u.Nombre.Equals(unidad.Nombre, StringComparison.OrdinalIgnoreCase));
+            if (existeNombreRepetido)
+            {
+                return (false, "Ya existe una unidad con este nombre.");
             }
             if (int.TryParse(unidad.Nombre, out _))
             {
-                throw new Exception("El nombre de la unidad no puede ser solo numérico.");
+                return (false, "El nombre de la unidad no puede ser solo numérico.");
             }
-            //var unidadesExistentes = await unidadAD.listarUnidades();
-            //if (unidadesExistentes.Any(u => u.Nombre.Equals(unidad.Nombre, StringComparison.OrdinalIgnoreCase)))
-            //{
-            //    throw new Exception("Ya existe una unidad con el mismo nombre.");
-            //}
-            var unidadesExistentes = await unidadAD.listarUnidades();
-            bool existeNombreRepetido = unidadesExistentes.Any(u => u.Nombre.ToLower() == unidad.Nombre.ToLower());
-
-            if (existeNombreRepetido)
+            if (!Regex.IsMatch(unidad.Nombre, @"^[a-zA-Z0-9áéíóúÁÉÍÓÚ\s]+$"))
             {
-                throw new Exception("Ya existe una unidad con este nombre.");
+                return (false, "El nombre de la unidad solo puede contener letras y números.");
             }
-            return await unidadAD.RegistrarUnidad(unidad);
+            
+            var registroExitoso = await unidadAD.RegistrarUnidad(unidad);
+            return (registroExitoso, MENSAJE_EXITO); //await unidadAD.RegistrarUnidad(unidad);
         }
         public async Task<List<Unidad>> ListarUnidades()
         {
@@ -56,13 +60,21 @@ namespace GestionAsistente.ReglasNegocio
                 {
                     return ("La unidad es erronea", false);
                 }
-                if (unidad.Nombre == null)
+                if (string.IsNullOrWhiteSpace(unidad.Nombre))
                 {
                     return ("El nombre de la unidad es necesario", false);
                 }
-                if (unidad.Nombre == null)
+                // Nombres duplicados
+                var unidadesExistentes = await unidadAD.listarUnidades();
+                //bool existeNombreRepetido = unidadesExistentes.Any(u => u.Nombre.ToLower() == unidad.Nombre.ToLower());
+                bool existeNombreRepetido = unidadesExistentes.Any(u => u.Nombre.Equals(unidad.Nombre, StringComparison.OrdinalIgnoreCase));
+                if (existeNombreRepetido)
                 {
-                    return ("La unidad ya existe", false);
+                    return ("Ya existe una unidad con este nombre.", false);
+                }
+                if (!Regex.IsMatch(unidad.Nombre, @"^[a-zA-Z0-9áéíóúÁÉÍÓÚ\s]+$"))
+                {
+                    return ("El nombre de la unidad solo puede contener letras y números.", false);
                 }
             }
             return await unidadAD.ActualizarUnidad(unidad);

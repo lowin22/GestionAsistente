@@ -19,11 +19,11 @@ namespace GestionAsistente.BlazorUI.Controlador
         {
             return historialAccionesRN.ListarHistorialPorFecha(fecha);
         }
-        public List<HistorialAcciones> BuscarAccionPorPersona(string nombrePersona)
+        
+ public List<HistorialAcciones> BuscarAccionPorPersona(string nombrePersona)
         {
             return historialAccionesRN.BuscarAccionPorPersona(nombrePersona);
-        }
-        public List<HistorialAcciones> BuscarPorAccion(string accion)
+        }       public List<HistorialAcciones> BuscarPorAccion(string accion)
         {
             return historialAccionesRN.BuscarPorAccion(accion);
         }
@@ -42,6 +42,10 @@ namespace GestionAsistente.BlazorUI.Controlador
         public List<HistorialAcciones> BuscarHistorial(string persona, string accion, DateTime? fecha)
         {
             return historialAccionesRN.BuscarHistorial(persona, accion, fecha);
+        }
+        public async Task<List<string>> ListarPersonas()
+        {
+            return await historialAccionesRN.ListarPersonas();
         }
 
     }

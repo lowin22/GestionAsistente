@@ -1,6 +1,7 @@
 ﻿using GestionAsistente.AccesoDatos.Contexto;
 using GestionAsistente.AccesoDatos.Modelos;
 using GestionAsistente.Entidades;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -136,6 +137,14 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             }).ToList();
 
             return historialAcciones;
+        }
+        public async Task<List<string>> ListarPersonas()
+        {
+            return await _contexto.HistoriaAccionesEFs
+                .Select(a => a.NombrePersona) 
+                .Distinct()                   
+                .OrderBy(nombre => nombre)    
+                .ToListAsync();               
         }
 
 

@@ -29,7 +29,7 @@
     </button>
 </EditForm>
 
-@if (mensajeExito != null)
+@* @if (mensajeExito != null)
 {
     <div class="alert alert-success">
         @mensajeExito
@@ -39,6 +39,50 @@
 {
     <div class="alert alert-danger">
         @mensajeError
+    </div>
+} *@
+
+@if (mensajeExito != null)
+{
+    <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content custom-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmación</h5>
+                    <button type="button" class="close" @onclick="CerrarModal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>@mensajeExito</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btnAceptar" @onclick="CerrarModal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (mensajeError != null)
+{
+    <div id="ModalError" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content custom-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">Error</h5>
+                    <button type="button" class="close" @onclick="CerrarModalError" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>@mensajeError</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btnAceptar" @onclick="CerrarModalError">Aceptar</button>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
@@ -76,23 +120,31 @@
                         </tr>
                     }
                 }
+                else
+                {
+                    <tr>
+                        <td colspan="3">No hay encargados registrados</td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
 </div>
 
 <!-- Modal de confirmación -->
-<div class="modal fade" id="ConfirmarEliminar" tabindex="-1" aria-labelledby="ConfirmarEliminarLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade" id="ConfirmarEliminar" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    @* tabindex="-1" aria-labelledby="ConfirmarEliminarLabel" aria-hidden="true"> *@
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header text-center">
                 <h5 class="modal-title" id="ConfirmarEliminarLabel">Confirmar Eliminación</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body text-center">
                 @if (mensajeExitoEliminar == null)
                 {
-                    <p>¿Estás seguro que deseas eliminar esta unidad?</p>
+                    <p class="fs-5">Esta acción no se puede deshacer.</p>
+                    <p class="text-danger">¿Estás seguro de que deseas eliminar esta unidad?</p>
                 }
                 else
                 {
@@ -124,7 +176,10 @@
 </div>
 @code {
     UnidadControlador unidadControlador = new UnidadControlador();
-    Unidad unidad = new Unidad();
+    Unidad unidad = new Unidad
+    {
+        
+    };
 
     HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
     // HistorialAcciones historialAcciones = new HistorialAcciones
@@ -147,6 +202,7 @@
 
     bool esEdicion = false; // Variable para controlar si estamos en modo edición
     int unidadAEliminarID; // Variable para guardar el ID de la unidad a eliminar
+    int unidadActualizarID;
     string mensajeExitoEliminar;
     //Unidad crearUnidad = new Unidad();
 
@@ -182,47 +238,71 @@
     }
     /**/
 
+    // private async Task RegistrarUnidad()
+    // {
+    //     // try
+    //     // {
+    //         //bool exito = await ;
+    //         (bool exito, string mensaje) = await unidadControlador.RegistrarUnidad(unidad);
+    //         if (exito)
+    //         {
+    //             mensajeExito = mensaje /*"Unidad registrada con éxito."*/;
+    //             mensajeError = null;
+    //             unidad = new Unidad();
+
+    //             //Establecer propiedades para historialAcciones de registrar
+    //             historialAcciones.NombrePersona = userName;
+    //             historialAcciones.Accion = "Registrar unidad: " + unidad.Nombre;
+    //             historialAcciones.Fecha = DateTime.Now;
+
+    //             await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+    //         }
+    //         else
+    //         {
+    //             mensajeError = mensaje /*"Hubo un error al registrar la unidad."*/;
+    //             mensajeExito = null;
+    //         }
+
+    //     // } 
+    //     // catch (Exception ex)
+    //     // {
+    //     //     mensajeError = ex.Message; // Muestra el mensaje de la excepción
+    //     //     mensajeExito = null;
+    //     // }
+    //     await RecargarUnidades();
+    //     //StateHasChanged();
+    // }
     private async Task RegistrarUnidad()
     {
-        try
+        (bool exito, string mensaje) = await unidadControlador.RegistrarUnidad(unidad);
+        if (exito)
         {
-            bool exito = await unidadControlador.RegistrarUnidad(unidad);
+            mensajeExito = mensaje;
+            mensajeError = null;
 
-            if (exito)
-            {
-                mensajeExito = "La unidad fue registrada exitosamente.";
-                mensajeError = null;
-                unidad = new Unidad();
+            // Ahora que sabemos que se registró correctamente, capturamos el nombre para el historial
+            historialAcciones.NombrePersona = userName;
+            historialAcciones.Accion = "Registrar unidad: " + unidad.Nombre;
+            historialAcciones.Fecha = DateTime.Now;
 
-                //Establecer propiedades para historialAcciones de registrar
-                historialAcciones.NombrePersona = userName;
-                historialAcciones.Accion = "Registrar unidad: " + unidad.Nombre;
-                historialAcciones.Fecha = DateTime.Now;
-
-                await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
-            }
-            else
-            {
-                mensajeError = "Hubo un error al registrar la unidad.";
-                mensajeExito = null;
-            }
-
-        } 
-        catch (Exception ex)
+            await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+        }
+        else
         {
-            mensajeError = ex.Message; // Muestra el mensaje de la excepción
+            mensajeError = mensaje;
             mensajeExito = null;
         }
+
         await RecargarUnidades();
-        //StateHasChanged();
     }
+
 
     /**/
     private async Task ActualizarUnidad()
     {
-        
+        //var unidadParaActualizar = listaUnidades.Find(x => x.UnidadID == unidadActualizarID);
         var (mensaje, exito) = await unidadControlador.ActualizarUnidad(unidad);
-
+        
         if (exito)
         {
             //Establecer propiedades para historialAcciones de registrar
@@ -236,6 +316,8 @@
             mensajeError = null;
             unidad = new Unidad();
             esEdicion = false; // Reiniciar el estado de edición
+
+            listaUnidades = await unidadControlador.ListarUnidades();
         }
         else
         {
@@ -255,13 +337,8 @@
     }
     private async Task EliminarUnidad(int unidadID)
     {
-        unidadAEliminarID = unidadID; // Guardamos el ID para eliminar cuando se confirme
-        mensajeExitoEliminar = null; // Limpia el mensaje de éxito previo
-                                     //await RecargarUnidades();
-        /*
-        await unidadControlador.EliminarUnidad(unidadID);
-        await RecargarUnidades();
-    */
+        unidadAEliminarID = unidadID; 
+        mensajeExitoEliminar = null; 
     }
 
     async Task ConfirmarEliminarUnidad()
@@ -288,16 +365,20 @@
         }
 
         StateHasChanged(); // Refresca la página para mostrar el mensaje
-
-        // await unidadControlador.EliminarUnidad(unidadAEliminarID); // Elimina la unidad
-        // listaUnidades = await unidadControlador.ListarUnidades();  // Actualiza la lista
-        // StateHasChanged(); // Refresca la página
     }
 
     void CerrarModal()
     {
+        mensajeExito = null;
         mensajeExitoEliminar = null; // Limpia el mensaje para la próxima eliminación
         StateHasChanged();
+    }
+
+    private void CerrarModalError()
+    {
+        mensajeError = null;
+        mensajeExito = null;
+        StateHasChanged(); // Actualiza el estado para ocultar el modal en la interfaz
     }
 
     private async Task RecargarUnidades()
