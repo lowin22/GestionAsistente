@@ -10,7 +10,7 @@ namespace GestionAsistente.BlazorUI.Controlador
         {
             this.unidadRN = new UnidadRN();
         }
-        public async Task<bool> RegistrarUnidad(Unidad unidad)
+        public async Task<(bool, string)> RegistrarUnidad(Unidad unidad)
         {
             return await unidadRN.RegistrarUnidad(unidad);
         }

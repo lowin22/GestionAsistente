@@ -63,5 +63,10 @@ namespace GestionAsistente.ReglasNegocio
         {
             return historialAccionesAD.BuscarHistorial(persona, accion, fecha);
         }
+        public async Task<List<string>> ListarPersonas()
+        {
+            return await historialAccionesAD.ListarPersonas();
+        }
+
     }
 }
