@@ -6,7 +6,7 @@
 
 <h3>Mostrar Horarios por Estación de Trabajo</h3>
 
-<button data-bs-toggle="modal" data-bs-target="#ConfirmarEliminarOficina"> ELiminar Horario Oficina</button>
+<button data-bs-toggle="modal" data-bs-target="#ConfirmarEliminarOficina"> Eliminar Horario Oficina</button>
 <div class="accordion" id="accordionHorarios">
     
     @foreach (var estacion in horarioControlador.horariosAgrupados)
@@ -26,8 +26,7 @@
         
         @foreach (var horario in horarioControlador.renderizarHorario)
         {
-            
-           
+                     
             @if ( estacion.EstacionTrabajoID==horario.EstacionTrabajoID)
                     {
                         horarioControlador.horarioTemporal.Add(horario);
@@ -61,15 +60,15 @@
                                                     <th scope="row" class="table-light text-center">@hour</th>
                                                     @foreach (var dia in horarioControlador.diasDeLaSemana)
                                                     {
-                                                <td style="min-width: 100px; height: 50px;" class="@GetCellClass(hour, dia, horarioControlador.horarioTemporal)">
+                                                <td style="min-width: 50px; height: 30px;" class="@GetCellClass(hour, dia, horarioControlador.horarioTemporal)">
                                                     @if (HasReservation(hour, dia, horarioControlador.horarioTemporal))
                                                     {
                                                         var horarioD = GetHorario(hour, dia, horarioControlador.horarioTemporal);
                                                         if (horarioD != null)
                                                         {
                                                             <div class="reservation-info">
-                                                                <p><strong>@(horarioD.Asistente?.Persona?.Nombre ?? "Sin asignar")</strong></p>
-                                                                <small>@(horarioD.HoraInicio.ToString("hh:mm")) - @(horarioD.HoraFin.ToString("hh:mm"))</small>
+                                                                <p> <strong>@(horarioD.Asistente?.Persona?.Nombre + " " + horarioD.Asistente?.Persona?.PrimerApellido + " " + 
+                                                                    horarioD.Asistente?.Persona?.SegundoApellido ?? "Sin asignar")</strong> </p>
                                                             </div>
                                                         }
                                                     }
@@ -212,7 +211,7 @@
 
         .table th, .table td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 5px;
             text-align: center;
         }
 
