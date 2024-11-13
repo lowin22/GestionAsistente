@@ -245,8 +245,17 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             {
                 return false;
             }
+            if (asistenteEF.BadgeID != null)
+            {
+                BadgeEF badgeEF = _contexto.BadgesEF.Find(asistenteEF.BadgeID);
+                if (badgeEF != null)
+                {
+                    badgeEF.Ocupado = false;
+                    _contexto.BadgesEF.Update(badgeEF);
+                }
+            }
             _contexto.AsistenteEFs.Remove(asistenteEF);
-            return _contexto.SaveChanges() > 0;
+            return await _contexto.SaveChangesAsync() > 0;
         }
         public async Task<List<Asistente>> BuscarAsistentePorNombre(string nombre)
         {
