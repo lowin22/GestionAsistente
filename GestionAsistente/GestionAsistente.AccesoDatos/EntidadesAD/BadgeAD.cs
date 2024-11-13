@@ -120,6 +120,9 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             {
                 badge.Justificacion = "";
             }
+            if (!badge.Activo) {
+               _contexto.AsistenteEFs.Where(a => a.BadgeID == badge.BadgeID).ToList().ForEach(a => a.BadgeID = null);
+            }
 
             badgeEF.BadgeID = badge.BadgeID;
             badgeEF.Activo = badge.Activo;
