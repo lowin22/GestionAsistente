@@ -4,25 +4,30 @@
 @using GestionAsistente.Entidades
 @rendermode InteractiveServer
 
-<h3>Crear Oficina</h3>
+<h3 style="text-align: center;">Crear Oficina</h3>
 
-<EditForm Model="oficina" OnValidSubmit="RegistrarOficina" FormName="crearOficinaForm">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <EditForm Model="oficina" OnValidSubmit="RegistrarOficina" FormName="crearOficinaForm">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <hr />
 
-    <div class="mb-3">
-        <label for="nombre" class="form-label">Nombre</label>
-        <InputText id="nombre" class="form-control" @bind-Value="oficina.Nombre" required />
+            <div class="form-floating mb-3">
+                <InputText id="nombre" class="form-control" @bind-Value="oficina.Nombre" placeholder="Nombre" required/>
+                <label for="nombre">Nombre</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <InputNumber id="primerApellido" class="form-control" @bind-Value="cantidadEstaciones" placeholder="Cantidad de estaciones de trabajo" />
+                <label for="primerApellido">Estaciones de trabajo</label>
+            </div>
+
+            <div style="text-align:center">
+                <button type="submit" class="btn btn-primary">Registrar</button>
+            </div>
+        </EditForm>
     </div>
-
-    <div class="mb-3">
-        <label for="primerApellido" class="form-label">Estaciones de trabajo</label>
-        <InputNumber id="primerApellido" class="form-control" @bind-Value="cantidadEstaciones"  />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Registrar</button>
-</EditForm>
-
 
 @if (mensajeExito != null)
 {
@@ -68,6 +73,7 @@
         </div>
     </div>
 }
+</div>
 
 @code {
     string mensajeExito;

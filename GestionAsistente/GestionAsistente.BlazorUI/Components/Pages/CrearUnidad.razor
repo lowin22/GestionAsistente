@@ -11,36 +11,33 @@
 @attribute [Authorize(Roles = "Usuario, Administrador")]
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserManager<ApplicationUser> UserManager
-@* <h1>Crear unidades</h1> *@
 
-<h3>@(esEdicion ? "Actualizar Unidad" : "Crear Unidad")</h3>
+<h3 style="text-align: center;">@(esEdicion ? "Actualizar Unidad" : "Crear Unidad")</h3>
 
-@* <EditForm Model="unidad" OnValidSubmit="RegistrarUnidad" FormName="crearRegistrarUnidad"> *@
-<EditForm Model="unidad" OnValidSubmit="ProcesarUnidad" FormName="crearRegistrarUnidad">
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <EditForm Model="unidad" OnValidSubmit="ProcesarUnidad" FormName="crearRegistrarUnidad">
+            <div class="row g-2 justify-content-center">
+                <hr />
 
-    <div class="mb-3">
-        <label for="nombre" class="form-label">Nombre Unidad:</label>
-        <InputText id="nombre" class="form-control" @bind-Value="unidad.Nombre" />
+                <div class="col-md-8 form-floating">
+                    <InputText id="nombre" class="form-control" @bind-Value="unidad.Nombre" placeholder="Nombre" style="height: 67%; margin-bottom: 1em;" />
+                    <label for="nombre" >Nombre</label>
+                </div>
+
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary form-control" style="margin-top: 0.7em;">
+                        @(esEdicion ? "Actualizar" : "Registrar")
+                    </button>
+                </div>
+
+            </div>
+        </EditForm>
     </div>
+</div>
 
-    @* <button type="submit" class="btn btn-primary">Registrar</button> *@
-    <button type="submit" class="btn btn-primary">
-        @(esEdicion ? "Actualizar" : "Registrar")
-    </button>
-</EditForm>
 
-@* @if (mensajeExito != null)
-{
-    <div class="alert alert-success">
-        @mensajeExito
-    </div>
-}
-@if (mensajeError != null)
-{
-    <div class="alert alert-danger">
-        @mensajeError
-    </div>
-} *@
+
 
 @if (mensajeExito != null)
 {

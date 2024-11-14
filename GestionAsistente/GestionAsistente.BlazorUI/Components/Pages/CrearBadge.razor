@@ -12,51 +12,57 @@
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<h3>Crear Badge</h3>
+<h3 style="text-align: center;" >Crear Badge</h3>
 
-<EditForm Model="badge" OnValidSubmit="RegistrarBadge" FormName="crearBadgeForm">
-    
-    <div class="mb-3">
-        <label for="horaInicio">Hora de Inicio</label>
-        <InputSelect id="horaInicio" class="form-select" @bind-Value="horaInicio" @oninput="OnHorarioChanged">
-            <option value="">Seleccione la hora de inicio</option>
-            @foreach (var hora in horasDelDiaInicio)
-            {
-                <option value="@hora">@hora</option>
-            }
-        </InputSelect>
-    </div>
+<div class="row justify-content-center">
+    <div class="col-md-4">
+    <EditForm Model="badge" OnValidSubmit="RegistrarBadge" FormName="crearBadgeForm">
 
-    <div class="mb-3">
-        <label for="horaFinal">Hora de Final</label>
-        <InputSelect id="horaFinal" class="form-select" @bind-Value="horaFinal">
-            <option value="">Seleccione la hora de finalización</option>
-            @foreach (var hora in horasDelDiaFinal)
-            {
-                <option value="@hora">@hora</option>
-            }
-        </InputSelect>
-    </div>
+            <hr />
+            <div class=" mb-3">
+            <label for="horaInicio">Hora de Inicio</label>
+            <InputSelect id="horaInicio" class="form-select" @bind-Value="horaInicio" @oninput="OnHorarioChanged">
+                <option value="">Seleccione la hora de inicio</option>
+                @foreach (var hora in horasDelDiaInicio)
+                {
+                    <option value="@hora">@hora</option>
+                }
+            </InputSelect>
+        </div>
 
-    <div class="mb-3">
-        <label for="unidadID" class="form-label">Unidad</label>
-        <InputSelect id="unidadID" class="form-control" @bind-Value="badge.UnidadID">
-            <option value="">Sin unidad</option>
-            @foreach (var unidad in listaUnidades)
-            {
-                <option value="@unidad.UnidadID">@unidad.Nombre</option>
-            }
-        </InputSelect>
-    </div>
+            <div class="mb-3">
+            <label for="horaFinal">Hora de Final</label>
+            <InputSelect id="horaFinal" class="form-select" @bind-Value="horaFinal">
+                <option value="">Seleccione la hora de finalización</option>
+                @foreach (var hora in horasDelDiaFinal)
+                {
+                    <option value="@hora">@hora</option>
+                }
+            </InputSelect>
+        </div>
 
-    <div class="mb-3">
-        <label for="cantidadACrear" class="form-label">Cantidad a crear</label>
-        <InputNumber id="cantidadACrear" class="form-control" @bind-Value="cantidadACrear" />
-    </div>
+            <div class="mb-3">
+            <label for="unidadID" class="form-label">Unidad</label>
+            <InputSelect id="unidadID" class="form-control" @bind-Value="badge.UnidadID">
+                <option value="">Sin unidad</option>
+                @foreach (var unidad in listaUnidades)
+                {
+                    <option value="@unidad.UnidadID">@unidad.Nombre</option>
+                }
+            </InputSelect>
+        </div>
 
+        <div class="mb-3">
+            <label for="cantidadACrear" class="form-label">Cantidad a crear</label>
+            <InputNumber id="cantidadACrear" class="form-control" @bind-Value="cantidadACrear" />
+        </div>
 
-    <button type="submit" class="btn btn-primary" disabled="@EsFormularioInvalido()">Registrar</button>
+        <div style="text-align:center">
+            <button type="submit" class="btn btn-primary" disabled="@EsFormularioInvalido()">Registrar</button>
+        </div>
 </EditForm>
+    </div>
+</div>
 @if (mensajeExito != null)
 {
     <div id="ModalsConfirmacion" class="modal fade show d-sm-inline-block" tabindex="-1" role="dialog" style="display: block;">

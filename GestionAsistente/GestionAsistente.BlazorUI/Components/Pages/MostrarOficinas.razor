@@ -234,21 +234,38 @@
 
     private async Task EliminarOficina(int oficinaID)
     {
-        await oficinaControlador.EliminarOficinas(oficinaID);
-        historialAcciones.Accion = "Eliminar oficina: " + oficinaEliminar.Nombre;
-        historialAcciones.Fecha = DateTime.Now;
-        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
-        await CargarPagina();
+        bool exitoEliminar =  await oficinaControlador.EliminarOficinas(oficinaID);
+
+        if (exitoEliminar)
+        {
+            mensajeExito = "Oficina eliminada con éxito";
+            historialAcciones.Accion = "Eliminar oficina: " + oficinaEliminar.Nombre;
+            historialAcciones.Fecha = DateTime.Now;
+            await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+            await CargarPagina();
+        } else
+        {
+            mensajeError = "Error al eliminar";
+        }
+
         StateHasChanged();
     }
 
     private async Task ActualizarOficina()
     {
-        await oficinaControlador.ActualizarOficina(oficinaActualizar, cantidadEstacionesActualizar);
-        historialAcciones.Accion = "Actualizar oficina: " + oficina.Nombre + " a " + oficinaActualizar.Nombre;
-        historialAcciones.Fecha = DateTime.Now;
-        await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
-        await CargarPagina();
+        (string mensaje, bool exitoActualizar) = await oficinaControlador.ActualizarOficina(oficinaActualizar, cantidadEstacionesActualizar);
+
+        if (exitoActualizar)
+        {
+            mensajeExito = "Oficina actualizada con éxito";
+            historialAcciones.Accion = "Actualizar oficina: " + oficina.Nombre + " a " + oficinaActualizar.Nombre;
+            historialAcciones.Fecha = DateTime.Now;
+            await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+            await CargarPagina();
+        }else
+        {
+            mensajeError = "Error al Actualizar";
+        }
         StateHasChanged();
     }
 
