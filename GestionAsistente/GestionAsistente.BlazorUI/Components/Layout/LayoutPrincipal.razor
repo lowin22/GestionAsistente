@@ -96,16 +96,14 @@
                     <li>
                         <a class="nav-link" href="Account/register">Registrarse</a>
                     </li>
+
                     <li>
-                        <a class="nav-link" href="Account/Login">Iniciar Sesión</a>
+                        <a class="nav-link" href="Account/Login">Salir</a>
                     </li>
+
                 </ul>
             </div>
-
-            <form method="get" @onsubmit="Salir">
-                <button @onclick="Salir" id="boton-salir" class="btn btn-outline-primary">Salir</button>
-                </form>
-
+            
         </div>
 
     </nav>
@@ -200,14 +198,14 @@
                     <li>
                         <a class="nav-link" href="/ayuda">Ayuda</a>
                     </li>
+
                     <li>
-                        <a class="nav-link" href="Account/Login">Iniciar Sesión</a>
+                        <a class="nav-link" href="Account/Login">Salir</a>
                     </li>
                     
                 </ul>
                
             </div>
-            <button @onclick="Salir" id="boton-salir" class="btn btn-outline-primary">Salir</button>
 
         </div>
 
@@ -225,12 +223,3 @@
     <footer class="footer">
         2024 Laboratorio Nacional de Materiales y Modelos Estructurales
     </footer>
-@code {
-    private async Task Salir()
-    {
-        Console.WriteLine("Saliendo...");
-        await SignInManager.SignOutAsync();
-        NavigationManager.NavigateTo("/Account/login", true); // Redirige al inicio después de cerrar sesión
-
-    }
-}
