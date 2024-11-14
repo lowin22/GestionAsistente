@@ -8,25 +8,27 @@
 @attribute [Authorize(Roles = "Usuario, Administrador")]
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserManager<ApplicationUser> UserManager
-<h3>Crear Encargado</h3>
+<h3 style="text-align: center;" >Crear Encargado</h3>
 
+<div class="row justify-content-center">
+    <div class="col-md-4">
 <EditForm Model="encargadoControlador.encargado" OnValidSubmit="RegistrarEncargado" FormName="crearEncargadoForm">
     <DataAnnotationsValidator />
     <ValidationSummary />
-
-    <div class="mb-3">
-        <label for="nombre" class="form-label">Nombre</label>
-        <InputText id="nombre" class="form-control" @bind-Value="encargadoControlador.encargado.Persona.Nombre" />
+            <hr />
+            <div class="form-floating mb-3">
+        <InputText id="nombre" class="form-control" @bind-Value="encargadoControlador.encargado.Persona.Nombre" placeholder="Nombre" aria-required="true"  />
+                <label for="nombre">Nombre</label>
     </div>
 
-    <div class="mb-3">
-        <label for="primerApellido" class="form-label">Primer Apellido</label>
-        <InputText id="primerApellido" class="form-control" @bind-Value="encargadoControlador.encargado.Persona.PrimerApellido" />
+            <div class="form-floating mb-3">
+                <InputText id="primerApellido" class="form-control" @bind-Value="encargadoControlador.encargado.Persona.PrimerApellido" placeholder="Primer Apellido" aria-required="true" />
+                <label for="primerApellido">Primer Apellido</label>
     </div>
 
-    <div class="mb-3">
-        <label for="segundoApellido" class="form-label">Segundo Apellido</label>
-        <InputText id="segundoApellido" class="form-control" @bind-Value="encargadoControlador.encargado.Persona.SegundoApellido" />
+            <div class="form-floating mb-3">
+                <InputText id="segundoApellido" class="form-control" @bind-Value="encargadoControlador.encargado.Persona.SegundoApellido" placeholder="Segundo Apellido" aria-required="true" />
+                <label for="segundoApellido">Segundo Apellido</label>
     </div>
 
     <div class="mb-3">
@@ -40,8 +42,11 @@
         </InputSelect>
     </div>
 
+    <div style="text-align:center">
     <button type="submit" class="btn btn-primary">Registrar</button>
+            </div>
 </EditForm>
+    </div>
 
 @if (mensajeExito != null)
 {
@@ -86,7 +91,7 @@
         </div>
     </div>
 }
-
+</div>
 
 @code {
     public EncargadoControlador encargadoControlador = new EncargadoControlador();

@@ -15,6 +15,7 @@
 <div class="container mt-3">
     <div class="card p-3 mx-auto">
         <h2 class="text-center mb-4">Registro de Asistente</h2>
+        <hr style="margin-top:-0.5em;"/>
         <EditForm Model="asistente" OnValidSubmit="RegistrarAsistente" FormName="crearAsistenteForm">
             <DataAnnotationsValidator />
             <ValidationSummary />
@@ -71,11 +72,11 @@
                 </div>
                 <div class="col-12 col-md-6">
                     <div class="form-floating mb-2">
-                        <InputText id="contrasenia" class="form-control form-control-sm" @bind-Value="asistente.Contrasenia" placeholder="Contraseña" />
+                        <InputText id="contrasenia" class="form-control form-control-sm" style="height: 80%;" @bind-Value="asistente.Contrasenia" placeholder="Contraseña" />
                         <label for="contrasenia">Contraseña</label>
                     </div>
                 </div>
-                <div class="col-12 col-md-6" style="margin-top: -3em">
+                <div class="col-12 col-md-6" style="margin-top: -2.5em">
                         <InputSelect id="BadgeID" class="form-select form-select-sm" @bind-Value="asistente.BadgeID">
                             <option value="">Seleccione el badge</option>
                             @foreach (var badge in listaBadge)
@@ -85,7 +86,7 @@
                         </InputSelect>
                 </div>
             </div>
-            <div class="d-grid gap-2 col-12 mx-auto mt-4">
+            <div style="text-align:center; margin: 0.7em;">
                 <button type="submit" class="btn btn-primary btn-sm">Registrar Asistente</button>
             </div>
         </EditForm>
