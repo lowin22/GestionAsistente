@@ -6,6 +6,7 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
+
     
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Mvc
@@ -202,11 +203,12 @@
                     <li>
                         <a class="nav-link" href="Account/Login">Iniciar Sesión</a>
                     </li>
+                    
                 </ul>
+               
             </div>
-            <form method="post" @onsubmit="Salir">
-                <button type="submit" id="boton-salir" class="btn btn-outline-primary">Salir</button>
-            </form>
+            <button @onclick="Salir" id="boton-salir" class="btn btn-outline-primary">Salir</button>
+
         </div>
 
     </nav>
@@ -226,7 +228,9 @@
 @code {
     private async Task Salir()
     {
+        Console.WriteLine("Saliendo...");
         await SignInManager.SignOutAsync();
-        NavigationManager.NavigateTo("/crear-usuario", true); // Redirige al inicio después de cerrar sesión
+        NavigationManager.NavigateTo("/Account/login", true); // Redirige al inicio después de cerrar sesión
+
     }
 }
