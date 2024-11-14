@@ -178,116 +178,106 @@
                 <EditForm Model="asistente" FormName="actualizarAsistenteForm">
                     <DataAnnotationsValidator />
                     <ValidationSummary />
-                    <div class="mb-3">
-                        <label for="usuario" class="form-label">Usuario</label>
-                        <InputText id="usuario" class="form-control" @bind-Value="asistente.nombreUsuario" require/>
-                        @if (string.IsNullOrWhiteSpace(asistente.nombreUsuario))
-                        {
-                            <p class="text-danger">Este campo es obligatorio y solo debe tener letras.</p>
-                        }
-                        @if (!string.IsNullOrEmpty(asistente.nombreUsuario) && !System.Text.RegularExpressions.Regex.IsMatch(asistente.nombreUsuario, @"^[a-zA-Z]+$"))
-                        {
-                            <p class="text-danger">El usuario solo puede contener letras (sin espacios, números o caracteres especiales).</p>
-                        }
+                    <div class="row">
+                        <!-- Columna 1 -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="usuario" class="form-label">Usuario</label>
+                                <InputText id="usuario" class="form-control" @bind-Value="asistente.nombreUsuario" />
+                                @if (string.IsNullOrWhiteSpace(asistente.nombreUsuario))
+                                {
+                                    <p class="text-danger">Este campo es obligatorio y solo debe tener letras.</p>
+                                }
+                                @if (!string.IsNullOrEmpty(asistente.nombreUsuario) && !System.Text.RegularExpressions.Regex.IsMatch(asistente.nombreUsuario, @"^[a-zA-Z]+$"))
+                                {
+                                    <p class="text-danger">El usuario solo puede contener letras.</p>
+                                }
+                            </div>
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">Nombre</label>
+                                <InputText id="nombre" class="form-control" @bind-Value="asistente.Persona.Nombre" />
+                                @if (string.IsNullOrWhiteSpace(asistente.Persona.Nombre))
+                                {
+                                    <p class="text-danger">Este campo es obligatorio.</p>
+                                }
+                            </div>
+                            <div class="mb-3">
+                                <label for="primerApellido" class="form-label">Primer Apellido</label>
+                                <InputText id="primerApellido" class="form-control" @bind-Value="asistente.Persona.PrimerApellido" />
+                                @if (string.IsNullOrWhiteSpace(asistente.Persona.PrimerApellido))
+                                {
+                                    <p class="text-danger">Este campo es obligatorio.</p>
+                                }
+                            </div>
+                            <div class="mb-3">
+                                <label for="segundoApellido" class="form-label">Segundo Apellido</label>
+                                <InputText id="segundoApellido" class="form-control" @bind-Value="asistente.Persona.SegundoApellido" />
+                                @if (string.IsNullOrWhiteSpace(asistente.Persona.SegundoApellido))
+                                {
+                                    <p class="text-danger">Este campo es obligatorio.</p>
+                                }
+                            </div>
+                            <div class="mb-3">
+                                <label for="contrasenia" class="form-label">Contraseña</label>
+                                <InputText id="contrasenia" class="form-control" @bind-Value="asistente.Contrasenia" />
+                                @if (string.IsNullOrWhiteSpace(asistente.Contrasenia))
+                                {
+                                    <p class="text-danger">Este campo es obligatorio.</p>
+                                }
+                            </div>
+                        </div>
+                        <!-- Columna 2 -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="accesos" class="form-label">Accesos</label>
+                                <InputTextArea id="accesos" class="form-control" @bind-Value="asistente.Accesos" />
+                                @if (string.IsNullOrWhiteSpace(asistente.Accesos))
+                                {
+                                    <p class="text-danger">Este campo es obligatorio.</p>
+                                }
+                            </div>
+                            <div class="mb-3">
+                                <label for="unidadID" class="form-label">Unidad</label>
+                                <InputSelect id="unidadID" class="form-control" @bind-Value="asistente.UnidadID">
+                                    <option value="0">-- Seleccione una unidad --</option>
+                                    @foreach (var unidad in listaUnidades)
+                                    {
+                                        <option value="@unidad.UnidadID">@unidad.Nombre</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                            <div class="mb-3">
+                                <label for="encargadoID" class="form-label">Encargado</label>
+                                <InputSelect id="encargadoID" class="form-control" @bind-Value="asistente.EncargadoID">
+                                    <option value="">-- Seleccione un encargado --</option>
+                                    @foreach (var encargado in listaEncargados)
+                                    {
+                                        <option value="@encargado.EncargadoID">@($"{encargado?.Persona.Nombre} {encargado?.Persona.PrimerApellido} {encargado?.Persona.SegundoApellido}")</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                            <div class="mb-3">
+                                <label for="BadgeID">Badge</label>
+                                <InputSelect id="BadgeID" class="form-control" @bind-Value="asistente.BadgeID">
+                                    <option value="">-- Seleccione el badge --</option>
+                                    @foreach (var badge in listaBadge)
+                                    {
+                                        <option value="@badge.BadgeID">@badge.BadgeID</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="nombre" class="form-label">Nombre</label>
-                        <InputText id="nombre" class="form-control" @bind-Value="asistente.Persona.Nombre" />
-                        @if (string.IsNullOrWhiteSpace(asistente.Persona.Nombre))
-                        {
-                            <p class="text-danger">Este campo es obligatorio y solo debe tener letras.</p>
-                        }
-                        @if (!string.IsNullOrEmpty(asistente.Persona.Nombre) && !System.Text.RegularExpressions.Regex.IsMatch(asistente.Persona.Nombre, @"^[a-zA-Z]+$"))
-                        {
-                            <p class="text-danger">El usuario solo puede contener letras (sin espacios, números o caracteres especiales).</p>
-                        }
+                    <div class="d-flex justify-content-end mt-3">
+                        <button type="submit" class="btn btn-primary me-2" @onclick="ActualizarUsuario">Guardar Cambios</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                     </div>
-                    <div class="mb-3">
-                        <label for="primerApellido" class="form-label">Primer Apellido</label>
-                        <InputText id="primerApellido" class="form-control" @bind-Value="asistente.Persona.PrimerApellido" />
-                        @if (string.IsNullOrWhiteSpace(asistente.Persona.PrimerApellido))
-                        {
-                            <p class="text-danger">Este campo es obligatorio y solo debe tener letras.</p>
-                        }
-                        @if (!string.IsNullOrEmpty(asistente.Persona.PrimerApellido) && !System.Text.RegularExpressions.Regex.IsMatch(asistente.Persona.PrimerApellido, @"^[a-zA-Z]+$"))
-                        {
-                            <p class="text-danger">El usuario solo puede contener letras (sin espacios, números o caracteres especiales).</p>
-                        }
-                    </div>
-                    <div class="mb-3">
-                        <label for="segundoApellido" class="form-label">Segundo Apellido</label>
-                        <InputText id="segundoApellido" class="form-control" @bind-Value="asistente.Persona.SegundoApellido" />
-                        @if (string.IsNullOrWhiteSpace(asistente.Persona.SegundoApellido))
-                        {
-                            <p class="text-danger">Este campo es obligatorio y solo debe tener letras.</p>
-                        }
-                        @if (!string.IsNullOrEmpty(asistente.Persona.SegundoApellido) && !System.Text.RegularExpressions.Regex.IsMatch(asistente.Persona.SegundoApellido, @"^[a-zA-Z]+$"))
-                        {
-                            <p class="text-danger">El usuario solo puede contener letras (sin espacios, números o caracteres especiales).</p>
-                        }
-                    </div>
-                    <div class="mb-3">
-                        <label for="contrasenia" class="form-label">Contraseña</label>
-                        <InputText id="contrasenia" class="form-control" @bind-Value="asistente.Contrasenia" />
-                        @if (string.IsNullOrWhiteSpace(asistente.Contrasenia))
-                        {
-                            <p class="text-danger">Este campo es obligatorio.</p>
-                        }
-                        @if (!string.IsNullOrEmpty(asistente.Contrasenia) && !System.Text.RegularExpressions.Regex.IsMatch(asistente.Contrasenia, @"^[^{}\[\]()<>]+$"))
-                        {
-                            <p class="text-danger">La contraseña no puede contener los siguientes caracteres: "{}[]()"</p>
-                        }
-                    </div>
-                    <div class="mb-3">
-                        <label for="accesos" class="form-label">Accesos</label>
-                        <InputTextArea id="accesos" class="form-control" @bind-Value="asistente.Accesos" />
-                        @if (string.IsNullOrWhiteSpace(asistente.Accesos))
-                        {
-                            <p class="text-danger">Este campo es obligatorio.</p>
-                        }
-                        @if (!string.IsNullOrEmpty(asistente.Accesos) && !System.Text.RegularExpressions.Regex.IsMatch(asistente.Accesos, @"^[^{}\[\]()<>]+$"))
-                        {
-                            <p class="text-danger">Los accesos no pueden contener los siguientes caracteres: "{}[]()"</p>
-                        }
-                    </div>
-                    <div class="mb-3">
-                        <label for="unidadID" class="form-label">Unidad</label>
-                        <InputSelect id="unidadID" class="form-control" @bind-Value="asistente.UnidadID" @oninput="OnUnidadChanged">
-                            <option value="0">-- Seleccione una unidad --</option>
-                            @foreach (var unidad in listaUnidades)
-                            {
-                                <option value="@unidad.UnidadID">@unidad.Nombre</option>
-                            }
-                        </InputSelect>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="encargadoID" class="form-label">Encargado</label>
-                        <InputSelect id="encargadoID" class="form-control" @bind-Value="asistente.EncargadoID">
-                            <option value="">-- Seleccione un encargado --</option>
-                            @foreach (var encargado in listaEncargados)
-                            {
-                                <option value="@encargado.EncargadoID">@($"{encargado?.Persona.Nombre} {encargado?.Persona.PrimerApellido} {encargado?.Persona.SegundoApellido}")</option>
-                            }
-                        </InputSelect>
-                    </div>
-                    <div class="mb-3">
-                        <label for="BadgeID">Badge</label>
-                        <InputSelect id="BadgeID" class="form-select" @bind-Value="asistente.BadgeID">
-                            <option value="">-- Seleccione el badge --</option>
-                            @foreach (var badge in listaBadge)
-                            {
-                                <option value="@badge.BadgeID">@badge.BadgeID</option>
-                            }
-                        </InputSelect>
-                    </div>
-                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @onclick="ActualizarUsuario">Guardar Cambios</button>
-                    <button type="submit" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                 </EditForm>
             </div>
         </div>
     </div>
 </div>
+
 <!-- Modal -->
 <div class="modal fade" id="horario" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
