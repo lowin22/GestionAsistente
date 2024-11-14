@@ -10,35 +10,51 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
 
+    <!-- Campo de Email -->
     <InputText @bind-Value="loginModel.Email" placeholder="Email" />
+    <ValidationMessage For="@(() => loginModel.Email)" />
+
+    <!-- Campo de Contraseña -->
     <InputText @bind-Value="loginModel.Password" placeholder="Contraseña" type="password" />
+    <ValidationMessage For="@(() => loginModel.Password)" />
 
     <button type="submit">Iniciar Sesión</button>
+
+    <!-- Mostrar mensaje de error general si falla el inicio de sesión -->
+    @if (!string.IsNullOrEmpty(loginErrorMessage))
+    {
+        <p class="text-danger">@loginErrorMessage</p>
+    }
 </EditForm>
 
 @code {
     private LoginModel loginModel = new LoginModel();
+    private string loginErrorMessage;
 
     private async Task LoginUser()
     {
+        // Intenta iniciar sesión usando Identity
         var result = await SignInManager.PasswordSignInAsync(loginModel.Email, loginModel.Password, isPersistent: false, lockoutOnFailure: false);
 
         if (result.Succeeded)
         {
+            // Redirige a la página principal si el inicio de sesión es exitoso
             Navigation.NavigateTo("/");
         }
         else
         {
-            // Manejar el fallo de inicio de sesión (mostrar mensaje al usuario)
+            // Muestra un mensaje de error personalizado en caso de fallo de inicio de sesión
+            loginErrorMessage = "El correo o la contraseña son incorrectos. Por favor, inténtalo nuevamente.";
         }
     }
 
     public class LoginModel
     {
-        [Required]
+        [Required(ErrorMessage = "Por favor, ingrese su correo electrónico.")]
+        [EmailAddress(ErrorMessage = "El formato del correo electrónico no es válido.")]
         public string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Por favor, ingrese su contraseña.")]
         public string Password { get; set; }
     }
 }
