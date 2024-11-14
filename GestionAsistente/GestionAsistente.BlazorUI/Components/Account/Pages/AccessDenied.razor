@@ -1,1 +1,25 @@
-﻿
+﻿@page "/Account/AccessDenied"
+
+<div class="container text-center mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <h1 class="display-4 text-primary mb-3">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        ¡Atención!
+                    </h1>
+                    <p class="lead text-primary">El usuario no tiene un rol asignado en el sistema.</p>
+                    <p class="text-muted mb-4">
+                        Para acceder a todas las funcionalidades, necesitas un rol asignado. 
+                        Ponte en contacto con el administrador para solicitar acceso.
+                    </p>
+                    <a href="Account/Login" class="btn btn-primary btn-lg px-4">
+                        Volver a iniciar sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
