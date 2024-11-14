@@ -624,20 +624,8 @@
 
         if (unidadUsuario == null)
         {   //unidad seleccionada
-            if (unidadId != 0)
-            {
-                listaBadge = await badgeControlador.ListarBadgePorUnidad(unidadId);
-                if (badgeID != null)
-                {
-                    Badge badgeAsignado = await badgeControlador.ObtenerBadgePorId(badgeID);
-                    listaBadge.Add(badgeAsignado);
-                }
-
-            }
-            else
-            {
-                listaBadge = new List<Badge>();
-            }
+            listaBadge = await badgeControlador.ListarBadge();
+            listaBadge = listaBadge.Where(a=>a.Ocupado==false).ToList();
         }
         else if (unidadUsuario != null)
         {
