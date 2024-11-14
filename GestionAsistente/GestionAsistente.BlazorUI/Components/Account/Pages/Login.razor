@@ -5,47 +5,52 @@
 @using Microsoft.AspNetCore.Identity
 @using GestionAsistente.BlazorUI.Data
 
-@layout Layout.LayoutMain 
+@layout Layout.LayoutMain
 @inject SignInManager<ApplicationUser> SignInManager
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 
-<PageTitle>Log in</PageTitle>
-
+<PageTitle>Iniciar Sesión</PageTitle>
 
 <div class="row d-flex justify-content-center align-items-center">
-    <div class="col-md-4" >
-        <h3>Bienvenido</h3>
+    <div class="col-md-4 ">
+        <h3 style="text-align:center" >Bienvenido</h3>
         <section class="justify-content-center" style="margin-bottom: 1em; background-color:none; padding: 0; ">
-            <StatusMessage Message="@errorMessage" />
+            <!-- Mensaje de error general -->
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger">@errorMessage</div>
+            }
+
             <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
                 <DataAnnotationsValidator />
-                <h2></h2>
-                <hr />
-                <ValidationSummary class="text-danger" role="alert" />
+                
+
                 <div class="form-floating mb-3">
                     <InputText @bind-Value="Input.Username" class="form-control" autocomplete="username" aria-required="true" placeholder="Usuario" />
-                    <label for="username" class="form-label">Username</label>
+                    <label style="max-height: 1em;" for="username" class="form-label">Usuario</label>
                     <ValidationMessage For="() => Input.Username" class="text-danger" />
                 </div>
 
                 <div class="form-floating mb-3">
                     <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Contraseña" />
-                    <label for="password" class="form-label">Password</label>
+                    <label for="password" class="form-label">Contraseña</label>
                     <ValidationMessage For="() => Input.Password" class="text-danger" />
                 </div>
 
-                <div>
+                @* <div class="form-check mb-3">
+                    <InputCheckbox @bind-Value="Input.RememberMe" class="form-check-input" />
+                    <label class="form-check-label">Recordarme</label>
+                </div> *@
+
+                <div style="text-align:center">
                     <button type="submit" class="w-40 h-20 btn btn-primary">Iniciar Sesión</button>
                 </div>
             </EditForm>
         </section>
     </div>
 </div>
-
-
-
 
 @code {
     private string? errorMessage;
@@ -73,7 +78,7 @@
         var result = await SignInManager.PasswordSignInAsync(Input.Username, Input.Password, Input.RememberMe, lockoutOnFailure: false);
         if (result.Succeeded)
         {
-            Logger.LogInformation("User logged in.");
+            Logger.LogInformation("Usuario ha iniciado sesión.");
             RedirectManager.RedirectTo(ReturnUrl);
         }
         else if (result.RequiresTwoFactor)
@@ -84,25 +89,26 @@
         }
         else if (result.IsLockedOut)
         {
-            Logger.LogWarning("User account locked out.");
+            Logger.LogWarning("Cuenta de usuario bloqueada.");
             RedirectManager.RedirectTo("Account/Lockout");
         }
         else
         {
-            errorMessage = "Error: Invalid login attempt.";
+            // Mensaje de error personalizado en caso de fallo de inicio de sesión
+            errorMessage = "Intento de inicio de sesión inválido. Verifique su usuario y contraseña.";
         }
     }
 
     private sealed class InputModel
     {
-        [Required]
+        [Required(ErrorMessage = "Por favor, ingrese su nombre de usuario.")]
         public string Username { get; set; } = "";
 
-        [Required]
+        [Required(ErrorMessage = "Por favor, ingrese su contraseña.")]
         [DataType(DataType.Password)]
         public string Password { get; set; } = "";
 
-        [Display(Name = "Remember me?")]
+        [Display(Name = "¿Recordarme?")]
         public bool RememberMe { get; set; }
     }
 }
