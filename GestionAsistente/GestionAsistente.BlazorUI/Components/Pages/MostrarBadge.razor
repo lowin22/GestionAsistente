@@ -163,7 +163,7 @@
            
 
             <div class="modal-footer justify-content-center">
-                <button class="btn btn-primary" data-bs-dismiss="modal" disabled="@EsFormularioEliminarInvalido()" @onclick="() => EliminarBadge(eliminarBadge.BadgeID)">
+                <button class="btn btn-primary" data-bs-dismiss="modal" @onclick="() => EliminarBadge(eliminarBadge.BadgeID)">
                     Confirmar
                 </button>
                 <button class="btn btn-danger" data-bs-dismiss="modal">
@@ -267,12 +267,19 @@
     private string nombreUsuarioAutenticado;
     private ApplicationUser usuarioIdentity;
 
+    private ReporteControlador reporteControlador = new ReporteControlador();
+    private ReporteBadge reporteBadge = new ReporteBadge();
+
     bool exito = false;
     string mensaje = "";
 
     UnidadControlador unidadControlador = new UnidadControlador();
 
     BadgeControlador badgeControlador = new BadgeControlador();
+
+    AsistenteControlador asistenteControlador = new AsistenteControlador();
+
+    Asistente asistente = new Asistente();
 
     string horaInicio, horaFinal = "", horario;
     string simboloRangoHoras = "a";
@@ -380,6 +387,9 @@
 
             // Asignar el nombre de usuario al historial de acciones
             historialAcciones.NombrePersona = nombreUsuarioAutenticado;
+
+            // Asignar el nombre de usuario al reporte
+            reporteBadge.NombreUsuario = nombreUsuarioAutenticado;
         }
 
         await CargarListaBadge();    
@@ -404,6 +414,21 @@
         badge.Justificacion = "";
     }
 
+    private async Task ReporteEliminar(int badgeID)
+    {
+        
+        if(asistente != null)
+        {
+            reporteBadge.NumeroBadge = asistente.BadgeID ?? -1;
+            //nombre completo
+            reporteBadge.NombreAsistente = asistente.Persona.Nombre + " " + asistente.Persona.PrimerApellido + " " + asistente.Persona.SegundoApellido;
+            reporteBadge.Accion = "Eliminar asignación de tarjeta";
+
+            await reporteControlador.RegistrarReporte(reporteBadge);
+        }
+
+    }
+
     async Task EliminarBadge(int badgeID)
     {
         //await badgeControlador.EliminarBadge(badgeID);
@@ -411,11 +436,19 @@
         //se actualiza el activo y la justificaion
         eliminarBadge.Justificacion = badge.Justificacion;
         eliminarBadge.Activo = false;
+        eliminarBadge.Ocupado = false;
+
+        //obtener la lista de asistentes que tienen el badge
+        List<Asistente> asistentes = await asistenteControlador.ListarAsistentes();
+
+        //filtrar el asistente
+        asistente = asistentes.FirstOrDefault(x => x.BadgeID == badgeID);
 
         (exito, mensaje) = await badgeControlador.ActualizarBadge(eliminarBadge);
 
         if (exito)
         {
+            await ReporteEliminar(badgeID);
             //Establecer propiedades para historialAcciones de registrar
             historialAcciones.Accion = "Desactivar badge: " + eliminarBadge.BadgeID;
             historialAcciones.Fecha = DateTime.Now;
@@ -579,11 +612,6 @@
     private bool EsFormularioActualizarInvalido()
     {
         return string.IsNullOrEmpty(horaInicio) || string.IsNullOrEmpty(horaFinal);
-    }
-
-    private bool EsFormularioEliminarInvalido()
-    {
-        return string.IsNullOrEmpty(badge?.Justificacion?.Trim());
     }
 
     private async Task CargarPagina()

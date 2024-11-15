@@ -503,7 +503,14 @@
                 Persona = new Persona()
             }
         };
-
+    private Asistente asistenteActualizarPrevio = new Asistente
+    {
+        Persona = new Persona(),
+        Encargado = new Encargado()
+        {
+            Persona = new Persona()
+        }
+    };
     private ReporteControlador reporteControlador = new ReporteControlador();
     private ReporteBadge reporteBadge = new ReporteBadge();
 
@@ -692,21 +699,21 @@
     private async Task ReporteAsignacionActualizar()
     {
 
-        List<Asistente> asistentePrevios = await asistenteControlador.ListarAsistentes();
-        Asistente asistentePrevio = asistentePrevios.Find(a => a.AsistenteID == asistenteActualizado.AsistenteID);
+        // List<Asistente> asistentePrevios = await asistenteControlador.ListarAsistentes();
+        // Asistente asistentePrevio = asistentePrevios.Find(a => a.AsistenteID == asistenteActualizado.AsistenteID);
 
-        if(asistentePrevio.BadgeID != null)
+        if(asistenteActualizarPrevio.BadgeID != null)
         {
 
-            reporteBadge.NumeroBadge = asistentePrevio.BadgeID ?? -1;
+            reporteBadge.NumeroBadge = asistenteActualizarPrevio.BadgeID ?? -1;
             //nombre completo
-            reporteBadge.NombreAsistente = asistentePrevio.Persona.Nombre + " " + asistentePrevio.Persona.PrimerApellido + " " + asistentePrevio.Persona.SegundoApellido;
+            reporteBadge.NombreAsistente = asistenteActualizarPrevio.Persona.Nombre + " " + asistenteActualizarPrevio.Persona.PrimerApellido + " " + asistenteActualizarPrevio.Persona.SegundoApellido;
             reporteBadge.Accion = "Eliminar asignación de tarjeta";
 
             await reporteControlador.RegistrarReporte(reporteBadge);
         }
 
-        if(asistente.BadgeID == null)
+        if(asistente.BadgeID != null)
         {
             reporteBadge.NumeroBadge = asistente.BadgeID ?? -1;
             //nombre completo
@@ -729,6 +736,9 @@
             asistente.Encargado = null;
             asistente.EncargadoID = null;
         }
+
+        asistenteActualizarPrevio = listaAsistentes.Find(a => a.AsistenteID == asistente.AsistenteID);
+
         (actualizado, string mensaje) = await asistenteControlador.ActualizarAsistente(asistente);
 
         listaAsistentes = await asistenteControlador.ListarAsistentes();

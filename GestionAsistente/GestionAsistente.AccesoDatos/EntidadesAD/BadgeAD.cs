@@ -129,6 +129,7 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             badgeEF.Justificacion = badge.Justificacion;
             badgeEF.Horario = badge.Horario;
             badgeEF.UnidadID = badge.UnidadID;
+            badgeEF.Ocupado = badge.Ocupado;
 
             return _contexto.SaveChanges() > 0;
         }
