@@ -38,20 +38,20 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                 Contrasenia = asistente.Contrasenia,
                 BadgeID = asistente.BadgeID
             };
-            BadgeEF badgeEF = _contexto.BadgesEF.Find(asistente.BadgeID);
-            if (badgeEF != null)
-            {
-                ReporteBadge reporteBadge = new ReporteBadge
-                {
-                    NombreUsuario = "Usuario prueba",
-                    NumeroBadge = badgeEF.BadgeID,
-                    NombreAsistente = asistente.Persona.Nombre,
-                    Accion = "Asignación de tarjeta"
-                };
-                await reporteBadgeAD.RegistrarReporteBadge(reporteBadge);
-                badgeEF.Ocupado = true;
+            //BadgeEF badgeEF = _contexto.BadgesEF.Find(asistente.BadgeID);
+            //if (badgeEF != null)
+            //{
+            //    ReporteBadge reporteBadge = new ReporteBadge
+            //    {
+            //        NombreUsuario = "Usuario prueba",
+            //        NumeroBadge = badgeEF.BadgeID,
+            //        NombreAsistente = asistente.Persona.Nombre,
+            //        Accion = "Asignación de tarjeta"
+            //    };
+            //    await reporteBadgeAD.RegistrarReporteBadge(reporteBadge);
+            //    badgeEF.Ocupado = true;
 
-            }
+            //}
 
             this._contexto.AsistenteEFs.Add(asistenteEF);
             return this._contexto.SaveChanges() > 0;
@@ -183,14 +183,14 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                 BadgeEF badgeEF = _contexto.BadgesEF.Find(idBadge);
                 badgeEF.Ocupado = false;
 
-                ReporteBadge reporteBadge = new ReporteBadge
-                {
-                    NombreUsuario = "Usuario prueba",
-                    NumeroBadge = badgeEF.BadgeID,
-                    NombreAsistente = asistente.Persona.Nombre,
-                    Accion = "Eliminar asignación de tarjeta"
-                };
-                await reporteBadgeAD.RegistrarReporteBadge(reporteBadge);
+                //ReporteBadge reporteBadge = new ReporteBadge
+                //{
+                //    NombreUsuario = "Usuario prueba",
+                //    NumeroBadge = badgeEF.BadgeID,
+                //    NombreAsistente = asistente.Persona.Nombre,
+                //    Accion = "Eliminar asignación de tarjeta"
+                //};
+                //await reporteBadgeAD.RegistrarReporteBadge(reporteBadge);
 
             }
 
@@ -223,14 +223,14 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
 
             if (badgeEFActual != null)
             {
-                ReporteBadge reporteBadge = new ReporteBadge
-                {
-                    NombreUsuario = "Usuario prueba",
-                    NumeroBadge = badgeEFActual.BadgeID,
-                    NombreAsistente = asistente.Persona.Nombre,
-                    Accion = "Asignación de tarjeta"
-                };
-                await reporteBadgeAD.RegistrarReporteBadge(reporteBadge);
+                //ReporteBadge reporteBadge = new ReporteBadge
+                //{
+                //    NombreUsuario = "Usuario prueba",
+                //    NumeroBadge = badgeEFActual.BadgeID,
+                //    NombreAsistente = asistente.Persona.Nombre,
+                //    Accion = "Asignación de tarjeta"
+                //};
+                //await reporteBadgeAD.RegistrarReporteBadge(reporteBadge);
 
                 badgeEFActual.Ocupado = true;
 

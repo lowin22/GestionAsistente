@@ -141,6 +141,9 @@
     public HistorialAccionesControlador historialAccionesControlador = new HistorialAccionesControlador();
     public HistorialAcciones historialAcciones = new HistorialAcciones();
 
+    private ReporteControlador reporteControlador = new ReporteControlador();
+    private ReporteBadge reporteBadge = new ReporteBadge();
+
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -151,13 +154,17 @@
             usuarioIdentity = await UserManager.FindByNameAsync(userName);
             unidadUsuario = usuarioIdentity.UnidadID;
         }
+
+        //asignar nombre usuario a reporte
+        reporteBadge.NombreUsuario = userName;
+
         listaUnidades = await unidadControlador.ListarUnidades();
         if (unidadUsuario != null)
-        
+
         {
             listaUnidades = listaUnidades.Where(x => x.UnidadID == unidadUsuario).ToList();
         }
-       
+
         if (asistente.UnidadID != 0)
         {
             await CargarEncargados(asistente.UnidadID);
@@ -201,6 +208,16 @@
             historialAcciones.Fecha = DateTime.Now;
             historialAcciones.NombrePersona = userName;
             await historialAccionesControlador.RegistrarHistorialAcciones(historialAcciones);
+            
+            //registrar reporte
+            if(asistente.BadgeID != null)
+            {
+                reporteBadge.NumeroBadge = asistente.BadgeID ?? -1;
+                reporteBadge.Fecha = DateTime.Now;
+                reporteBadge.NombreAsistente = asistente.Persona.Nombre;
+                reporteBadge.Accion = "Asignación de tarjeta";
+                await reporteControlador.RegistrarReporte(reporteBadge);
+            }
 
             notificarUsuario= mensaje;
             registrado = true;
