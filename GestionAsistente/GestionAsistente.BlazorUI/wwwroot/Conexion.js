@@ -3,13 +3,13 @@
     const alertElement = document.getElementById('connectionAlert');
 
     if (navigator.onLine) {
-        statusElement.textContent = "Conectado a Internet";
+        
         statusElement.style.color = "green";
 
         // Ocultar el mensaje de alerta si hay conexión
         alertElement.style.display = "none";
     } else {
-        statusElement.textContent = "No hay conexión a Internet";
+    
         statusElement.style.color = "red";
 
         // Mostrar el mensaje de alerta si no hay conexión
