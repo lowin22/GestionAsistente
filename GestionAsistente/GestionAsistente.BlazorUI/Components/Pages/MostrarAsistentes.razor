@@ -238,7 +238,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="unidadID" class="form-label">Unidad</label>
-                                <InputSelect id="unidadID" class="form-control" @bind-Value="asistente.UnidadID">
+                                <InputSelect id="unidadID" class="form-control" @bind-Value="asistente.UnidadID" @oninput="OnUnidadChanged">
                                     <option value="0">-- Seleccione una unidad --</option>
                                     @foreach (var unidad in listaUnidades)
                                     {
