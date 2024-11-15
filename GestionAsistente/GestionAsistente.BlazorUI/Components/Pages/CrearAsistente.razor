@@ -214,7 +214,8 @@
             {
                 reporteBadge.NumeroBadge = asistente.BadgeID ?? -1;
                 reporteBadge.Fecha = DateTime.Now;
-                reporteBadge.NombreAsistente = asistente.Persona.Nombre;
+                //nombre completo
+                reporteBadge.NombreAsistente = asistente.Persona.Nombre + " " + asistente.Persona.PrimerApellido + " " + asistente.Persona.SegundoApellido;
                 reporteBadge.Accion = "Asignación de tarjeta";
                 await reporteControlador.RegistrarReporte(reporteBadge);
             }

@@ -269,7 +269,7 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-end mt-3">
-                        <button type="submit" class="btn btn-primary me-2" @onclick="ActualizarUsuario">Guardar Cambios</button>
+                        <button type="submit" class="btn btn-primary me-2" @onclick="ActualizarAsistente">Guardar Cambios</button>
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
                     </div>
                 </EditForm>
@@ -503,6 +503,10 @@
                 Persona = new Persona()
             }
         };
+
+    private ReporteControlador reporteControlador = new ReporteControlador();
+    private ReporteBadge reporteBadge = new ReporteBadge();
+
     private bool unidadCambiada = false;
 
     // Propiedades de paginación
@@ -522,8 +526,8 @@
             userName = user.Identity.Name;
             usuarioIdentity = await UserManager.FindByNameAsync(userName);
             unidadUsuario = usuarioIdentity.UnidadID;
-
-            Console.WriteLine($"Unidad del usuario: {unidadUsuario}");
+            
+            reporteBadge.NombreUsuario = userName;
         }
         if (unidadUsuario == null)
         {
@@ -643,12 +647,31 @@
         }
     }
 
+    private async Task ReporteAsignacionEliminar()
+    {
+        List<Asistente> asistentePrevios = await asistenteControlador.ListarAsistentes();
+        Asistente asistentePrevio = asistentePrevios.Find(a => a.AsistenteID == asistenteActualizado.AsistenteID);
+
+        if (asistentePrevio.BadgeID != null)
+        {
+
+            reporteBadge.NumeroBadge = asistentePrevio.BadgeID ?? -1;
+            //nombre completo
+            reporteBadge.NombreAsistente = asistentePrevio.Persona.Nombre + " " + asistentePrevio.Persona.PrimerApellido + " " + asistentePrevio.Persona.SegundoApellido;
+            reporteBadge.Accion = "Eliminar asignación de tarjeta";
+
+            await reporteControlador.RegistrarReporte(reporteBadge);
+        }
+
+    }
+
     private async Task EliminarAsistente(int asistenteID)
     {
         (bool eliminado, string mensaje) = await asistenteControlador.EliminarAsistente(asistenteID);
 
         if (eliminado)
         {
+            await ReporteAsignacionEliminar();
             listaAsistentes = await asistenteControlador.ListarAsistentes();
 
             //Establecer propiedades para historialAcciones de registrar
@@ -664,6 +687,35 @@
         {
             notificarEliminacion = mensaje; 
         }
+    }
+
+    private async Task ReporteAsignacionActualizar()
+    {
+
+        List<Asistente> asistentePrevios = await asistenteControlador.ListarAsistentes();
+        Asistente asistentePrevio = asistentePrevios.Find(a => a.AsistenteID == asistenteActualizado.AsistenteID);
+
+        if(asistentePrevio.BadgeID != null)
+        {
+
+            reporteBadge.NumeroBadge = asistentePrevio.BadgeID ?? -1;
+            //nombre completo
+            reporteBadge.NombreAsistente = asistentePrevio.Persona.Nombre + " " + asistentePrevio.Persona.PrimerApellido + " " + asistentePrevio.Persona.SegundoApellido;
+            reporteBadge.Accion = "Eliminar asignación de tarjeta";
+
+            await reporteControlador.RegistrarReporte(reporteBadge);
+        }
+
+        if(asistente.BadgeID == null)
+        {
+            reporteBadge.NumeroBadge = asistente.BadgeID ?? -1;
+            //nombre completo
+            reporteBadge.NombreAsistente = asistente.Persona.Nombre + " " + asistente.Persona.PrimerApellido + " " + asistente.Persona.SegundoApellido;
+            reporteBadge.Accion = "Asignación de tarjeta";
+
+            await reporteControlador.RegistrarReporte(reporteBadge);
+        }
+
     }
 
     private async Task ActualizarAsistente()
@@ -685,11 +737,13 @@
         {
             listaAsistentes = listaAsistentes.Where(a => a.UnidadID == unidadUsuario).ToList();
         }
-        
+
         StateHasChanged();
 
         if (actualizado)
         {
+            await ReporteAsignacionActualizar();
+
             //Establecer propiedades para historialAcciones de registrar
             historialAcciones.Accion = "Actualizar asistente: " + asistente.Persona.Nombre + " " +
             asistente.Persona.PrimerApellido + " " + asistente.Persona.SegundoApellido;
