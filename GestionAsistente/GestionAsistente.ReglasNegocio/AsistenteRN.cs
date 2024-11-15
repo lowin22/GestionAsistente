@@ -105,8 +105,8 @@ namespace GestionAsistente.ReglasNegocio
         // Validaciones de accesos
         { a => a.Accesos != null,
           "Los accesos no pueden estar en blanco" },
-        { a => a.Accesos != null && System.Text.RegularExpressions.Regex.IsMatch(a.Accesos, PATRON_LETRAS_NUMEROS),
-          "Los accesos solo pueden contener letras y números" },
+        // { a => a.Accesos != null && System.Text.RegularExpressions.Regex.IsMatch(a.Accesos, PATRON_LETRAS_NUMEROS),
+        //   "Los accesos solo pueden contener letras y números" },
         { a => a.Accesos != null && !System.Text.RegularExpressions.Regex.IsMatch(a.Accesos, PATRON_CARACTERES_ESPECIALES),
           "Los accesos no deben contener los caracteres <, >, (), []" },
 
