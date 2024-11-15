@@ -42,7 +42,7 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                 reportes.Add(new ReporteBadge
                 {
                     Accion = reporteEF.Accion,
-                    NombreUsuario = "Usuario",
+                    NombreUsuario = reporteEF.NombreUsuario,
                     NumeroBadge = reporteEF.NumeroBadge,
                     NombreAsistente = reporteEF.NombreAsistente, 
                     Fecha = DateTime.Now
