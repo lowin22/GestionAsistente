@@ -626,6 +626,11 @@
         {   //unidad seleccionada
             listaBadge = await badgeControlador.ListarBadge();
             listaBadge = listaBadge.Where(a=>a.Ocupado==false).ToList();
+            if (badgeID != null)
+            {
+                Badge badgeAsignado = await badgeControlador.ObtenerBadgePorId(badgeID);
+                listaBadge.Add(badgeAsignado);
+            }
         }
         else if (unidadUsuario != null)
         {
@@ -676,7 +681,11 @@
 
         listaAsistentes = await asistenteControlador.ListarAsistentes();
         //cuando filtro la lista se cae
-        listaAsistentes = listaAsistentes.Where(a => a.UnidadID == unidadUsuario).ToList();
+        if (unidadUsuario != null)       
+        {
+            listaAsistentes = listaAsistentes.Where(a => a.UnidadID == unidadUsuario).ToList();
+        }
+        
         StateHasChanged();
 
         if (actualizado)
