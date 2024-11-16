@@ -26,7 +26,7 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                 NombreUsuario = reporteBadge.NombreUsuario,
                 NumeroBadge = reporteBadge.NumeroBadge,
                 NombreAsistente = reporteBadge.NombreAsistente,
-                Fecha = reporteBadge.Fecha
+                Fecha = DateTime.Now
             };
             this._contexto.ReporteBadgeEFs.Add(reporteBadgeEF);
             return this._contexto.SaveChanges() > 0;
@@ -45,7 +45,7 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                     NombreUsuario = reporteEF.NombreUsuario,
                     NumeroBadge = reporteEF.NumeroBadge,
                     NombreAsistente = reporteEF.NombreAsistente, 
-                    Fecha = DateTime.Now
+                    Fecha = reporteEF.Fecha
                 });
             }
 
