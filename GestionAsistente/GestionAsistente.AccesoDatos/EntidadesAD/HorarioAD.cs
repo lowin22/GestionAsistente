@@ -80,6 +80,12 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                 HoraFin = x.HoraFin,
                 Dia = x.Dia,
                 EstacionTrabajoID = x.EstacionTrabajoID,
+                EstacionTrabajo = new EstacionTrabajo
+                {
+                    EstacionTrabajoID = x.EstacionTrabajo.EstacionTrabajoID,
+                    OficinaID = x.EstacionTrabajo.OficinaID,
+                    Numero = x.EstacionTrabajo.Numero,
+                },
                 AsistenteID = x.AsistenteID,
                 Asistente = new Asistente
                 {
@@ -113,6 +119,7 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
            {
                EstacionTrabajoID = x.EstacionTrabajo.EstacionTrabajoID,
                OficinaID = x.EstacionTrabajo.OficinaID,
+               Numero = x.EstacionTrabajo.Numero,
                Oficina = new Oficina
                {
                    OficinaID = x.EstacionTrabajo.Oficina.OficinaID,

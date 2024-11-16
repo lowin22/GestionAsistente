@@ -61,31 +61,41 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
 
             // Obtener estaciones de trabajo actuales asociadas a esta oficina
             var estacionesActuales = _contexto.EstacionTrabajoEFs
-                .Where(et => et.OficinaID == oficina.OficinaID).ToList();
+                .Where(et => et.OficinaID == oficina.OficinaID)
+                .OrderBy(et => et.Numero) // Ordenar por número de estación
+                .ToList();
 
             int cantidadActual = estacionesActuales.Count;
-            int diferencia = cantidadEstaciones - cantidadActual;
 
-            if (diferencia > 0)
+            if (cantidadEstaciones > cantidadActual)
             {
-                // Agregar nuevas estaciones de trabajo
-                var nuevasEstaciones = Enumerable.Range(0, diferencia)
-                    .Select(_ => new EstacionTrabajoEF
+                // Agregar nuevas estaciones de trabajo para completar la cantidad deseada
+                for (int i = cantidadActual + 1; i <= cantidadEstaciones; i++)
+                {
+                    estacionesActuales.Add(new EstacionTrabajoEF
                     {
-                        Numero = cantidadActual + 1, // O generar otro identificador si es necesario
-                        Estado = 0,       // Puedes definir un estado inicial aquí
+                        Numero = i,
+                        Estado = 0, // Estado inicial
                         OficinaID = oficina.OficinaID
-                    }).ToList();
-
-                _contexto.EstacionTrabajoEFs.AddRange(nuevasEstaciones);
+                    });
+                }
+                _contexto.EstacionTrabajoEFs.AddRange(estacionesActuales.Skip(cantidadActual));
             }
-            else if (diferencia < 0)
+            else if (cantidadEstaciones < cantidadActual)
             {
-                // Eliminar exceso de estaciones de trabajo
+                // Eliminar las estaciones de trabajo en exceso
                 var estacionesAEliminar = estacionesActuales
-                    .Take(Math.Abs(diferencia)).ToList();
+                    .Skip(cantidadEstaciones)
+                    .ToList();
 
                 _contexto.EstacionTrabajoEFs.RemoveRange(estacionesAEliminar);
+                estacionesActuales = estacionesActuales.Take(cantidadEstaciones).ToList();
+            }
+
+            // Reasignar los números de las estaciones de trabajo para que sean consecutivos
+            for (int i = 0; i < estacionesActuales.Count; i++)
+            {
+                estacionesActuales[i].Numero = i + 1;
             }
 
             // Guardar cambios en la base de datos
