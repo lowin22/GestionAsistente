@@ -71,7 +71,7 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
                     BadgeID = b.BadgeID,
                     Horario = b.Horario,
                     UnidadID = b.UnidadID,
-                    Justificacion= b.Justificacion,
+                    Justificacion = b.Justificacion,
                     Activo = b.Activo,
                     Ocupado = b.Ocupado,
                     Unidad = b.Unidad != null ? new Unidad
@@ -120,8 +120,9 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             {
                 badge.Justificacion = "";
             }
-            if (!badge.Activo) {
-               _contexto.AsistenteEFs.Where(a => a.BadgeID == badge.BadgeID).ToList().ForEach(a => a.BadgeID = null);
+            if (!badge.Activo)
+            {
+                _contexto.AsistenteEFs.Where(a => a.BadgeID == badge.BadgeID).ToList().ForEach(a => a.BadgeID = null);
             }
 
             badgeEF.BadgeID = badge.BadgeID;
@@ -148,7 +149,7 @@ namespace GestionAsistente.AccesoDatos.EntidadesAD
             // Filtrar los badges por UnidadID antes de traerlos desde la base de datos
             List<BadgeEF> badgesEF = await this._contexto.BadgesEF
                 .Include(e => e.Unidad)  // Incluir Unidad
-                .Where(b => b.UnidadID == unidadId && b.Ocupado != true)  // Filtrar por UnidadID
+                .Where(b => b.UnidadID == unidadId && b.Ocupado != true && b.Activo == true)  // Filtrar por UnidadID
                 .ToListAsync();
 
             List<Badge> badges = new List<Badge>();
